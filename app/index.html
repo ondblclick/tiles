@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Tiles</title>
+    <link rel="stylesheet" href="stylesheets/application.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.73/jsrender.js"></script>
+    <script type="text/javascript" src="javascripts/utils.js"></script>
+    <script type="text/javascript" src="javascripts/collection.js"></script>
+    <script type="text/javascript" src="javascripts/model.js"></script>
+    <script type="text/javascript" src="javascripts/canvas.js"></script>
+    <script type="text/javascript" src="javascripts/tile-common.js"></script>
+    <script type="text/javascript" src="javascripts/tile.js"></script>
+    <script type="text/javascript" src="javascripts/pseudo-tile.js"></script>
+    <script type="text/javascript" src="javascripts/application.js"></script>
+  </head>
+  <body>
+    <div class="canvas"></div>
+    <script id='tile' type='text/x-jsrender'>
+      <div class='tile tile-{{:type}}' data-model-id='{{:id}}' style='transform:translate({{:#data.x * 30}}px, {{:#data.y * 30}}px)'></div>
+    </script>
+    <script id='pseudo-tile' type='text/x-jsrender'>
+      <div class='pseudo-tile' data-model-id='{{:id}}' style='transform:translate({{:#data.x * 30}}px, {{:#data.y * 30}}px)'></div>
+    </script>
+  </body>
+</html>
