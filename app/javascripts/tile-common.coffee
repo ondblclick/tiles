@@ -8,7 +8,7 @@ class @TileCommon extends Model
           if Tile.types[neighbors[key].type][value].indexOf(type) is -1
             return false
       return true
-    console.log allowedTypes
+    new TilesLibraryModal(allowedTypes, @).show()
 
   emptyNeighbors: ->
     res = []

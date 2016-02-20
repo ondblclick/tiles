@@ -1,46 +1,5 @@
-$light-grey: #eee;
-$dark-grey: #888;
-$white: #fff;
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  cursor: -webkit-grab;
-  height: 100vh;
-  overflow: hidden;
-  width: 100vw;
-}
-
-.canvas {
-  transform: translate(calc(50vw - 15px), calc(50vh - 15px));
-}
-
-.tile {
-  background-color: $light-grey;
-  cursor: pointer;
-  height: 30px;
-  position: absolute;
-  width: 30px;
-  z-index: 1;
-
-  &:hover { opacity: .7; }
-}
-
-.pseudo-tile {
-  cursor: pointer;
-  height: 30px;
-  position: absolute;
-  text-align: center;
-  width: 30px;
-  z-index: auto;
-
-  &:hover { opacity: .7; }
-
-  &::before {
-    content: '+';
-    line-height: 30px;
-  }
-}
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic);
+@import 'colors';
+@import 'main';
+@import 'tile';
+@import 'modal';

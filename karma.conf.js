@@ -22,8 +22,10 @@ module.exports = function(config) {
     },
 
     files: [
+      'https://code.jquery.com/jquery-2.2.0.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.73/jsrender.js',
       './app/javascripts/*.coffee',
-      './spec/*.coffee'
+      './spec/*.spec.coffee'
     ]
   });
 }

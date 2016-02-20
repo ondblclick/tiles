@@ -1,0 +1,17 @@
+.popover {
+  background-color: $white;
+  border: 1px solid $dark-grey;
+  border-radius: 5px;
+  height: 300px;
+  left: 100px;
+  padding: 20px;
+  position: absolute;
+  top: 100px;
+  width: 300px;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}

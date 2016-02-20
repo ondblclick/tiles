@@ -1,0 +1,16 @@
+* {
+  font-family: 'Roboto';
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  cursor: -webkit-grab;
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+}
+
+.canvas {
+  transform: translate(calc(50vw - 15px), calc(50vh - 15px));
+}

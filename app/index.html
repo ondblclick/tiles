@@ -14,9 +14,19 @@
     <script type="text/javascript" src="javascripts/tile.js"></script>
     <script type="text/javascript" src="javascripts/pseudo-tile.js"></script>
     <script type="text/javascript" src="javascripts/application.js"></script>
+    <script type="text/javascript" src="javascripts/tiles-library-modal.js"></script>
   </head>
   <body>
     <div class="canvas"></div>
+    <script id='tile-library-modal' type='text/x-jrender'>
+      <div class="popover">
+        <ul>
+          {{props data}}
+            <li>{{:prop}}</li>
+          {{/props}}
+        </ul>
+      </div>
+    </script>
     <script id='tile' type='text/x-jsrender'>
       <div class='tile tile-{{:type}}' data-model-id='{{:id}}' style='transform:translate({{:#data.x * 30}}px, {{:#data.y * 30}}px)'></div>
     </script>

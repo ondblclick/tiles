@@ -14,8 +14,7 @@ gulp.task('styles', function() {
 
 gulp.task('coffee', function() {
   return gulp.src('./app/javascripts/*.coffee')
-    .pipe(coffee({ bare: false }))
-    .on('error', swallowError)
+    .pipe(coffee({ bare: false }).on('error', swallowError))
     .pipe(gulp.dest('./dist/javascripts'));
 });
 
@@ -35,7 +34,7 @@ gulp.task('clean', function() {
 });
 
 gulp.task('default', ['clean'], function() {
-  return gulp.run('styles', 'coffee', 'images', 'markup');
+  return gulp.start('styles', 'coffee', 'images', 'markup');
 });
 
 gulp.task('server', ['watch'], function() {
@@ -51,29 +50,10 @@ gulp.task('test', function (done) {
 });
 
 gulp.task('watch', function() {
-  var eventMessage = function(event) {
-    console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
-  }
-
-  gulp.watch('./app/stylesheets/*.scss', function(event) {
-    eventMessage(event);
-    gulp.run('styles');
-  });
-
-  gulp.watch('./app/javascripts/*.coffee', function(event) {
-    eventMessage(event);
-    gulp.run('coffee');
-  });
-
-  gulp.watch('./app/images/*.*', function(event) {
-    eventMessage(event);
-    gulp.run('images');
-  });
-
-  gulp.watch('./app/*.html', function(event) {
-    eventMessage(event);
-    gulp.run('markup');
-  });
+  gulp.watch('app/stylesheets/*.scss', ['styles']);
+  gulp.watch('app/javascripts/*.coffee', ['coffee']);
+  gulp.watch('app/images/*.*', ['images']);
+  gulp.watch('app/*.html', ['markup']);
 });
 
 function swallowError (error) {

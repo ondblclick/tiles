@@ -1,0 +1,26 @@
+.tile {
+  background-color: $light-grey;
+  cursor: pointer;
+  height: 30px;
+  position: absolute;
+  width: 30px;
+  z-index: 1;
+
+  &:hover { opacity: .7; }
+}
+
+.pseudo-tile {
+  cursor: pointer;
+  height: 30px;
+  position: absolute;
+  text-align: center;
+  width: 30px;
+  z-index: auto;
+
+  &:hover { opacity: .7; }
+
+  &::before {
+    content: '+';
+    line-height: 30px;
+  }
+}
