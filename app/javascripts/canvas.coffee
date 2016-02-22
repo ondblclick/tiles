@@ -1,27 +1,37 @@
 class @Canvas
   constructor: ->
     @_bindings()
-    @_renderTiles()
-    @_renderAddButtons()
+    @render()
     @dragging = false
 
-  _renderAddButtons: ->
+  render: ->
+    @_removeTiles()
+    @_renderTiles()
+    @_removePseudoTiles()
+    @_createPseudoTiles()
+    @_renderPseudoTiles()
+
+  _removeTiles: ->
+    $('.tile, .pseudo-tile').remove()
+
+  _removePseudoTiles: ->
+    PseudoTile.collection = []
+
+  _createPseudoTiles: ->
     tiles = Tile.all().filter (tile) ->
-      return false if tile.neighbors().length is 4
+      return false if Object.keys(tile.neighbors()).length is 4
       return true
 
     tiles.forEach (tile) ->
       emptyCells = tile.emptyNeighbors()
       emptyCells.forEach (emptyCell) ->
         pseudoTile = PseudoTile.findByPosition(emptyCell)
-        PseudoTile.create(emptyCell).render() unless pseudoTile
+        PseudoTile.create(emptyCell) unless pseudoTile
+
+  _renderPseudoTiles: ->
+    PseudoTile.all().forEach (tile) -> tile.render()
 
   _renderTiles: ->
-    Tile.create({ x: 1, y: 0, type: 'someType' })
-    Tile.create({ x: 0, y: -1, type: 'theType' })
-    Tile.create({ x: -1, y: 0, type: 'anotherType' })
-    Tile.create({ x: 0, y: 1, type: 'theType' })
-    Tile.create({ x: 0, y: 0, type: 'anotherType' })
     Tile.all().forEach (tile) -> tile.render()
 
   _bindings: ->

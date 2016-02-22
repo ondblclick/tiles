@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="stylesheets/application.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.73/jsrender.js"></script>
+    <script type="text/javascript" src="javascripts/tiles-set.js"></script>
     <script type="text/javascript" src="javascripts/utils.js"></script>
     <script type="text/javascript" src="javascripts/collection.js"></script>
     <script type="text/javascript" src="javascripts/model.js"></script>
@@ -19,10 +20,12 @@
   <body>
     <div class="canvas"></div>
     <script id='tile-library-modal' type='text/x-jrender'>
-      <div class="popover">
-        <ul>
+      <div class='popover'>
+        <ul class='list-tiles'>
           {{props data}}
-            <li>{{:prop}}</li>
+            <li class='list-tiles-item'>
+              <a href="#" data-tile-type='{{:prop}}'>{{:prop}}</a>
+            </li>
           {{/props}}
         </ul>
       </div>

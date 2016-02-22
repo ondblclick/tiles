@@ -2,16 +2,21 @@
   background-color: $white;
   border: 1px solid $dark-grey;
   border-radius: 5px;
-  height: 300px;
-  left: 100px;
+  bottom: 20px;
+  left: 20px;
   padding: 20px;
   position: absolute;
-  top: 100px;
+  top: 20px;
   width: 300px;
+  z-index: 999;
+}
 
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.list-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  .list-tiles-item {
+    a:hover { text-decoration: none; }
   }
 }
