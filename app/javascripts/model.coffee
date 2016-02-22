@@ -12,6 +12,10 @@ class @Model
       @[key] = properties[key] if @fields.indexOf(key) isnt -1
     @constructor.collection.push @
 
+  destroy: ->
+    index = @constructor.collection.indexOf(@)
+    @constructor.collection.splice(index, 1) unless index is -1
+
   addFields: ->
     @fields = @fields || []
     @fields.forEach (field) => @[field] = null

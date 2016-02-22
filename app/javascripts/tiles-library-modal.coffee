@@ -5,6 +5,8 @@ class @TilesLibraryModal
   _bindings: ->
     $(document).off 'click', '.list-tiles-item a'
     $(document).on 'click', '.list-tiles-item a', (e) =>
+      existingTile = Tile.findByPosition({ x: @tile.x, y: @tile.y })
+      existingTile.destroy() if existingTile
       Tile.create
         x: @tile.x
         y: @tile.y

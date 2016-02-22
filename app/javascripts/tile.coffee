@@ -1,6 +1,5 @@
 class @Tile extends TileCommon
   @inversed: { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }
-
   @types: tilesSet
 
   @findByPosition: (position) ->
