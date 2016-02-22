@@ -4,10 +4,11 @@
   border-radius: 5px;
   bottom: 20px;
   left: 20px;
+  overflow-y: scroll;
   padding: 20px;
   position: absolute;
   top: 20px;
-  width: 300px;
+  width: 271px;
   z-index: 999;
 }
 
@@ -17,6 +18,23 @@
   padding: 0;
 
   .list-tiles-item {
-    a:hover { text-decoration: none; }
+    display: inline-block;
+
+    a:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+@for $i from 0 through 11 {
+  @for $j from 0 through 11 {
+    [data-tile-type='#{$i}-#{$j}'] {
+      background-image: url('../images/tiles.png');
+      background-position-x: -#{$i * (48 + 2) + 2}px;
+      background-position-y: -#{$j * (48 + 2) + 2}px;
+      display: inline-block;
+      height: 48px;
+      width: 48px;
+    }
   }
 }
