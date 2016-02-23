@@ -21,11 +21,16 @@ class @Canvas
     Tile.all().forEach (tile) -> tile.render()
 
   _bindings: ->
+    $(document).on 'click', '.pseudo-tile', (e) =>
+      existingTile = Tile.findByPosition({ x: @currentX, y: @currentY })
+      existingTile.destroy() if existingTile
+      Tile.create({ x: @currentX, y: @currentY, type: @selectedTile.find('a').data('tile-type') })
+      @render()
+
     $(document).on 'click', '.list-tiles-item', (e) =>
       @selectedTile = $(e.currentTarget)
       @selectedTile.toggleClass('active').siblings().removeClass('active')
       @selectedTile = undefined unless @selectedTile.is('.active')
-      console.log @selectedTile
       if @selectedTile
         $('.pseudo-tile').css('background', @selectedTile.find('a').css('background'))
         $('.pseudo-tile').addClass('active')
@@ -52,12 +57,12 @@ class @Canvas
 
       if @selectedTile
         return if $(e.target).is('.pseudo-tile')
-        col = Math.floor(e.offsetX / 48)
-        row = Math.floor(e.offsetY / 48)
+        @currentX = Math.floor(e.offsetX / 48)
+        @currentY = Math.floor(e.offsetY / 48)
         if $(e.target).is('.tile')
-          col = col + Math.floor($(e.target).position().left / 48)
-          row = row + Math.floor($(e.target).position().top / 48)
-        $('.pseudo-tile').css('transform', "translate(#{col * 48}px, #{row * 48}px)")
+          @currentX += Math.floor($(e.target).position().left / 48)
+          @currentY += Math.floor($(e.target).position().top / 48)
+        $('.pseudo-tile').css('transform', "translate(#{@currentX * 48}px, #{@currentY * 48}px)")
 
     $(document).on 'mouseup', =>
       @dragging = false
