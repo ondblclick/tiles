@@ -1,17 +1,3 @@
-.popover {
-  background-color: $white;
-  border: 1px solid $dark-grey;
-  border-radius: 5px;
-  bottom: 20px;
-  left: 20px;
-  overflow-y: scroll;
-  padding: 20px;
-  position: absolute;
-  top: 20px;
-  width: 271px;
-  z-index: 999;
-}
-
 .list-tiles {
   list-style: none;
   margin: 0;
@@ -20,8 +6,8 @@
   .list-tiles-item {
     display: inline-block;
 
-    a:hover {
-      text-decoration: none;
+    &.active {
+      a { box-shadow: 0 0 0 2px $blue; }
     }
   }
 }
@@ -37,4 +23,14 @@
       width: 48px;
     }
   }
+}
+
+.pseudo-tile {
+  display: none;
+  height: 48px;
+  position: absolute;
+  width: 48px;
+  z-index: 999;
+
+  &.active { display: block; }
 }
