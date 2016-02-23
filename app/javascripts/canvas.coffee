@@ -25,6 +25,12 @@ class @Canvas
       @selectedTile = $(e.currentTarget)
       @selectedTile.toggleClass('active').siblings().removeClass('active')
       @selectedTile = undefined unless @selectedTile.is('.active')
+      console.log @selectedTile
+      if @selectedTile
+        $('.pseudo-tile').css('background', @selectedTile.find('a').css('background'))
+        $('.pseudo-tile').addClass('active')
+      else
+        $('.pseudo-tile').removeClass('active')
 
     $(document).on 'mousedown', '.canvas', (e) =>
       return if $(e.target).is('.tile')
@@ -48,6 +54,9 @@ class @Canvas
         return if $(e.target).is('.pseudo-tile')
         col = Math.floor(e.offsetX / 48)
         row = Math.floor(e.offsetY / 48)
+        if $(e.target).is('.tile')
+          col = col + Math.floor($(e.target).position().left / 48)
+          row = row + Math.floor($(e.target).position().top / 48)
         $('.pseudo-tile').css('transform', "translate(#{col * 48}px, #{row * 48}px)")
 
     $(document).on 'mouseup', =>
