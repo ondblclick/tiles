@@ -1,9 +1,9 @@
 class @Map extends Model
   hasMany: -> [Tile]
 
+  fields: ['width', 'height', 'tileSize', 'tileOffset']
+
   initialize: ->
-    @tileSize = 48
-    @tileOffset = 2
     @context = canvas.getContext('2d')
     @_bindings()
     @_renderNavPanel()
@@ -23,7 +23,7 @@ class @Map extends Model
 
   _clean: ->
     @context.fillStyle = '#fff'
-    @context.fillRect(0, 0, 4800, 4800)
+    @context.fillRect(0, 0, @width * @tileSize, @height * @tileSize)
 
   _renderGrid: ->
     @context.fillStyle = 'rgba(0, 0, 0, .05)'
