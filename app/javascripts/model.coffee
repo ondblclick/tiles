@@ -4,6 +4,8 @@ class @Model
   @where: (props) -> utils.where(@all(), props)
   @create: (props) -> new @(props)
 
+  initialize: ->
+
   constructor: (properties) ->
     @addFields()
     @addAssociations()
@@ -11,6 +13,7 @@ class @Model
     utils.keys(properties).forEach (key) =>
       @[key] = properties[key] if @fields.indexOf(key) isnt -1
     @constructor.collection.push @
+    @initialize()
 
   destroy: ->
     index = @constructor.collection.indexOf(@)

@@ -1,30 +1,76 @@
-class @Canvas
-  constructor: ->
+class @Map extends Model
+  hasMany: -> [Tile]
+
+  initialize: ->
+    @tileSize = 48
+    @tileOffset = 2
+    @context = canvas.getContext('2d')
     @_bindings()
-    @render()
     @_renderNavPanel()
     @dragging = false
     @selectedTile = undefined
 
-  render: ->
-    @_removeTiles()
+  drawImage: (srcX, srcY, dstX, dstY) ->
+    @context.drawImage(sprite, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
+
+  drawRect: (x, y) ->
+    @context.fillRect(x, y, @tileSize, @tileSize)
+
+  render: =>
+    @_clean()
+    @_renderGrid()
     @_renderTiles()
 
-  _removeTiles: ->
-    $('.tile').remove()
+  _clean: ->
+    @context.fillStyle = '#fff'
+    @context.fillRect(0, 0, 4800, 4800)
+
+  _renderGrid: ->
+    @context.fillStyle = 'rgba(0, 0, 0, .05)'
+    col = 0
+    while col < 100
+      row = 0
+      while row < 100
+        if row % 2 is 0
+          @drawRect(col * @tileSize, row * @tileSize) if col % 2 is 1
+        else
+          @drawRect(col * @tileSize, row * @tileSize) if col % 2 is 0
+        row++
+      col++
+
+  _renderTiles: ->
+    Tile.all().forEach (tile) => tile.render(@context)
 
   _renderNavPanel: ->
     template = $.templates('#tile-library-modal')
     $('.list-tiles').append(template.render({ data: tilesSet }))
 
-  _renderTiles: ->
-    Tile.all().forEach (tile) -> tile.render()
+  _fromPosition: (coordinate) ->
+    coordinate * (@tileSize + @tileOffset) + @tileOffset
 
   _bindings: ->
-    $(document).on 'click', '.pseudo-tile', (e) =>
-      existingTile = Tile.findByPosition({ x: @currentX, y: @currentY })
+    $(document).on 'mousemove', (e) =>
+      return unless $(e.target).is('#canvas')
+      return unless @selectedTile
+      pageX = Math.floor(e.offsetX / @tileSize)
+      pageY = Math.floor(e.offsetY / @tileSize)
+      [imageX, imageY] = @selectedTile.find('a').data('tile-type').split('-')
+      @render()
+      @context.fillStyle = '#fff'
+      @drawRect(pageX * @tileSize, pageY * @tileSize)
+      @context.globalAlpha = 0.3
+      @drawImage(@_fromPosition(imageX), @_fromPosition(imageY), pageX * @tileSize, pageY * @tileSize)
+      @context.globalAlpha = 1
+
+    $(document).on 'mouseleave', '#canvas', => @render()
+
+    $(document).on 'click', '#canvas', (e) =>
+      return unless @selectedTile
+      currentX = Math.floor(e.offsetX / @tileSize)
+      currentY = Math.floor(e.offsetY / @tileSize)
+      existingTile = Tile.findByPosition({ x: currentX, y: currentY })
       existingTile.destroy() if existingTile
-      Tile.create({ x: @currentX, y: @currentY, type: @selectedTile.find('a').data('tile-type') })
+      @tiles().create({ x: currentX, y: currentY, type: @selectedTile.find('a').data('tile-type') })
       @render()
 
     $(document).on 'click', '.list-tiles-item', (e) =>
@@ -36,33 +82,3 @@ class @Canvas
         $('.pseudo-tile').addClass('active')
       else
         $('.pseudo-tile').removeClass('active')
-
-    $(document).on 'mousedown', '.canvas', (e) =>
-      return if $(e.target).is('.tile')
-      return if $(e.target).is('.pseudo-tile')
-      @dragging = true
-      @pageX = e.pageX
-      @pageY = e.pageY
-
-    $('.canvas').on 'mousemove', (e) =>
-      if @dragging
-        deltaX = @pageX - e.pageX
-        deltaY = @pageY - e.pageY
-        matrix = $('.canvas').css('transform').split(',')
-        translateX = parseInt(matrix[4])
-        translateY = parseInt(matrix[5])
-        $('.canvas').css('transform', "translate(#{translateX - deltaX}px, #{translateY - deltaY}px)")
-        @pageX = e.pageX
-        @pageY = e.pageY
-
-      if @selectedTile
-        return if $(e.target).is('.pseudo-tile')
-        @currentX = Math.floor(e.offsetX / 48)
-        @currentY = Math.floor(e.offsetY / 48)
-        if $(e.target).is('.tile')
-          @currentX += Math.floor($(e.target).position().left / 48)
-          @currentY += Math.floor($(e.target).position().top / 48)
-        $('.pseudo-tile').css('transform', "translate(#{@currentX * 48}px, #{@currentY * 48}px)")
-
-    $(document).on 'mouseup', =>
-      @dragging = false

@@ -18,9 +18,7 @@
   </head>
   <body>
     <div class="canvas-wrapper">
-      <div class="canvas">
-        <div class="pseudo-tile"></div>
-      </div>
+      <canvas id="canvas" width="4800" height="4800"></canvas>
     </div>
     <div class="panel">
       <div class="list-tiles"></div>
@@ -28,18 +26,13 @@
         layers goes here
       </div>
     </div>
+    <img id="sprite" src="/images/tiles.png" alt="">
     <script id='tile-library-modal' type='text/x-jrender'>
       {{props data}}
         <li class='list-tiles-item'>
           <a href="#" data-tile-type='{{:key}}'></a>
         </li>
       {{/props}}
-    </script>
-    <script id='tile' type='text/x-jsrender'>
-      <div class='tile tile-{{:type}}' data-model-id='{{:id}}' style='transform:translate({{:#data.x * 48}}px, {{:#data.y * 48}}px)'></div>
-    </script>
-    <script id='pseudo-tile' type='text/x-jsrender'>
-      <div class='pseudo-tile' data-model-id='{{:id}}' style='transform:translate({{:#data.x * 48}}px, {{:#data.y * 48}}px)'></div>
     </script>
   </body>
 </html>

@@ -1,7 +1,6 @@
 $(document).ready ->
-  Tile.create({ x: 1, y: 0, type: '10-1' })
-  Tile.create({ x: 0, y: -1, type: '10-1' })
-  Tile.create({ x: -1, y: 0, type: '10-1' })
-  Tile.create({ x: 0, y: 1, type: '10-1' })
-  Tile.create({ x: 0, y: 0, type: '10-1' })
-  window.canvas = new Canvas()
+  c = new Map()
+  c.tiles().create({ x: 10, y: 10, type: '10-1' })
+  c.tiles().create({ x: 11, y: 10, type: '5-5' })
+  c.tiles().create({ x: 10, y: 11, type: '10-1' })
+  c.render()

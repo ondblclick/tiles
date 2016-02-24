@@ -14,30 +14,8 @@ body {
 .canvas-wrapper {
   float: left;
   height: 100vh;
-  overflow: hidden;
+  overflow: auto;
   width: calc(100vw - 366px);
-
-  .canvas {
-    height: 0;
-    position: relative;
-    transform: translate(calc(50vw - 183px - 24px), calc(50vh - 24px));
-    width: 0;
-
-    &::before {
-      background-color: $white;
-      background-image: linear-gradient(45deg, $light-grey 25%, transparent 25%, transparent 75%, $light-grey 75%, $light-grey),
-      linear-gradient(45deg, $light-grey 25%, transparent 25%, transparent 75%, $light-grey 75%, $light-grey);
-      background-position: 0 0, 48px 48px;
-      background-size: 96px 96px;
-      bottom: -4800px;
-      box-shadow: inset 0 0 5px 5px $grey;
-      content: '';
-      left: -4800px;
-      position: absolute;
-      right: -4800px;
-      top: -4800px;
-    }
-  }
 }
 
 .panel {
