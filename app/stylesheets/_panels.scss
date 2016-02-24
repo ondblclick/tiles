@@ -24,13 +24,3 @@
     }
   }
 }
-
-.pseudo-tile {
-  display: none;
-  height: 48px;
-  position: absolute;
-  width: 48px;
-  z-index: 999;
-
-  &.active { display: block; }
-}

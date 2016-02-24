@@ -61,10 +61,11 @@ class @Map extends Model
       @context.fillStyle = '#fff'
       @drawRect(pageX * @tileSize, pageY * @tileSize)
       @context.globalAlpha = 0.3
-      @drawImage(@_fromPosition(imageX), @_fromPosition(imageY), pageX * @tileSize, pageY * @tileSize)
+      @drawImage(imageX, imageY, pageX * @tileSize, pageY * @tileSize)
       @context.globalAlpha = 1
 
-    $(document).on 'mouseleave', '#canvas', => @render()
+    $(document).on 'mouseleave', '#canvas', =>
+      @render()
 
     $(document).on 'click', '#canvas', (e) =>
       return unless @_selectedTile().length
