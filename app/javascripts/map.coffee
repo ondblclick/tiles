@@ -2,7 +2,6 @@
 class @Map extends Model
   hasMany: -> [Tile]
   belongsTo: -> [Editor]
-
   fields: ['width', 'height']
 
   initialize: ->
@@ -43,10 +42,7 @@ class @Map extends Model
       col++
 
   _renderTiles: ->
-    Tile.all().forEach (tile) => tile.render(@context)
-
-  _fromPosition: (coord) ->
-    coord * (@tileSize + @tileOffset) + @tileOffset
+    @tiles().forEach (tile) => tile.render(@context)
 
   _bindings: ->
     $(document).on 'click', '#export-as-png', (e) ->

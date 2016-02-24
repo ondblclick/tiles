@@ -1,3 +1,5 @@
+# TODO: move the model.coffee to the repo
+# TODO: move the package.json to the repo
 $(document).ready ->
   editor = Editor.create({ imagePath: '/images/tiles.png', tileSize: 48, tileOffset: 2, tilesCols: 11, tilesRows: 11 })
   map = editor.maps().create({ width: 100, height: 100 })

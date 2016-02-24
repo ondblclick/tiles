@@ -1,6 +1,5 @@
 class @Editor extends Model
   hasMany: -> [Map]
-
   fields: ['tileSize', 'tileOffset', 'imagePath', 'tilesCols', 'tilesRows']
 
   initialize: ->
