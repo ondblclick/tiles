@@ -1,11 +1,17 @@
-class @Canvas
-  constructor: ->
+class @Map extends Model
+  hasMany: -> [Tile]
+
+  initialize: ->
+    @tileSize = 48
+    @tileOffset = 2
     @context = canvas.getContext('2d')
     @_bindings()
-    @render()
     @_renderNavPanel()
     @dragging = false
     @selectedTile = undefined
+
+  drawImage: (srcX, srcY, dstX, dstY) ->
+    @context.drawImage(sprite, srcX, srcY, 48, 48, dstX, dstY, 48, 48)
 
   render: =>
     @_clean()
@@ -36,27 +42,32 @@ class @Canvas
     template = $.templates('#tile-library-modal')
     $('.list-tiles').append(template.render({ data: tilesSet }))
 
+  _fromPosition: (coordinate) ->
+    coordinate * (@tileSize + @tileOffset) + @tileOffset
+
   _bindings: ->
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('#canvas')
       return unless @selectedTile
-      currentX = Math.floor(e.pageX / 48)
-      currentY = Math.floor(e.pageY / 48)
+      pageX = Math.floor(e.offsetX / 48)
+      pageY = Math.floor(e.offsetY / 48)
+      [imageX, imageY] = @selectedTile.find('a').data('tile-type').split('-')
       @render()
-      @context.drawImage(sprite, @selectedTile.find('a').data('tile-type').split('-')[0] * (48 + 2) + 2, @selectedTile.find('a').data('tile-type').split('-')[1] * (48 + 2) + 2, 48, 48, currentX * 48, currentY * 48, 48, 48)
-      # @context.fillStyle = '#ccc'
-      # @context.fillRect(currentX * 48, currentY * 48, 48, 48)
+      @context.globalAlpha = 0.3
+      @drawImage(@_fromPosition(imageX), @_fromPosition(imageY), pageX * 48, pageY * 48)
+      @context.globalAlpha = 1
 
     $(document).on 'mouseleave', '#canvas', =>
       @render()
 
     $(document).on 'click', '#canvas', (e) =>
+      console.log e
       return unless @selectedTile
-      currentX = Math.floor(e.pageX / 48)
-      currentY = Math.floor(e.pageY / 48)
+      currentX = Math.floor(e.offsetX / 48)
+      currentY = Math.floor(e.offsetY / 48)
       existingTile = Tile.findByPosition({ x: currentX, y: currentY })
       existingTile.destroy() if existingTile
-      Tile.create({ x: currentX, y: currentY, type: @selectedTile.find('a').data('tile-type') })
+      @tiles().create({ x: currentX, y: currentY, type: @selectedTile.find('a').data('tile-type') })
       @render()
 
     $(document).on 'click', '.list-tiles-item', (e) =>

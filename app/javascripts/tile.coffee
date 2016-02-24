@@ -3,11 +3,11 @@ class @Tile extends Model
   @findByPosition: (position) ->
     Tile.where(position)[0]
 
+  belongsTo: -> [Map]
   fields: ['x', 'y', 'type']
 
-  spriteX: -> @type.split('-')[0]
-
-  spriteY: -> @type.split('-')[1]
+  spriteCol: -> @type.split('-')[0]
+  spriteRow: -> @type.split('-')[1]
 
   render: (context) ->
-    context.drawImage(sprite, @spriteX() * (48 + 2) + 2, @spriteY() * (48 + 2) + 2, 48, 48, @x * 48, @y * 48, 48, 48)
+    @map().drawImage(@map()._fromPosition(@spriteCol()), @map()._fromPosition(@spriteRow()), @x * 48, @y * 48)
