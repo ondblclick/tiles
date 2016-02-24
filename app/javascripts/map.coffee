@@ -2,7 +2,7 @@
 class @Map extends Model
   hasMany: -> [Tile]
   belongsTo: -> [Editor]
-  fields: ['width', 'height']
+  fields: ['cols', 'rows']
 
   initialize: ->
     @tileSize = @editor().tileSize
@@ -26,7 +26,7 @@ class @Map extends Model
 
   _clean: ->
     @context.fillStyle = '#fff'
-    @context.fillRect(0, 0, @width * @tileSize, @height * @tileSize)
+    @context.fillRect(0, 0, @cols * @tileSize, @rows * @tileSize)
 
   _renderGrid: ->
     @context.fillStyle = 'rgba(0, 0, 0, .05)'
