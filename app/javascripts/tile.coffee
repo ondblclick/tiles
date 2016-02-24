@@ -1,5 +1,4 @@
 class @Tile extends Model
-  @types: tilesSet
   @findByPosition: (position) ->
     Tile.where(position)[0]
 

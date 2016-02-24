@@ -9,13 +9,12 @@ class @Map extends Model
     @tileOffset = @editor().tileOffset
     @context = canvas.getContext('2d')
     @_bindings()
-    @dragging = false
 
   _selectedTile: ->
     $('.list-tiles-item.active')
 
   drawImage: (srcX, srcY, dstX, dstY) ->
-    @context.drawImage(sprite, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
+    @context.drawImage(@editor().sprite, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
 
   drawRect: (x, y) ->
     @context.fillRect(x, y, @tileSize, @tileSize)
@@ -45,13 +44,12 @@ class @Map extends Model
   _renderTiles: ->
     Tile.all().forEach (tile) => tile.render(@context)
 
-  _fromPosition: (coordinate) ->
-    coordinate * (@tileSize + @tileOffset) + @tileOffset
+  _fromPosition: (coord) ->
+    coord * (@tileSize + @tileOffset) + @tileOffset
 
   _bindings: ->
     $(document).on 'click', '#export-as-png', (e) ->
-      dataUrl = canvas.toDataURL('image/png')
-      $(e.currentTarget).attr('href', dataUrl)
+      $(e.currentTarget).attr('href', canvas.toDataURL('image/png'))
 
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('#canvas')
