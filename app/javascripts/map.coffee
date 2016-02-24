@@ -1,3 +1,4 @@
+# TODO: make user able to pick the size of map or something
 class @Map extends Model
   hasMany: -> [Tile]
   belongsTo: -> [Editor]
@@ -76,10 +77,5 @@ class @Map extends Model
       @tiles().create({ x: currentX, y: currentY, type: @_selectedTile().find('a').data('tile-type') })
       @render()
 
-    $(document).on 'click', '.list-tiles-item', (e) =>
+    $(document).on 'click', '.list-tiles-item', (e) ->
       $(e.currentTarget).toggleClass('active').siblings().removeClass('active')
-      if @_selectedTile().length
-        $('.pseudo-tile').css('background', @_selectedTile().find('a').css('background'))
-        $('.pseudo-tile').addClass('active')
-      else
-        $('.pseudo-tile').removeClass('active')
