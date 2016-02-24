@@ -19,7 +19,7 @@ class @Editor extends Model
     tilesSet = {}
     [0..(@tilesCols - 1)].forEach (col) =>
       [0..(@tilesRows - 1)].forEach (row) ->
-        tilesSet["#{col}-#{row}"] = {}
+        tilesSet["#{col * (48 + 2) + 2}-#{row * (48 + 2) + 2}"] = {}
     tilesSet
 
   _renderNavPanel: ->
