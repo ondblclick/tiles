@@ -11,7 +11,10 @@ class @Map extends Model
     @selectedTile = undefined
 
   drawImage: (srcX, srcY, dstX, dstY) ->
-    @context.drawImage(sprite, srcX, srcY, 48, 48, dstX, dstY, 48, 48)
+    @context.drawImage(sprite, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
+
+  drawRect: (x, y) ->
+    @context.fillRect(x, y, @tileSize, @tileSize)
 
   render: =>
     @_clean()
@@ -29,9 +32,9 @@ class @Map extends Model
       row = 0
       while row < 100
         if row % 2 is 0
-          @context.fillRect(col * 48, row * 48, 48, 48) if col % 2 is 1
+          @drawRect(col * @tileSize, row * @tileSize) if col % 2 is 1
         else
-          @context.fillRect(col * 48, row * 48, 48, 48) if col % 2 is 0
+          @drawRect(col * @tileSize, row * @tileSize) if col % 2 is 0
         row++
       col++
 
@@ -49,22 +52,22 @@ class @Map extends Model
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('#canvas')
       return unless @selectedTile
-      pageX = Math.floor(e.offsetX / 48)
-      pageY = Math.floor(e.offsetY / 48)
+      pageX = Math.floor(e.offsetX / @tileSize)
+      pageY = Math.floor(e.offsetY / @tileSize)
       [imageX, imageY] = @selectedTile.find('a').data('tile-type').split('-')
       @render()
+      @context.fillStyle = '#fff'
+      @drawRect(pageX * @tileSize, pageY * @tileSize)
       @context.globalAlpha = 0.3
-      @drawImage(@_fromPosition(imageX), @_fromPosition(imageY), pageX * 48, pageY * 48)
+      @drawImage(@_fromPosition(imageX), @_fromPosition(imageY), pageX * @tileSize, pageY * @tileSize)
       @context.globalAlpha = 1
 
-    $(document).on 'mouseleave', '#canvas', =>
-      @render()
+    $(document).on 'mouseleave', '#canvas', => @render()
 
     $(document).on 'click', '#canvas', (e) =>
-      console.log e
       return unless @selectedTile
-      currentX = Math.floor(e.offsetX / 48)
-      currentY = Math.floor(e.offsetY / 48)
+      currentX = Math.floor(e.offsetX / @tileSize)
+      currentY = Math.floor(e.offsetY / @tileSize)
       existingTile = Tile.findByPosition({ x: currentX, y: currentY })
       existingTile.destroy() if existingTile
       @tiles().create({ x: currentX, y: currentY, type: @selectedTile.find('a').data('tile-type') })

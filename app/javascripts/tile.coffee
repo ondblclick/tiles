@@ -10,4 +10,4 @@ class @Tile extends Model
   spriteRow: -> @type.split('-')[1]
 
   render: (context) ->
-    @map().drawImage(@map()._fromPosition(@spriteCol()), @map()._fromPosition(@spriteRow()), @x * 48, @y * 48)
+    @map().drawImage(@map()._fromPosition(@spriteCol()), @map()._fromPosition(@spriteRow()), @x * @map().tileSize, @y * @map().tileSize)
