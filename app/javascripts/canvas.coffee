@@ -11,7 +11,6 @@ class @Canvas
     @_clean()
     @_renderGrid()
     @_renderTiles()
-    # @_renderObjects()
 
   _clean: ->
     @context.fillStyle = '#fff'
@@ -37,12 +36,27 @@ class @Canvas
     template = $.templates('#tile-library-modal')
     $('.list-tiles').append(template.render({ data: tilesSet }))
 
-
   _bindings: ->
-    $(document).on 'click', '.pseudo-tile', (e) =>
-      existingTile = Tile.findByPosition({ x: @currentX, y: @currentY })
+    $(document).on 'mousemove', (e) =>
+      return unless $(e.target).is('#canvas')
+      return unless @selectedTile
+      currentX = Math.floor(e.pageX / 48)
+      currentY = Math.floor(e.pageY / 48)
+      @render()
+      @context.drawImage(sprite, @selectedTile.find('a').data('tile-type').split('-')[0] * (48 + 2) + 2, @selectedTile.find('a').data('tile-type').split('-')[1] * (48 + 2) + 2, 48, 48, currentX * 48, currentY * 48, 48, 48)
+      # @context.fillStyle = '#ccc'
+      # @context.fillRect(currentX * 48, currentY * 48, 48, 48)
+
+    $(document).on 'mouseleave', '#canvas', =>
+      @render()
+
+    $(document).on 'click', '#canvas', (e) =>
+      return unless @selectedTile
+      currentX = Math.floor(e.pageX / 48)
+      currentY = Math.floor(e.pageY / 48)
+      existingTile = Tile.findByPosition({ x: currentX, y: currentY })
       existingTile.destroy() if existingTile
-      Tile.create({ x: @currentX, y: @currentY, type: @selectedTile.find('a').data('tile-type') })
+      Tile.create({ x: currentX, y: currentY, type: @selectedTile.find('a').data('tile-type') })
       @render()
 
     $(document).on 'click', '.list-tiles-item', (e) =>
@@ -54,33 +68,3 @@ class @Canvas
         $('.pseudo-tile').addClass('active')
       else
         $('.pseudo-tile').removeClass('active')
-
-    $(document).on 'mousedown', '.canvas', (e) =>
-      return if $(e.target).is('.tile')
-      return if $(e.target).is('.pseudo-tile')
-      @dragging = true
-      @pageX = e.pageX
-      @pageY = e.pageY
-
-    $('.canvas').on 'mousemove', (e) =>
-      if @dragging
-        deltaX = @pageX - e.pageX
-        deltaY = @pageY - e.pageY
-        matrix = $('.canvas').css('transform').split(',')
-        translateX = parseInt(matrix[4])
-        translateY = parseInt(matrix[5])
-        $('.canvas').css('transform', "translate(#{translateX - deltaX}px, #{translateY - deltaY}px)")
-        @pageX = e.pageX
-        @pageY = e.pageY
-
-      if @selectedTile
-        return if $(e.target).is('.pseudo-tile')
-        @currentX = Math.floor(e.offsetX / 48)
-        @currentY = Math.floor(e.offsetY / 48)
-        if $(e.target).is('.tile')
-          @currentX += Math.floor($(e.target).position().left / 48)
-          @currentY += Math.floor($(e.target).position().top / 48)
-        $('.pseudo-tile').css('transform', "translate(#{@currentX * 48}px, #{@currentY * 48}px)")
-
-    $(document).on 'mouseup', =>
-      @dragging = false
