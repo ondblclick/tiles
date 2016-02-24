@@ -1,14 +1,18 @@
 class @Map extends Model
   hasMany: -> [Tile]
+  belongsTo: -> [Editor]
 
-  fields: ['width', 'height', 'tileSize', 'tileOffset']
+  fields: ['width', 'height']
 
   initialize: ->
+    @tileSize = @editor().tileSize
+    @tileOffset = @editor().tileOffset
     @context = canvas.getContext('2d')
     @_bindings()
-    @_renderNavPanel()
     @dragging = false
-    @selectedTile = undefined
+
+  _selectedTile: ->
+    $('.list-tiles-item.active')
 
   drawImage: (srcX, srcY, dstX, dstY) ->
     @context.drawImage(sprite, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
@@ -41,10 +45,6 @@ class @Map extends Model
   _renderTiles: ->
     Tile.all().forEach (tile) => tile.render(@context)
 
-  _renderNavPanel: ->
-    template = $.templates('#tile-library-modal')
-    $('.list-tiles').append(template.render({ data: tilesSet }))
-
   _fromPosition: (coordinate) ->
     coordinate * (@tileSize + @tileOffset) + @tileOffset
 
@@ -55,10 +55,10 @@ class @Map extends Model
 
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('#canvas')
-      return unless @selectedTile
+      return unless @_selectedTile().length
       pageX = Math.floor(e.offsetX / @tileSize)
       pageY = Math.floor(e.offsetY / @tileSize)
-      [imageX, imageY] = @selectedTile.find('a').data('tile-type').split('-')
+      [imageX, imageY] = @_selectedTile().find('a').data('tile-type').split('-')
       @render()
       @context.fillStyle = '#fff'
       @drawRect(pageX * @tileSize, pageY * @tileSize)
@@ -69,20 +69,18 @@ class @Map extends Model
     $(document).on 'mouseleave', '#canvas', => @render()
 
     $(document).on 'click', '#canvas', (e) =>
-      return unless @selectedTile
+      return unless @_selectedTile().length
       currentX = Math.floor(e.offsetX / @tileSize)
       currentY = Math.floor(e.offsetY / @tileSize)
       existingTile = Tile.findByPosition({ x: currentX, y: currentY })
       existingTile.destroy() if existingTile
-      @tiles().create({ x: currentX, y: currentY, type: @selectedTile.find('a').data('tile-type') })
+      @tiles().create({ x: currentX, y: currentY, type: @_selectedTile().find('a').data('tile-type') })
       @render()
 
     $(document).on 'click', '.list-tiles-item', (e) =>
-      @selectedTile = $(e.currentTarget)
-      @selectedTile.toggleClass('active').siblings().removeClass('active')
-      @selectedTile = undefined unless @selectedTile.is('.active')
-      if @selectedTile
-        $('.pseudo-tile').css('background', @selectedTile.find('a').css('background'))
+      $(e.currentTarget).toggleClass('active').siblings().removeClass('active')
+      if @_selectedTile().length
+        $('.pseudo-tile').css('background', @_selectedTile().find('a').css('background'))
         $('.pseudo-tile').addClass('active')
       else
         $('.pseudo-tile').removeClass('active')
