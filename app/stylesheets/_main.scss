@@ -16,6 +16,25 @@ body {
   height: 100vh;
   overflow: auto;
   width: calc(100vw - 366px);
+
+  .toolbar {
+    position: fixed;
+    right: 390px;
+    top: 10px;
+
+    .toolbar-item {
+      background-color: $white;
+      border: 1px solid $grey;
+      border-radius: 5px;
+      color: inherit;
+      cursor: pointer;
+      display: inline-block;
+      padding: 5px 10px;
+      text-decoration: none;
+
+      &:hover { opacity: .7; }
+    }
+  }
 }
 
 .panel {

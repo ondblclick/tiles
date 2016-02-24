@@ -49,6 +49,10 @@ class @Map extends Model
     coordinate * (@tileSize + @tileOffset) + @tileOffset
 
   _bindings: ->
+    $(document).on 'click', '#export-as-png', (e) ->
+      dataUrl = canvas.toDataURL('image/png')
+      $(e.currentTarget).attr('href', dataUrl)
+
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('#canvas')
       return unless @selectedTile
