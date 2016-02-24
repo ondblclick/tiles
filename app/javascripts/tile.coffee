@@ -5,7 +5,9 @@ class @Tile extends Model
   belongsTo: -> [Map]
   fields: ['x', 'y', 'type']
 
-  initialize: -> [@spriteX, @spriteY] = @type.split('-')
+  initialize: ->
+    [@spriteX, @spriteY] = @type.split('-')
+    @tileSize = @map().tileSize
 
   render: ->
-    @map().drawImage(@spriteX, @spriteY, @x * @map().tileSize, @y * @map().tileSize)
+    @map().drawImage(@spriteX, @spriteY, @x * @tileSize, @y * @tileSize)

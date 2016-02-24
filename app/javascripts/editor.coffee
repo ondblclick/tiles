@@ -27,12 +27,15 @@ class @Editor extends Model
     img
 
   _tilesSet: ->
+    # TODO: change to array
     tilesSet = {}
     [0..(@tilesCols - 1)].forEach (col) =>
       [0..(@tilesRows - 1)].forEach (row) =>
-        tilesSet["#{col * (@tileSize + @tileOffset) + @tileOffset}-#{row * (@tileSize + @tileOffset) + @tileOffset}"] = {}
+        tilesSet["#{@_posToPix(col)}-#{@_posToPix(row)}"] = {}
     tilesSet
 
   _renderNavPanel: ->
     template = $.templates('#tile-library-modal')
     $('.list-tiles').append(template.render({ data: @_tilesSet() }))
+
+  _posToPix: (pos) -> pos * (@tileSize + @tileOffset) + @tileOffset
