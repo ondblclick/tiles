@@ -5,7 +5,18 @@ class @Editor extends Model
 
   initialize: ->
     @sprite = @_renderImage()
+    @_createStyles()
     @_renderNavPanel()
+
+  _createStyles: ->
+    style = document.createElement('style')
+    rules = ''
+    for key, value of @_tilesSet()
+      [x, y] = key.split('-')
+      rules += "[data-tile-type='#{key}'] { background-position-x: -#{x}px; background-position-y: -#{y}px; }"
+    rules += "[data-tile-type] { background-image: url('#{@imagePath}') }"
+    style.appendChild(document.createTextNode(rules))
+    document.head.appendChild(style)
 
   _renderImage: ->
     img = new Image()
@@ -18,8 +29,8 @@ class @Editor extends Model
   _tilesSet: ->
     tilesSet = {}
     [0..(@tilesCols - 1)].forEach (col) =>
-      [0..(@tilesRows - 1)].forEach (row) ->
-        tilesSet["#{col * (48 + 2) + 2}-#{row * (48 + 2) + 2}"] = {}
+      [0..(@tilesRows - 1)].forEach (row) =>
+        tilesSet["#{col * (@tileSize + @tileOffset) + @tileOffset}-#{row * (@tileSize + @tileOffset) + @tileOffset}"] = {}
     tilesSet
 
   _renderNavPanel: ->

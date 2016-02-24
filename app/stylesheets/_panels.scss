@@ -12,15 +12,8 @@
   }
 }
 
-@for $i from 0 through 11 {
-  @for $j from 0 through 11 {
-    [data-tile-type='#{$i * (48 + 2) + 2}-#{$j * (48 + 2) + 2}'] {
-      background-image: url('../images/tiles.png');
-      background-position-x: -#{$i * (48 + 2) + 2}px;
-      background-position-y: -#{$j * (48 + 2) + 2}px;
-      display: inline-block;
-      height: 48px;
-      width: 48px;
-    }
-  }
+[data-tile-type] {
+  display: inline-block;
+  height: 48px;
+  width: 48px;
 }
