@@ -28,11 +28,11 @@
       </div>
     </div>
     <script id='tile-library-modal' type='text/x-jrender'>
-      {{props data}}
+      {{for data}}
         <li class='list-tiles-item'>
-          <a href="#" data-tile-type='{{:key}}'></a>
+          <a href="#" data-tile-type='{{:type}}'></a>
         </li>
-      {{/props}}
+      {{/for}}
     </script>
   </body>
 </html>
