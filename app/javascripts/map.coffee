@@ -33,6 +33,13 @@ class @Map extends Model
     @_renderGrid()
     @_renderTiles()
 
+  toJSON: ->
+    res = {}
+    res.cols = @cols
+    res.rows = @rows
+    res.tiles = @tiles().map (tile) -> tile.toJSON()
+    res
+
   _cleanCanvas: ->
     @context().fillStyle = Map.STYLES.WHITE
     @context().fillRect(0, 0, @cols * @tileSize, @rows * @tileSize)
