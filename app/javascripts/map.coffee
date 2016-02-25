@@ -57,7 +57,7 @@ class @Map extends Model
   _bindings: ->
     $(document).off 'mousemove'
     $(document).on 'mousemove', (e) =>
-      return unless $(e.target).is('#canvas')
+      return unless $(e.target).is('canvas')
       return unless @_selectedTile().length
       pageX = Math.floor(e.offsetX / @tileSize)
       pageY = Math.floor(e.offsetY / @tileSize)
@@ -69,12 +69,12 @@ class @Map extends Model
       @drawImage(imageX, imageY, pageX * @tileSize, pageY * @tileSize)
       @context().globalAlpha = 1
 
-    $(document).off 'mouseleave', '#canvas'
-    $(document).on 'mouseleave', '#canvas', =>
+    $(document).off 'mouseleave', 'canvas'
+    $(document).on 'mouseleave', 'canvas', =>
       @render()
 
-    $(document).off 'click', '#canvas'
-    $(document).on 'click', '#canvas', (e) =>
+    $(document).off 'click', 'canvas'
+    $(document).on 'click', 'canvas', (e) =>
       return unless @_selectedTile().length
       currentX = Math.floor(e.offsetX / @tileSize)
       currentY = Math.floor(e.offsetY / @tileSize)
