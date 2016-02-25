@@ -6,6 +6,21 @@ class @Editor extends Model
     @sprite = @_renderImage()
     @_createStyles()
     @_renderNavPanel()
+    @_bindings()
+
+  _bindings: ->
+    $(document).on 'click', '#create-map', =>
+      Tile.collection = []
+      Map.collection = []
+      @maps().create({ cols: $('#map-width').val(), rows: $('#map-height').val() })
+      @maps()[0].prepareCanvas()
+      @maps()[0].render()
+
+    $(document).on 'click', '#export-as-png', (e) =>
+      $(e.currentTarget).attr('href', @maps()[0].canvas()[0].toDataURL('image/png'))
+
+    $(document).on 'click', '.list-tiles-item', (e) ->
+      $(e.currentTarget).toggleClass('active').siblings().removeClass('active')
 
   _createStyles: ->
     style = document.createElement('style')

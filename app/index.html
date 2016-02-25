@@ -17,9 +17,12 @@
   <body>
     <div class="canvas-wrapper">
       <div class="toolbar">
+        <input id="map-width" type="text" placeholder='Width' class='toolbar-item' value='10'>
+        <input id="map-height" type="text" placeholder='Height' class='toolbar-item' value='10'>
+        <input id="create-map" type="button" value='Create' class='toolbar-item'>
+        <div class="toolbar-split"></div>
         <a id="export-as-png" class="toolbar-item" download="map.png">PNG</a>
       </div>
-      <canvas id="canvas" width="4800" height="4800"></canvas>
     </div>
     <div class="panel">
       <div class="list-tiles"></div>
@@ -29,9 +32,7 @@
     </div>
     <script id='tile-library-modal' type='text/x-jrender'>
       {{for data}}
-        <li class='list-tiles-item'>
-          <a href="#" data-tile-type='{{:type}}'></a>
-        </li>
+        <li class='list-tiles-item' data-tile-type='{{:type}}'></li>
       {{/for}}
     </script>
   </body>

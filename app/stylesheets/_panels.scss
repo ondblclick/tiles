@@ -4,11 +4,10 @@
   padding: 0;
 
   .list-tiles-item {
+    cursor: pointer;
     display: inline-block;
 
-    &.active {
-      a { box-shadow: 0 0 0 2px $blue; }
-    }
+    &.active { box-shadow: 0 0 0 2px $blue; }
   }
 }
 
