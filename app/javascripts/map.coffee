@@ -1,4 +1,8 @@
 class @Map extends Model
+  @STYLES:
+    GREY: 'rgba(0, 0, 0, .05)'
+    WHITE: '#fff'
+
   hasMany: -> [Tile]
   belongsTo: -> [Editor]
   fields: ['cols', 'rows']
@@ -14,11 +18,7 @@ class @Map extends Model
 
   prepareCanvas: ->
     @canvas().remove()
-    canvas = document.createElement('canvas')
-    canvas.id = 'canvas'
-    canvas.width = @cols * @tileSize
-    canvas.height = @rows * @tileSize
-    $('.canvas-wrapper').append(canvas)
+    $('.canvas-wrapper').append("<canvas width='#{@cols * @tileSize}' height='#{@rows * @tileSize}'></canvas>")
 
   _selectedTile: ->
     $('.list-tiles-item.active')
@@ -35,11 +35,11 @@ class @Map extends Model
     @_renderTiles()
 
   _cleanCanvas: ->
-    @context().fillStyle = '#fff'
+    @context().fillStyle = Map.STYLES.WHITE
     @context().fillRect(0, 0, @cols * @tileSize, @rows * @tileSize)
 
   _renderGrid: ->
-    @context().fillStyle = 'rgba(0, 0, 0, .05)'
+    @context().fillStyle = Map.STYLES.GREY
     col = 0
     while col < 100
       row = 0
@@ -63,7 +63,7 @@ class @Map extends Model
       pageY = Math.floor(e.offsetY / @tileSize)
       [imageX, imageY] = @_selectedTile().data('tile-type').split('-')
       @render()
-      @context().fillStyle = '#fff'
+      @context().fillStyle = Map.STYLES.WHITE
       @drawRect(pageX * @tileSize, pageY * @tileSize)
       @context().globalAlpha = 0.3
       @drawImage(imageX, imageY, pageX * @tileSize, pageY * @tileSize)
