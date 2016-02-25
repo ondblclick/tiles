@@ -28,10 +28,6 @@ class @Editor extends Model
     $(document).on 'click', '.list-tiles-item', (e) ->
       $(e.currentTarget).toggleClass('active').siblings().removeClass('active')
 
-    $(document).off 'click', '#export-as-json'
-    $(document).on 'click', '#export-as-json', (e) =>
-      window.prompt("Copy to clipboard: Ctrl+C, Enter", JSON.stringify(@toJSON()))
-
   toJSON: ->
     res = {}
     res.tileSize = @tileSize

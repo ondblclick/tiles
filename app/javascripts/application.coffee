@@ -9,3 +9,27 @@ $(document).ready ->
   editor.render ->
     map.prepareCanvas()
     map.render()
+
+  $(document).on 'click', '#export-as-json', (e) ->
+    window.prompt("Copy to clipboard: Ctrl+C, Enter", JSON.stringify(editor.toJSON()))
+
+  $(document).on 'click', '#import-as-json', (e) ->
+    json = JSON.parse(window.prompt("Paste valid JSON here"))
+
+    editor = Editor.create
+      imagePath: json.imagePath
+      tileSize: json.tileSize
+      tileOffset: json.tileOffset
+      tilesCols: json.tilesCols
+      tilesRows: json.tilesRows
+
+    json.maps.forEach (map) ->
+      m = editor.maps().create({ cols: map.cols, rows: map.rows })
+      return unless map.tiles.length
+      map.tiles.forEach (tile) ->
+        m.tiles().create(tile)
+
+    editor.render ->
+      editor.maps().forEach (map) ->
+        map.prepareCanvas()
+        map.render()
