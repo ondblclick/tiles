@@ -10,7 +10,6 @@ class @Map extends Model
   initialize: ->
     @tileSize = @editor().tileSize
     @tileOffset = @editor().tileOffset
-    @prepareCanvas()
     @_bindings()
 
   canvas: -> $('.canvas-wrapper canvas')

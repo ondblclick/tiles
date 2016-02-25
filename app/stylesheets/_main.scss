@@ -17,6 +17,10 @@ body {
   overflow: auto;
   width: calc(100vw - 366px);
 
+  canvas {
+    box-shadow: 0 0 0 3px $grey;
+  }
+
   .toolbar {
     position: fixed;
     right: 390px;

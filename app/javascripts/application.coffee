@@ -6,4 +6,6 @@ $(document).ready ->
   map.tiles().create({ x: 10, y: 10, type: editor._tilesSet()[0] })
   map.tiles().create({ x: 11, y: 10, type: editor._tilesSet()[1] })
   map.tiles().create({ x: 10, y: 11, type: editor._tilesSet()[2] })
+  editor.render()
+  map.prepareCanvas()
   map.render()

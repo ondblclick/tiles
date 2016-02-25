@@ -3,10 +3,12 @@ class @Editor extends Model
   fields: ['tileSize', 'tileOffset', 'imagePath', 'tilesCols', 'tilesRows']
 
   initialize: ->
+    @_bindings()
+
+  render: ->
     @sprite = @_renderImage()
     @_createStyles()
     @_renderNavPanel()
-    @_bindings()
 
   _bindings: ->
     $(document).on 'click', '#create-map', =>
@@ -21,6 +23,9 @@ class @Editor extends Model
 
     $(document).on 'click', '.list-tiles-item', (e) ->
       $(e.currentTarget).toggleClass('active').siblings().removeClass('active')
+
+    $(document).on 'click', '#export-as-json', (e) =>
+      
 
   _createStyles: ->
     style = document.createElement('style')
