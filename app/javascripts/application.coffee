@@ -25,7 +25,7 @@ $(document).ready ->
 
     json.maps.forEach (map) ->
       m = editor.maps().create({ cols: map.cols, rows: map.rows })
-      return unless map.tiles.length
+      return unless map.tiles
       map.tiles.forEach (tile) ->
         m.tiles().create(tile)
 

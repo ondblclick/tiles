@@ -10,9 +10,3 @@
     &.active { box-shadow: 0 0 0 2px $blue; }
   }
 }
-
-[data-tile-type] {
-  display: inline-block;
-  height: 48px;
-  width: 48px;
-}

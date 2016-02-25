@@ -3,6 +3,7 @@ class @Editor extends Model
   fields: ['tileSize', 'tileOffset', 'imagePath', 'tilesCols', 'tilesRows']
 
   initialize: ->
+    @tileOffset = @tileOffset or 0
     @_bindings()
 
   render: (cb) ->
@@ -42,12 +43,12 @@ class @Editor extends Model
     $('#tiles-set').remove()
     style = document.createElement('style')
     style.id = 'tiles-set'
-    rules = ''
+    t = ''
     for item in @_tilesSet()
       [x, y] = item.split('-')
-      rules += "[data-tile-type='#{item}'] { background-position-x: -#{x}px; background-position-y: -#{y}px; }"
-    rules += "[data-tile-type] { background-image: url('#{@imagePath}') }"
-    style.appendChild(document.createTextNode(rules))
+      t += "[data-tile-type='#{item}'] { background-position-x: -#{x}px; background-position-y: -#{y}px; }"
+    t += "[data-tile-type] { background-image: url('#{@imagePath}'); width: #{@tileSize}px; height: #{@tileSize}px; }"
+    style.appendChild(document.createTextNode(t))
     document.head.appendChild(style)
 
   _renderImage: (cb) ->
