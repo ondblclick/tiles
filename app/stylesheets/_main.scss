@@ -79,11 +79,14 @@ body {
 
   .list-tiles {
     @extend %panel-item;
-    height: calc(60vh - 15px);
-  }
+    height: calc(100vh - 15px);
+    list-style: none;
 
-  .list-layers {
-    @extend %panel-item;
-    height: calc(40vh - 15px);
+    .list-tiles-item {
+      cursor: pointer;
+      display: inline-block;
+
+      &.active { box-shadow: 0 0 0 2px $blue; }
+    }
   }
 }
