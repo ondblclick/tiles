@@ -79,7 +79,7 @@ body {
 
   .list-tiles {
     @extend %panel-item;
-    height: calc(100vh - 15px);
+    height: calc(100vh - 20px);
     list-style: none;
 
     .list-tiles-item {
