@@ -1,16 +1,17 @@
 class @Tile extends Model
-  belongsTo: -> [Map]
-  fields: ['x', 'y', 'type']
+  belongsTo: -> [Map, TileSet]
+  fields: ['x', 'y', 'uniqId']
 
   initialize: ->
-    [@spriteX, @spriteY] = @type.split('-')
+    [@spriteX, @spriteY] = @uniqId.split('-')
     @tileSize = @map().tileSize
 
-  toJSON: ->
-    x: @x
-    y: @y
-    type: @type
+  # toJSON: ->
+  #   x: @x
+  #   y: @y
+  #   type: @type
 
-  render: -> @map().drawImage(@spriteX, @spriteY, @x * @tileSize, @y * @tileSize)
+  render: ->
+    @map().context().drawImage(@tileset().image, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
 
   @findByPosition: (position) -> Tile.where(position)[0]

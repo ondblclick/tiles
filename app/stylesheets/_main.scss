@@ -77,10 +77,20 @@ body {
     padding: 10px;
   }
 
+  .list-sprites {
+    @extend %panel-item;
+    height: calc(30vh - 15px);
+
+    .list-sprites-item {
+      cursor: pointer;
+
+      &:hover { opacity: .7; }
+    }
+  }
+
   .list-tiles {
     @extend %panel-item;
-    height: calc(100vh - 20px);
-    list-style: none;
+    height: calc(70vh - 15px);
 
     .list-tiles-item {
       cursor: pointer;

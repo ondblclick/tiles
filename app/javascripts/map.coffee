@@ -22,8 +22,11 @@ class @Map extends Model
   _selectedTile: ->
     $('.list-tiles-item.active')
 
+  _selectedTileSet: ->
+    utils.where(@editor().tilesets(), { uniqId: $('.list-tyles-item.active').data('tileset-id') })
+
   drawImage: (srcX, srcY, dstX, dstY) ->
-    @context().drawImage(@editor().sprite, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
+    @context().drawImage(@_selectedTileSet().image, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
 
   drawRect: (x, y) ->
     @context().fillRect(x, y, @tileSize, @tileSize)

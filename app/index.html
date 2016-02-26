@@ -28,11 +28,18 @@
       </div>
     </div>
     <div class="panel">
-      <div class="list-tiles"></div>
+      <div class="list-sprites">
+        <id class='list-sprites-item'>ololo</id>
+        <id class='list-sprites-item'>ololo</id>
+        <id class='list-sprites-item'>ololo</id>
+      </div>
+      <div class="list-tiles">
+
+      </div>
     </div>
     <script id='tile-library-modal' type='text/x-jrender'>
       {{for data}}
-        <li class='list-tiles-item' data-tile-type='{{:type}}'></li>
+        <div class='list-tiles-item' data-tile-id='{{:id}}' data-tileset-id='{{:tileSetId}}'></div>
       {{/for}}
     </script>
   </body>
