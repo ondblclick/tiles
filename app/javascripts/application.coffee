@@ -1,19 +1,14 @@
 # TODO: move the model.coffee to the repo
 # TODO: move the package.json to the repo
 $(document).ready ->
-  editor = Editor.create({ tileSize: 48, tileOffset: 2 })
-  editor.tilesets().create({ imagePath: '/images/tiles.png', cols: 12, rows: 12, uniqId: 'base' })
-  editor.tilesets().create({ imagePath: 'http://rogue.epixx.org/images/Home_20110311_1.png', cols: 6, rows: 5, uniqId: 'another' })
+  editor = Editor.create({ tileSize: 48 })
+  editor.tilesets().create({ imagePath: '/images/tiles.png', cols: 12, rows: 12, uniqId: 'base', tileOffset: 2 })
+  editor.tilesets().create({ imagePath: '/images/tiles_2.png', cols: 6, rows: 5, uniqId: 'another', tileOffset: 0 })
   editor.render()
+  map = editor.maps().create({ cols: 10, rows: 10 })
+  map.prepareCanvas()
+  map.render()
 
-  # map = editor.maps().create({ cols: 20, rows: 15 })
-  # map.tiles().create({ x: 10, y: 10, type: editor._tilesSet()[0] })
-  # map.tiles().create({ x: 11, y: 10, type: editor._tilesSet()[1] })
-  # map.tiles().create({ x: 10, y: 11, type: editor._tilesSet()[2] })
-  # editor.render ->
-  #   map.prepareCanvas()
-  #   map.render()
-  #
   # $(document).on 'click', '#export-as-json', (e) ->
   #   window.prompt("Copy to clipboard: Ctrl+C, Enter", JSON.stringify(editor.toJSON()))
   #

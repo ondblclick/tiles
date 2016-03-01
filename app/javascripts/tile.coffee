@@ -6,12 +6,7 @@ class @Tile extends Model
     [@spriteX, @spriteY] = @uniqId.split('-')
     @tileSize = @map().tileSize
 
-  # toJSON: ->
-  #   x: @x
-  #   y: @y
-  #   type: @type
-
   render: ->
-    @map().context().drawImage(@tileset().image, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
+    @map().context().drawImage(@tileset().image(), @spriteX, @spriteY, @tileSize, @tileSize, @x * @tileSize, @y * @tileSize, @tileSize, @tileSize)
 
   @findByPosition: (position) -> Tile.where(position)[0]

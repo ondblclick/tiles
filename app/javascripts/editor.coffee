@@ -1,50 +1,8 @@
-class @TileSet extends Model
-  belongsTo: -> [Editor]
-  fields: ['imagePath', 'cols', 'rows', 'uniqId']
-
-  initialize: ->
-    @tileOffset = @editor().tileOffset
-    @tileSize = @editor().tileSize
-
-  image: ->
-    $("img##{@uniqId}")[0]
-
-  renderStyles: ->
-    style = document.createElement('style')
-    style.id = @uniqId
-    t = "[data-tile-id][data-tileset-id='#{@uniqId}'] { background-image: url('#{@imagePath}'); width: #{@tileSize}px; height: #{@tileSize}px; }"
-    for item in @tileIds()
-      [x, y] = item.split('-')
-      t += "[data-tile-id='#{item}'][data-tileset-id='#{@uniqId}'] { background-position-x: -#{x}px; background-position-y: -#{y}px; }"
-    style.appendChild(document.createTextNode(t))
-    document.head.appendChild(style)
-
-  renderImage: ->
-    img = new Image()
-    img.src = @imagePath
-    img.id = @uniqId
-    $('body').append(img)
-
-  renderTiles: ->
-    template = $.templates('#tile-library-modal')
-    $('.list-tiles').append(template.render({ data: @tileIds().map((item) => { id: "#{item}", tileSetId: @uniqId }) }))
-
-  tileIds: ->
-    ids = []
-    [0..(@cols - 1)].forEach (col) =>
-      [0..(@rows - 1)].forEach (row) =>
-        ids.push("#{@posToPix(col)}-#{@posToPix(row)}")
-    ids
-
-  posToPix: (pos) -> pos * (@tileSize + @tileOffset) + @tileOffset
-
-
 class @Editor extends Model
   hasMany: -> [Map, TileSet]
-  fields: ['tileSize', 'tileOffset']
+  fields: ['tileSize']
 
   initialize: ->
-    @tileOffset = @tileOffset or 0
     @_bindings()
 
   render: (cb) ->
@@ -53,6 +11,15 @@ class @Editor extends Model
       tileSet.renderImage()
       tileSet.renderTiles()
       tileSet.renderStyles()
+
+  _selectedTile: ->
+    $('.list-tiles-item.active')
+
+  _selectedTileSet: ->
+    utils.where(@tilesets(), { uniqId: $('.list-tiles-item.active').data('tileset-id') })[0]
+
+  currentMap: ->
+    @maps()[0]
 
   _bindings: ->
     $(document).off 'click', '#create-map'
@@ -71,36 +38,34 @@ class @Editor extends Model
     $(document).on 'click', '.list-tiles-item', (e) ->
       $(e.currentTarget).toggleClass('active').siblings().removeClass('active')
 
-  # toJSON: ->
-  #   res = {}
-  #   res.tileSize = @tileSize
-  #   res.tileOffset = @tileOffset
-  #   res.imagePath = @imagePath
-  #   res.tilesCols = @tilesCols
-  #   res.tilesRows = @tilesRows
-  #   res.maps = @maps().map (map) -> map.toJSON()
-  #   res
+    $(document).off 'mousemove'
+    $(document).on 'mousemove', (e) =>
+      return unless $(e.target).is('canvas')
+      return unless @_selectedTile().length
+      pageX = Math.floor(e.offsetX / @tileSize)
+      pageY = Math.floor(e.offsetY / @tileSize)
+      [imageX, imageY] = @_selectedTile().data('tile-id').split('-')
+      @currentMap().render()
+      @currentMap().context().fillStyle = Map.STYLES.WHITE
+      @currentMap().drawRect(pageX * @tileSize, pageY * @tileSize)
+      @currentMap().context().globalAlpha = 0.3
+      @currentMap().context().drawImage(@_selectedTileSet().image(), imageX, imageY, @tileSize, @tileSize, pageX * @tileSize, pageY * @tileSize, @tileSize, @tileSize)
+      @currentMap().context().globalAlpha = 1
 
-  # _renderImages: (cb) ->
-  #   sprites = []
-  #   @tileSets.forEach (tileSet) ->
-  #     img = new Image()
-  #     img.src = tileSet.imagePath
-  #     img.id = tileSet.id
-  #     $('body').append(img)
-  #     img.onload = -> cb() if cb
-  #     sprites.push img
-  #   sprites
+    $(document).off 'mouseleave', 'canvas'
+    $(document).on 'mouseleave', 'canvas', =>
+      @currentMap().render()
 
-  # _tilesSet: ->
-  #   tilesSet = []
-  #   [0..(@tilesCols - 1)].forEach (col) =>
-  #     [0..(@tilesRows - 1)].forEach (row) =>
-  #       tilesSet.push("#{@_posToPix(col)}-#{@_posToPix(row)}")
-  #   tilesSet
-
-  # _renderNavPanel: ->
-  #   template = $.templates('#tile-library-modal')
-  #   $('.list-tiles').empty().append(template.render({ data: @_tilesSet().map((item) -> { type: "#{item}" }) }))
-
-  # _posToPix: (pos) -> pos * (@tileSize + @tileOffset) + @tileOffset
+    $(document).off 'click', 'canvas'
+    $(document).on 'click', 'canvas', (e) =>
+      return unless @_selectedTile().length
+      currentX = Math.floor(e.offsetX / @tileSize)
+      currentY = Math.floor(e.offsetY / @tileSize)
+      existingTile = Tile.findByPosition({ x: currentX, y: currentY })
+      existingTile.destroy() if existingTile
+      @currentMap().tiles().create
+        x: currentX
+        y: currentY
+        uniqId: @_selectedTile().data('tile-id')
+        tileset_id: @_selectedTileSet().id
+      @currentMap().render()

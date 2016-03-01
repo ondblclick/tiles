@@ -10,7 +10,6 @@ class @Map extends Model
   initialize: ->
     @tileSize = @editor().tileSize
     @tileOffset = @editor().tileOffset
-    @_bindings()
 
   canvas: -> $('.canvas-wrapper canvas')
   context: -> @canvas()[0].getContext('2d')
@@ -19,15 +18,6 @@ class @Map extends Model
     @canvas().remove()
     $('.canvas-wrapper').append("<canvas width='#{@cols * @tileSize}' height='#{@rows * @tileSize}'></canvas>")
 
-  _selectedTile: ->
-    $('.list-tiles-item.active')
-
-  _selectedTileSet: ->
-    utils.where(@editor().tilesets(), { uniqId: $('.list-tyles-item.active').data('tileset-id') })
-
-  drawImage: (srcX, srcY, dstX, dstY) ->
-    @context().drawImage(@_selectedTileSet().image, srcX, srcY, @tileSize, @tileSize, dstX, dstY, @tileSize, @tileSize)
-
   drawRect: (x, y) ->
     @context().fillRect(x, y, @tileSize, @tileSize)
 
@@ -35,13 +25,6 @@ class @Map extends Model
     @_cleanCanvas()
     @_renderGrid()
     @_renderTiles()
-
-  toJSON: ->
-    res = {}
-    res.cols = @cols
-    res.rows = @rows
-    res.tiles = @tiles().map (tile) -> tile.toJSON()
-    res
 
   _cleanCanvas: ->
     @context().fillStyle = Map.STYLES.WHITE
@@ -61,33 +44,4 @@ class @Map extends Model
       col++
 
   _renderTiles: ->
-    @tiles().forEach (tile) => tile.render(@context)
-
-  _bindings: ->
-    $(document).off 'mousemove'
-    $(document).on 'mousemove', (e) =>
-      return unless $(e.target).is('canvas')
-      return unless @_selectedTile().length
-      pageX = Math.floor(e.offsetX / @tileSize)
-      pageY = Math.floor(e.offsetY / @tileSize)
-      [imageX, imageY] = @_selectedTile().data('tile-type').split('-')
-      @render()
-      @context().fillStyle = Map.STYLES.WHITE
-      @drawRect(pageX * @tileSize, pageY * @tileSize)
-      @context().globalAlpha = 0.3
-      @drawImage(imageX, imageY, pageX * @tileSize, pageY * @tileSize)
-      @context().globalAlpha = 1
-
-    $(document).off 'mouseleave', 'canvas'
-    $(document).on 'mouseleave', 'canvas', =>
-      @render()
-
-    $(document).off 'click', 'canvas'
-    $(document).on 'click', 'canvas', (e) =>
-      return unless @_selectedTile().length
-      currentX = Math.floor(e.offsetX / @tileSize)
-      currentY = Math.floor(e.offsetY / @tileSize)
-      existingTile = Tile.findByPosition({ x: currentX, y: currentY })
-      existingTile.destroy() if existingTile
-      @tiles().create({ x: currentX, y: currentY, type: @_selectedTile().data('tile-type') })
-      @render()
+    @tiles().forEach (tile) -> tile.render()
