@@ -1,4 +1,4 @@
-class @Map extends Model
+class @Layer extends Model
   @STYLES:
     GREY: 'rgba(0, 0, 0, .05)'
     WHITE: '#fff'
@@ -27,11 +27,11 @@ class @Map extends Model
     @_renderTiles()
 
   _cleanCanvas: ->
-    @context().fillStyle = Map.STYLES.WHITE
+    @context().fillStyle = Layer.STYLES.WHITE
     @context().fillRect(0, 0, @cols * @tileSize, @rows * @tileSize)
 
   _renderGrid: ->
-    @context().fillStyle = Map.STYLES.GREY
+    @context().fillStyle = Layer.STYLES.GREY
     col = 0
     while col < 100
       row = 0

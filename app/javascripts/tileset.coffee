@@ -8,6 +8,11 @@ class @TileSet extends Model
   image: ->
     $("img##{@uniqId}")[0]
 
+  render: ->
+    @renderImage()
+    @renderTiles()
+    @renderStyles()
+
   renderStyles: ->
     style = document.createElement('style')
     style.id = @uniqId

@@ -1,12 +1,12 @@
 class @Tile extends Model
-  belongsTo: -> [Map, TileSet]
+  belongsTo: -> [Layer, TileSet]
   fields: ['x', 'y', 'uniqId']
 
   initialize: ->
     [@spriteX, @spriteY] = @uniqId.split('-')
-    @tileSize = @map().tileSize
+    @tileSize = @layer().tileSize
 
   render: ->
-    @map().context().drawImage(@tileset().image(), @spriteX, @spriteY, @tileSize, @tileSize, @x * @tileSize, @y * @tileSize, @tileSize, @tileSize)
+    @layer().context().drawImage(@tileset().image(), @spriteX, @spriteY, @tileSize, @tileSize, @x * @tileSize, @y * @tileSize, @tileSize, @tileSize)
 
   @findByPosition: (position) -> Tile.where(position)[0]

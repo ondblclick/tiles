@@ -1,13 +1,12 @@
-# TODO: move the model.coffee to the repo
-# TODO: move the package.json to the repo
 $(document).ready ->
   editor = Editor.create({ tileSize: 48 })
   editor.tilesets().create({ imagePath: '/images/tiles.png', cols: 12, rows: 12, uniqId: 'base', tileOffset: 2 })
   editor.tilesets().create({ imagePath: '/images/tiles_2.png', cols: 6, rows: 5, uniqId: 'another', tileOffset: 0 })
   editor.render()
-  map = editor.maps().create({ cols: 10, rows: 10 })
-  map.prepareCanvas()
-  map.render()
+
+  layer = editor.layers().create({ cols: 10, rows: 10 })
+  layer.prepareCanvas()
+  layer.render()
 
   # $(document).on 'click', '#export-as-json', (e) ->
   #   window.prompt("Copy to clipboard: Ctrl+C, Enter", JSON.stringify(editor.toJSON()))
