@@ -16,7 +16,8 @@
     "watch:css": "onchange 'app/stylesheets/*.scss' -- npm run build:css",
     "watch:js": "onchange 'app/javascripts/*.coffee' -- npm run build:js",
     "watch:html": "onchange 'app/*.html' -- npm run build:html",
-    "watch:all": "npm-run-all -p serve watch:css watch:js watch:html",
+    "watch:images": "onchange 'app/images/*.*' -- npm run build:images",
+    "watch:all": "npm-run-all -p serve watch:css watch:js watch:html watch:images",
     "postinstall": "npm run build:all && npm run watch:all"
   },
   "devDependencies": {

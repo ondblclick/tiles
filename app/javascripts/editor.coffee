@@ -1,73 +1,69 @@
 class @Editor extends Model
-  hasMany: -> [Map]
-  fields: ['tileSize', 'tileOffset', 'imagePath', 'tilesCols', 'tilesRows']
+  hasMany: -> [Layer, TileSet]
+  fields: ['tileSize']
 
   initialize: ->
-    @tileOffset = @tileOffset or 0
     @_bindings()
 
   render: (cb) ->
     $('canvas').remove()
-    @sprite = @_renderImage(cb)
-    @_createStyles()
-    @_renderNavPanel()
+    $('.list-tiles').empty()
+    promises = @tilesets().map (tileSet) -> tileSet.render()
+    $.when(promises...).then -> cb()
+
+  selectedTile: ->
+    $('.list-tiles-item.active')
+
+  selectedSet: ->
+    utils.where(@tilesets(), { uniqId: $('.list-tiles-item.active').data('tileset-id') })[0]
+
+  currentLayer: ->
+    @layers()[0]
+
+  toJSON: ->
+    tileSize: @tileSize
+    tileSets: @tilesets().map((tileSet) -> tileSet.toJSON())
+    layers: @layers().map((layer) -> layer.toJSON())
 
   _bindings: ->
-    $(document).off 'click', '#create-map'
     $(document).on 'click', '#create-map', =>
       Tile.collection = []
-      Map.collection = []
-      @maps().create({ cols: $('#map-width').val(), rows: $('#map-height').val() })
-      @maps()[0].prepareCanvas()
-      @maps()[0].render()
+      Layer.collection = []
+      @layers().create({ cols: $('#map-width').val(), rows: $('#map-height').val() })
+      @currentLayer().prepareCanvas()
+      @currentLayer().render()
 
-    $(document).off 'click', '#export-as-png'
     $(document).on 'click', '#export-as-png', (e) =>
-      $(e.currentTarget).attr('href', @maps()[0].canvas()[0].toDataURL('image/png'))
+      $(e.currentTarget).attr('href', @currentLayer().canvas()[0].toDataURL('image/png'))
 
-    $(document).off 'click', '.list-tiles-item'
     $(document).on 'click', '.list-tiles-item', (e) ->
       $(e.currentTarget).toggleClass('active').siblings().removeClass('active')
 
-  toJSON: ->
-    res = {}
-    res.tileSize = @tileSize
-    res.tileOffset = @tileOffset
-    res.imagePath = @imagePath
-    res.tilesCols = @tilesCols
-    res.tilesRows = @tilesRows
-    res.maps = @maps().map (map) -> map.toJSON()
-    res
+    $(document).on 'mousemove', (e) =>
+      return unless $(e.target).is('canvas')
+      return unless @selectedTile().length
+      pageX = Math.floor(e.offsetX / @tileSize)
+      pageY = Math.floor(e.offsetY / @tileSize)
+      [imageX, imageY] = @selectedTile().data('tile-id').split('-')
+      @currentLayer().render()
+      @currentLayer().context().fillStyle = Layer.STYLES.WHITE
+      @currentLayer().drawRect(pageX * @tileSize, pageY * @tileSize)
+      @currentLayer().context().globalAlpha = 0.3
+      @currentLayer().context().drawImage(@selectedSet().image(), imageX, imageY, @tileSize, @tileSize, pageX * @tileSize, pageY * @tileSize, @tileSize, @tileSize)
+      @currentLayer().context().globalAlpha = 1
 
-  _createStyles: ->
-    $('#tiles-set').remove()
-    style = document.createElement('style')
-    style.id = 'tiles-set'
-    t = ''
-    for item in @_tilesSet()
-      [x, y] = item.split('-')
-      t += "[data-tile-type='#{item}'] { background-position-x: -#{x}px; background-position-y: -#{y}px; }"
-    t += "[data-tile-type] { background-image: url('#{@imagePath}'); width: #{@tileSize}px; height: #{@tileSize}px; }"
-    style.appendChild(document.createTextNode(t))
-    document.head.appendChild(style)
+    $(document).on 'mouseleave', 'canvas', =>
+      @currentLayer().render()
 
-  _renderImage: (cb) ->
-    img = new Image()
-    img.src = @imagePath
-    img.id = 'sprite'
-    $('body').append(img)
-    img.onload = -> cb() if cb
-    img
-
-  _tilesSet: ->
-    tilesSet = []
-    [0..(@tilesCols - 1)].forEach (col) =>
-      [0..(@tilesRows - 1)].forEach (row) =>
-        tilesSet.push("#{@_posToPix(col)}-#{@_posToPix(row)}")
-    tilesSet
-
-  _renderNavPanel: ->
-    template = $.templates('#tile-library-modal')
-    $('.list-tiles').empty().append(template.render({ data: @_tilesSet().map((item) -> { type: "#{item}" }) }))
-
-  _posToPix: (pos) -> pos * (@tileSize + @tileOffset) + @tileOffset
+    $(document).on 'click', 'canvas', (e) =>
+      return unless @selectedTile().length
+      currentX = Math.floor(e.offsetX / @tileSize)
+      currentY = Math.floor(e.offsetY / @tileSize)
+      existingTile = Tile.findByPosition({ x: currentX, y: currentY })
+      existingTile.destroy() if existingTile
+      @currentLayer().tiles().create
+        x: currentX
+        y: currentY
+        uniqId: @selectedTile().data('tile-id')
+        tileset_id: @selectedSet().id
+      @currentLayer().render()

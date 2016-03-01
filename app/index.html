@@ -10,8 +10,9 @@
     <script type="text/javascript" src="javascripts/collection.js"></script>
     <script type="text/javascript" src="javascripts/model.js"></script>
     <script type="text/javascript" src="javascripts/editor.js"></script>
-    <script type="text/javascript" src="javascripts/map.js"></script>
+    <script type="text/javascript" src="javascripts/layer.js"></script>
     <script type="text/javascript" src="javascripts/tile.js"></script>
+    <script type="text/javascript" src="javascripts/tileset.js"></script>
     <script type="text/javascript" src="javascripts/application.js"></script>
   </head>
   <body>
@@ -28,11 +29,15 @@
       </div>
     </div>
     <div class="panel">
-      <div class="list-tiles"></div>
+      <div class="list-sprites">
+        <textarea name="" id="" style='width:100%;height:100%;'>{"tileSize":48,"tileSets":[{"imagePath":"/images/tiles.png","cols":12,"rows":12,"uniqId":"base","tileOffset":2,"id":"tileset_2"},{"imagePath":"/images/tiles_2.png","cols":6,"rows":5,"uniqId":"another","tileOffset":0,"id":"tileset_3"}],"layers":[{"cols":10,"rows":10,"id":"layer_4","tiles":[{"x":0,"y":0,"id":"tile_5","tileset_id":"tileset_2","uniqId":"52-102"},{"x":1,"y":0,"id":"tile_6","tileset_id":"tileset_2","uniqId":"52-102"},{"x":3,"y":0,"id":"tile_7","tileset_id":"tileset_2","uniqId":"52-102"},{"x":2,"y":0,"id":"tile_8","tileset_id":"tileset_2","uniqId":"52-102"},{"x":5,"y":0,"id":"tile_9","tileset_id":"tileset_2","uniqId":"52-102"},{"x":6,"y":0,"id":"tile_10","tileset_id":"tileset_2","uniqId":"52-102"},{"x":4,"y":0,"id":"tile_11","tileset_id":"tileset_2","uniqId":"52-102"},{"x":7,"y":0,"id":"tile_12","tileset_id":"tileset_2","uniqId":"52-102"},{"x":8,"y":0,"id":"tile_13","tileset_id":"tileset_2","uniqId":"52-102"},{"x":9,"y":0,"id":"tile_14","tileset_id":"tileset_2","uniqId":"52-102"},{"x":9,"y":9,"id":"tile_15","tileset_id":"tileset_2","uniqId":"252-152"},{"x":8,"y":9,"id":"tile_16","tileset_id":"tileset_2","uniqId":"252-152"},{"x":7,"y":9,"id":"tile_17","tileset_id":"tileset_2","uniqId":"252-152"},{"x":6,"y":9,"id":"tile_18","tileset_id":"tileset_2","uniqId":"252-152"},{"x":5,"y":9,"id":"tile_19","tileset_id":"tileset_2","uniqId":"252-152"},{"x":4,"y":9,"id":"tile_20","tileset_id":"tileset_2","uniqId":"252-152"},{"x":3,"y":9,"id":"tile_21","tileset_id":"tileset_2","uniqId":"252-152"},{"x":2,"y":9,"id":"tile_22","tileset_id":"tileset_2","uniqId":"252-152"},{"x":1,"y":9,"id":"tile_23","tileset_id":"tileset_2","uniqId":"252-152"},{"x":0,"y":9,"id":"tile_24","tileset_id":"tileset_2","uniqId":"252-152"}]}]}</textarea>
+      </div>
+      <div class="list-tiles">
+      </div>
     </div>
     <script id='tile-library-modal' type='text/x-jrender'>
       {{for data}}
-        <li class='list-tiles-item' data-tile-type='{{:type}}'></li>
+        <div class='list-tiles-item' data-tile-id='{{:id}}' data-tileset-id='{{:tileSetId}}'></div>
       {{/for}}
     </script>
   </body>

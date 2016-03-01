@@ -12,6 +12,7 @@ class @Model
     @constructor.collection = @constructor.collection or []
     utils.keys(properties).forEach (key) =>
       @[key] = properties[key] if @fields.indexOf(key) isnt -1
+    @id = utils.uniqueId("#{@constructor.name.toLowerCase()}_") unless @id
     @constructor.collection.push @
     @initialize()
 
@@ -24,7 +25,6 @@ class @Model
     @fields.forEach (field) => @[field] = null
     @fields.push('id')
     @fields = utils.uniq(@fields)
-    @id = utils.uniqueId("#{@constructor.name.toLowerCase()}_")
 
   addAssociations: ->
     @addBelongsToAssociation() if !!@belongsTo
