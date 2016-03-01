@@ -7,7 +7,9 @@ class @Editor extends Model
 
   render: (cb) ->
     $('canvas').remove()
-    @tilesets().forEach (tileSet) -> tileSet.render()
+    $('.list-tiles').empty()
+    promises = @tilesets().map (tileSet) -> tileSet.render()
+    $.when(promises...).then -> cb()
 
   selectedTile: ->
     $('.list-tiles-item.active')
@@ -17,6 +19,11 @@ class @Editor extends Model
 
   currentLayer: ->
     @layers()[0]
+
+  toJSON: ->
+    tileSize: @tileSize
+    tileSets: @tilesets().map((tileSet) -> tileSet.toJSON())
+    layers: @layers().map((layer) -> layer.toJSON())
 
   _bindings: ->
     $(document).off 'click', '#create-map'

@@ -5,13 +5,21 @@ class @TileSet extends Model
   initialize: ->
     @tileSize = @editor().tileSize
 
+  toJSON: ->
+    imagePath: @imagePath
+    cols: @cols
+    rows: @rows
+    uniqId: @uniqId
+    tileOffset: @tileOffset
+    id: @id
+
   image: ->
     $("img##{@uniqId}")[0]
 
   render: ->
-    @renderImage()
     @renderTiles()
     @renderStyles()
+    @renderImage()
 
   renderStyles: ->
     style = document.createElement('style')
@@ -29,10 +37,13 @@ class @TileSet extends Model
     document.head.appendChild(style)
 
   renderImage: ->
+    d = new $.Deferred
     img = new Image()
     img.src = @imagePath
     img.id = @uniqId
+    img.onload = -> d.resolve()
     $('body').append(img)
+    d.promise()
 
   renderTiles: ->
     template = $.templates('#tile-library-modal')

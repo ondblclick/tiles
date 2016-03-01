@@ -11,6 +11,12 @@ class @Layer extends Model
     @tileSize = @editor().tileSize
     @tileOffset = @editor().tileOffset
 
+  toJSON: ->
+    cols: @cols
+    rows: @rows
+    id: @id
+    tiles: @tiles().map((tile) -> tile.toJSON())
+
   canvas: -> $('.canvas-wrapper canvas')
   context: -> @canvas()[0].getContext('2d')
 
