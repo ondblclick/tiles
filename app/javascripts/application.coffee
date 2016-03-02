@@ -41,8 +41,9 @@ $(document).ready ->
     str = "Pick a name of map to open: "
     str = "Wrong name. " + str if wrong
     name = window.prompt(str)
-    unless localStorage.getItem(name)
-      name = openNamePrompt(true)
+    if name
+      unless localStorage.getItem(name)
+        name = openNamePrompt(true)
     name
 
   saveNamePrompt = (wrong = false) ->
