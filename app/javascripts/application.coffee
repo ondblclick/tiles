@@ -13,6 +13,9 @@ $(document).ready ->
 
   $(document).on 'click', '#import-as-json', (e) ->
     json = JSON.parse(window.prompt("Paste valid JSON here"))
+    importMap(editor, json)
+
+  importMap = (editor, json) ->
     editor.tileSize = json.tileSize
     TileSet.collection = []
     Layer.collection = []
@@ -20,7 +23,32 @@ $(document).ready ->
     json.layers.forEach (layer) ->
       l = editor.layers().create(layer)
       layer.tiles.forEach (tile) -> l.tiles().create(tile)
-    editor.render ->
-      editor.layers().forEach (layer) ->
-        layer.prepareCanvas()
-        layer.render()
+      editor.render ->
+        editor.layers().forEach (layer) ->
+          layer.prepareCanvas()
+          layer.render()
+
+  $(document).on 'click', '#save-to-localstorage', (e) ->
+    name = saveNamePrompt()
+    localStorage.setItem(name, JSON.stringify(editor.toJSON())) if name
+
+  $(document).on 'click', '#open-from-localstorage', (e) ->
+    name = openNamePrompt()
+    json = JSON.parse(localStorage.getItem(name))
+    importMap(editor, json)
+
+  openNamePrompt = (empty = false) ->
+    str = "Pick a name of map to open: "
+    str = "Wrong name. " + str if empty
+    name = window.prompt(str)
+    unless localStorage.getItem(name)
+      name = openNamePrompt(true)
+    name
+
+  saveNamePrompt = (inUse = false) ->
+    str = "Set a name for a map"
+    str = "Already in use. " + str if inUse
+    name = window.prompt(str)
+    if localStorage.getItem(name)
+      name = saveNamePrompt(true)
+    name
