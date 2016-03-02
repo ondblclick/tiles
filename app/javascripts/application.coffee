@@ -21,7 +21,7 @@ $(document).ready ->
 
   $(document).on 'click', '#open-from-localstorage', (e) ->
     name = openNamePrompt()
-    json = JSON.parse(localStorage.getItem(name))
+    json = JSON.parse(localStorage.getItem(name)) if name
     importMap(editor, json)
 
   importMap = (editor, json) ->
