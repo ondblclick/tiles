@@ -5,6 +5,13 @@
   padding: 0;
 }
 
+// TEMP STYLES
+canvas {
+  margin-top: 5px;
+  border: 1px solid #ccc;
+}
+// / TEMP STYLES
+
 .wrapper {
   height: calc(100vh - 10px);
   width: calc(100vw - 10px);

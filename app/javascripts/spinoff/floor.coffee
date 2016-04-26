@@ -10,7 +10,10 @@ class Floor extends Model
     tabTmpl = $.templates('#floor-tab')
     containerTmpl = $.templates('#floor-container')
     tab = tabTmpl.render(@toJSON())
-    container = containerTmpl.render(@toJSON())
+    obj = @toJSON()
+    obj.width = @scene().width * @scene().game().tileSize
+    obj.height = @scene().height * @scene().game().tileSize
+    container = containerTmpl.render(obj)
     $("#floor-tabs-#{@sceneId}").append(tab)
     $("#floor-containers-#{@sceneId}").append(container)
 

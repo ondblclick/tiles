@@ -18,10 +18,18 @@ $(document).ready ->
   tileSet3 = game.tileSets().create()
   scene1 = game.scenes().create({ name: 'very first scene', width: 10, height: 10 })
   scene2 = game.scenes().create({ name: 'second scene', width: 20, height: 20 })
-  scene3 = game.scenes().create({ name: 'last scene', width: 30, height: 30 })
+  scene3 = game.scenes().create({ name: 'last scene', width: 15, height: 15 })
   floor1 = scene1.floors().create({ name: 'floor 1' })
   floor2 = scene1.floors().create({ name: 'floor 2' })
   floor3 = scene1.floors().create({ name: 'floor 3' })
+
+  floor4 = scene2.floors().create({ name: 'floor 4' })
+  floor5 = scene2.floors().create({ name: 'floor 5' })
+  floor6 = scene2.floors().create({ name: 'floor 6' })
+
+  floor7 = scene3.floors().create({ name: 'floor 7' })
+  floor8 = scene3.floors().create({ name: 'floor 8' })
+  floor9 = scene3.floors().create({ name: 'floor 9' })
 
 
   editor.render()
