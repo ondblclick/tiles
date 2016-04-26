@@ -1,31 +1,46 @@
 {
-  "name": "",
-  "version": "0.0.0",
-  "dependencies": {},
+  "name": "myAwesomeApp",
+  "version": "0.0.1",
   "scripts": {
-    "clean": "rm -f dist/{stylesheets/*,javascripts/*,images/*}",
+    "clean": "rm -f dist/{stylesheets/*,javascripts/*,images/*,svgs/*}",
     "scss": "node-sass --output-style compressed -o dist/stylesheets app/stylesheets",
     "html": "cp app/*.html dist",
     "imagemin": "imagemin app/images dist/images -p",
-    "serve": "browser-sync start --server dist --files 'dist/stylesheets/*.css, dist/javascripts/*.js, dist/*.html, !node_modules/**/*.html'",
+    "serve": "browser-sync start --server dist --files 'dist/stylesheets/*.css, dist/javascripts/*.js, !node_modules/**/*.html'",
     "build:css": "npm run scss",
     "build:html": "npm run html",
-    "build:js": "./node_modules/coffee-script/bin/coffee --compile --output dist/javascripts app/javascripts",
+    "build:js": "npm run script",
     "build:images": "npm run imagemin",
-    "build:all": "npm run build:css && npm run build:js && npm run build:images",
-    "watch:css": "onchange 'app/stylesheets/*.scss' -- npm run build:css",
-    "watch:js": "onchange 'app/javascripts/*.coffee' -- npm run build:js",
+    "build:all": "npm run build:css && npm run build:js && npm run build:images && npm run build:html",
+    "watch:css": "onchange 'app/stylesheets/*.*' -- npm run build:css",
+    "watch:js": "onchange 'app/javascripts/*.*' -- npm run build:js",
     "watch:html": "onchange 'app/*.html' -- npm run build:html",
     "watch:images": "onchange 'app/images/*.*' -- npm run build:images",
     "watch:all": "npm-run-all -p serve watch:css watch:js watch:html watch:images",
-    "postinstall": "npm run build:all && npm run watch:all"
+    "postinstall": "npm run build:all && npm run watch:all",
+    "script": "mkdirp dist/javascripts && browserify -t coffeeify app/javascripts/*.coffee -o='dist/javascripts/index.js'",
+    "test": "./node_modules/karma/bin/karma start --singleRun"
   },
   "devDependencies": {
     "browser-sync": "^2.11.1",
-    "coffee-script": "^1.10.0",
+    "browserify": "^13.0.0",
+    "coffeeify": "^2.0.1",
     "imagemin-cli": "^2.1.0",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.21",
+    "karma-browserify": "^5.0.2",
+    "karma-jasmine": "^0.3.7",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-spec-reporter": "0.0.24",
+    "mkdirp": "^0.5.1",
     "node-sass": "^3.4.2",
     "npm-run-all": "^1.5.1",
-    "onchange": "^2.0.0"
+    "onchange": "^2.0.0",
+    "phantomjs-prebuilt": "^2.1.4"
+  },
+  "dependencies": {
+    "activer": "^0.5.4",
+    "jquery": "^2.2.3",
+    "jsrender": "^0.9.75"
   }
 }

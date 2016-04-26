@@ -1,28 +1,34 @@
-class @Editor extends Model
-  hasMany: -> [Layer, TileSet]
-  fields: ['tileSize']
+Model = require('activer')
+Layer = require('./layer.coffee')
+TileSet = require('./tileset.coffee')
+Tile = require('./tile.coffee')
+$ = require('jquery')
 
-  initialize: ->
+class Editor extends Model
+  @attributes('tileSize')
+  @hasMany('Layer', 'TileSet')
+
+  afterCreate: ->
     @_bindings()
 
   render: (cb) ->
     $('canvas').remove()
     $('.list-tiles').empty()
-    promises = @tilesets().map (tileSet) -> tileSet.render()
+    promises = @tileSets().map (tileSet) -> tileSet.render()
     $.when(promises...).then -> cb()
 
   selectedTile: ->
     $('.list-tiles-item.active')
 
   selectedSet: ->
-    utils.where(@tilesets(), { uniqId: $('.list-tiles-item.active').data('tileset-id') })[0]
+    @tileSets().filter((item) -> item.uniqId is $('.list-tiles-item.active').data('tileset-id'))[0]
 
   currentLayer: ->
     @layers()[0]
 
   toJSON: ->
     tileSize: @tileSize
-    tileSets: @tilesets().map((tileSet) -> tileSet.toJSON())
+    tileSets: @tileSets().map((tileSet) -> tileSet.toJSON())
     layers: @layers().map((layer) -> layer.toJSON())
 
   _bindings: ->
@@ -65,5 +71,7 @@ class @Editor extends Model
         x: currentX
         y: currentY
         uniqId: @selectedTile().data('tile-id')
-        tileset_id: @selectedSet().id
+        tileSetId: @selectedSet().id
       @currentLayer().render()
+
+module.exports = Editor

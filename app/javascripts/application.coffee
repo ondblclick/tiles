@@ -1,7 +1,12 @@
+Editor = require('./editor.coffee')
+TileSet = require('./tileset.coffee')
+Layer = require('./tileset.coffee')
+$ = require('jquery')
+
 $(document).ready ->
   editor = Editor.create({ tileSize: 48 })
-  editor.tilesets().create({ imagePath: '/images/tiles.png', cols: 12, rows: 12, uniqId: 'base', tileOffset: 2 })
-  editor.tilesets().create({ imagePath: '/images/tiles_2.png', cols: 6, rows: 5, uniqId: 'another', tileOffset: 0 })
+  editor.tileSets().create({ imagePath: '/images/tiles.png', cols: 12, rows: 12, uniqId: 'base', tileOffset: 2 })
+  editor.tileSets().create({ imagePath: '/images/tiles_2.png', cols: 6, rows: 5, uniqId: 'another', tileOffset: 0 })
   editor.layers().create({ cols: 10, rows: 10 })
   editor.render ->
     editor.layers().forEach (layer) ->
@@ -28,7 +33,7 @@ $(document).ready ->
     editor.tileSize = json.tileSize
     TileSet.collection = []
     Layer.collection = []
-    json.tileSets.forEach (tileSet) -> editor.tilesets().create(tileSet)
+    json.tileSets.forEach (tileSet) -> editor.tileSets().create(tileSet)
     json.layers.forEach (layer) ->
       l = editor.layers().create(layer)
       layer.tiles.forEach (tile) -> l.tiles().create(tile)

@@ -1,13 +1,18 @@
-class @Layer extends Model
+Model = require('activer')
+Tile = require('./tile.coffee')
+Editor = require('./editor.coffee')
+$ = require('jquery')
+
+class Layer extends Model
   @STYLES:
     GREY: 'rgba(0, 0, 0, .05)'
     WHITE: '#fff'
 
-  hasMany: -> [Tile]
-  belongsTo: -> [Editor]
-  fields: ['cols', 'rows']
+  @attributes('cols', 'rows')
+  @hasMany('Tile')
+  @belongsTo('Editor')
 
-  initialize: ->
+  afterCreate: ->
     @tileSize = @editor().tileSize
     @tileOffset = @editor().tileOffset
 
@@ -51,3 +56,5 @@ class @Layer extends Model
 
   _renderTiles: ->
     @tiles().forEach (tile) -> tile.render()
+
+module.exports = Layer

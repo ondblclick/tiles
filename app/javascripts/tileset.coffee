@@ -1,8 +1,13 @@
-class @TileSet extends Model
-  belongsTo: -> [Editor]
-  fields: ['imagePath', 'cols', 'rows', 'uniqId', 'tileOffset']
+Model = require('activer')
+Editor = require('./editor.coffee')
+$ = require('jquery')
+require('jsrender')($)
 
-  initialize: ->
+class TileSet extends Model
+  @attributes('imagePath', 'cols', 'rows', 'uniqId', 'tileOffset')
+  @belongsTo('Editor')
+
+  afterCreate: ->
     @tileSize = @editor().tileSize
 
   toJSON: ->
@@ -57,3 +62,5 @@ class @TileSet extends Model
     ids
 
   posToPix: (pos) -> pos * (@tileSize + @tileOffset) + @tileOffset
+
+module.exports = TileSet
