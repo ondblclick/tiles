@@ -8,11 +8,31 @@
   </head>
   <body>
     <div class="wrapper">
-      <ul class='scene-tabs tabs' id='scene-tabs' data-tabs-for='#scene-containers' data-tabs-attr='data-model-id'></ul>
-      <ul class='scene-containers' id='scene-containers'></ul>
+      <div id='scene'>
+        <ul class='scene-tabs tabs' id='scene-tabs' data-tabs-for='#scene-containers' data-tabs-attr='data-model-id'></ul>
+        <ul class='scene-containers' id='scene-containers'></ul>
+      </div>
+      <div id='toolbar'>
+        <ul class='tilesets-tabs tabs' id='tilesets-tabs' data-tabs-for='#tilesets-containers' data-tabs-attr='data-model-id'></ul>
+        <ul class='tilesets-containers' id='tilesets-containers'></ul>
+      </div>
     </div>
 
     <!-- TEMPLATES -->
+    <script id='tileset-tab' type='text/x-jrender'>
+      <li class='tileset-tab' data-model-id='{{:id}}'>{{:name}}</li>
+    </script>
+
+    <script id='tileset-container' type='text/x-jrender'>
+      <li class='tileset-container' data-model-id='{{:id}}'>
+        <ul>
+          {{for tiles}}
+            <li data-tile-id='{{:id}}'></li>
+          {{/for}}
+        </ul>
+      </li>
+    </script>
+
     <script id='scene-tab' type='text/x-jrender'>
       <li class='scene-tab' data-model-id='{{:id}}'>{{:name}}</li>
     </script>
@@ -32,6 +52,10 @@
       <li class='floor-container' data-model-id='{{:id}}'>
         <canvas width='{{:width}}' height='{{:height}}'></canvas>
       </li>
+    </script>
+
+    <script id='tile' type='text/x-jrender'>
+      <li data-tile-id='{{:id}}' data-tileset-id={{:tileSetId}}></li>
     </script>
     <!-- / TEMPLATES -->
   </body>

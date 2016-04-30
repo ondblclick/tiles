@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  font-family: 'Roboto';
+  font-family: 'Arial';
   margin: 0;
   padding: 0;
 }
@@ -19,6 +19,22 @@ canvas {
   padding: 5px;
   border: 1px solid #ccc;
   position: relative;
+
+  #scene {
+    width: calc(60% - 5px);
+    left: 5px;
+    top: 5px;
+    bottom: 5px;
+    position: absolute;
+  }
+
+  #toolbar {
+    width: calc(40% - 10px);
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    position: absolute;
+  }
 }
 
 .floor-containers {
@@ -31,12 +47,13 @@ canvas {
   }
 }
 
-.scene-containers {
+.scene-containers,
+.tilesets-containers {
   position: absolute;
-  left: 5px;
-  right: 5px;
-  top: 41px;
-  bottom: 5px;
+  left: 0px;
+  right: 0px;
+  top: 35px;
+  bottom: 0px;
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 5px;
@@ -48,6 +65,16 @@ canvas {
     height: 100%;
 
     &.is-active { display: block; }
+    
+    > ul {
+      list-style: none;
+      
+      > li {
+        float: left;
+        margin-right: 5px;
+        margin-bottom: 5px;
+      }
+    }
   }
 }
 
