@@ -1,32 +1,31 @@
 Model = require 'activer'
 Game = require './game.coffee'
+Tile = require './tile.coffee'
 $ = require 'jquery'
 
 class TileSet extends Model
   @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset')
   @belongsTo('Game')
+  @hasMany('Tile')
+
+  afterCreate: ->
+    @generateTiles()
+
+  generateTiles: ->
+    [0..(@cols - 1)].forEach (col) =>
+      [0..(@rows - 1)].forEach (row) =>
+        @tiles().create({ x: @posToPix(col), y: @posToPix(row) })
 
   renderStyles: ->
     style = document.createElement('style')
     style.id = @id
-    t = ".tileset-container[data-model-id='#{@id}'] [data-tile-id] {
+    t = ".tileset-container[data-model-id='#{@id}'] .tile {
       background-image: url('#{@imagePath}');
       width: #{@game().tileSize}px;
       height: #{@game().tileSize}px; }"
-    for item in @tileIds()
-      [x, y] = item.split('-')
-      t += ".tileset-container[data-model-id='#{@id}'] [data-tile-id='#{item}'] {
-        background-position-x: -#{x}px;
-        background-position-y: -#{y}px; }"
+    t += @tiles().map((tile) -> tile.style()).join('')
     style.appendChild(document.createTextNode(t))
     document.head.appendChild(style)
-
-  tileIds: ->
-    ids = []
-    [0..(@cols - 1)].forEach (col) =>
-      [0..(@rows - 1)].forEach (row) =>
-        ids.push("#{@posToPix(col)}-#{@posToPix(row)}")
-    ids
 
   posToPix: (pos) -> pos * (@game().tileSize + @tileOffset) + @tileOffset
 
@@ -40,21 +39,16 @@ class TileSet extends Model
     $('body').append(img)
     d.promise()
 
-  renderTiles: ->
-    template = $.templates('#tile')
-    $('.list-tiles').append(template.render({ data: @tileIds().map((item) => { id: "#{item}", tileSetId: @id }) }))
-
   renderToEditor: ->
     tabTmpl = $.templates('#tileset-tab')
     containerTmpl = $.templates('#tileset-container')
     tab = tabTmpl.render(@toJSON())
     obj = @toJSON()
-    obj.tiles = @tileIds().map((id) => { id: id })
+    obj.tiles = @tiles().map((tile) => tile.toJSON())
     container = containerTmpl.render(obj)
     $('#tilesets-tabs').append(tab)
     $('#tilesets-containers').append(container)
     @renderStyles()
-#     @renderTiles()
     @renderImage()
 
 module.exports = TileSet

@@ -5,13 +5,6 @@
   padding: 0;
 }
 
-// TEMP STYLES
-canvas {
-  margin-top: 5px;
-  border: 1px solid #ccc;
-}
-// / TEMP STYLES
-
 .wrapper {
   height: calc(100vh - 10px);
   width: calc(100vw - 10px);
@@ -65,16 +58,39 @@ canvas {
     height: 100%;
 
     &.is-active { display: block; }
-    
-    > ul {
-      list-style: none;
-      
-      > li {
-        float: left;
-        margin-right: 5px;
-        margin-bottom: 5px;
-      }
-    }
+  }
+}
+
+.tilesets-containers {
+  > li {
+    overflow: auto;
+
+    > ul { list-style: none; }
+  }
+}
+
+.floor-containers {
+  > li {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    top: 40px;
+    bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 5px;
+    overflow: auto;
+
+    canvas { border: 1px solid #ccc; }
+  }
+}
+
+.tile {
+  float: left;
+  margin: 5px;
+
+  &.is-active {
+    box-shadow: 0 0 0 5px #03A9F4;
   }
 }
 

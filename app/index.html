@@ -25,9 +25,10 @@
 
     <script id='tileset-container' type='text/x-jrender'>
       <li class='tileset-container' data-model-id='{{:id}}'>
-        <ul>
+        <ul class='tiles-container'>
+          <!-- TODO: most likely tiles should be rendered using the render method of tile class -->
           {{for tiles}}
-            <li data-tile-id='{{:id}}'></li>
+            <li class='tile' data-model-id='{{:id}}'></li>
           {{/for}}
         </ul>
       </li>
