@@ -39,14 +39,11 @@ class Editor extends Model
       return unless @tile
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      # existingTile = Tile.findByPosition({ x: currentX, y: currentY })
-      # existingTile.destroy() if existingTile
-      # @currentLayer().tiles().create
-      #   x: currentX
-      #   y: currentY
-      #   uniqId: @selectedTile().data('tile-id')
-      #   tileSetId: @selectedSet().id
-      # @currentLayer().render()
+      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      cell = floor.cells().where({ col: currentX, row: currentY })[0]
+      cell.terrain().destroy() if cell.terrain()
+      cell.createTerrain({ tileId: @tile.id })
+      floor.render()
 
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')

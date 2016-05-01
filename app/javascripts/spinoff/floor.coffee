@@ -31,6 +31,10 @@ class Floor extends Model
   render: ->
     @clear()
     @renderGrid()
+    @renderTerrain()
+
+  renderTerrain: ->
+    @cells().map((cell) -> cell.render())
 
   clear: ->
     @context().fillStyle = Floor.STYLES.WHITE
