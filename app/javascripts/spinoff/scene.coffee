@@ -17,7 +17,7 @@ class Scene extends Model
     $('#scene-containers').append(container)
 
     @floors().forEach (floor) -> floor.renderToEditor()
-    $('[id*=floor-tabs] > li:first-child').addClass('is-active')
+    $('[id*=floor-tabs] > .tab').first().addClass('is-active')
     $('[id*=floor-containers] > li:first-child').addClass('is-active')
 
 module.exports = Scene

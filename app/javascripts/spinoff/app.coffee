@@ -1,7 +1,7 @@
 Editor = require './editor.coffee'
 $ = require 'jquery'
 
-$(document).on 'click', '[data-tabs-for] > li', (e) ->
+$(document).on 'click', '[data-tabs-for] > .tab', (e) ->
   tab = $(e.target)
   tabList = tab.parents('[data-tabs-for]')
   selector = tabList.data('tabs-for')

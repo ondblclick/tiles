@@ -15,14 +15,14 @@ class Editor extends Model
 
   render: ->
     imagePromises = @game().tileSets().forEach (tileSet) -> tileSet.renderToEditor()
-    $('#tilesets-tabs > li:first-child').addClass('is-active')
+    $('#tilesets-tabs > .tab').first().addClass('is-active')
     $('#tilesets-containers > li:first-child').addClass('is-active')
     $.when(imagePromises...).then =>
       @renderScenes()
 
   renderScenes: ->
     @game().scenes().forEach (scene) -> scene.renderToEditor()
-    $('#scene-tabs > li:first-child').addClass('is-active')
+    $('#scene-tabs > .tab').first().addClass('is-active')
     $('#scene-containers > li:first-child').addClass('is-active')
 
   bindings: ->
