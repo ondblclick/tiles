@@ -31,12 +31,12 @@ class TileSet extends Model
 
   renderImage: ->
     d = new $.Deferred
-    img = new Image()
-    img.src = @imagePath
-    img.id = @id
-    img.style = 'display: none;'
-    img.onload = -> d.resolve()
-    $('body').append(img)
+    @img = new Image()
+    @img.src = @imagePath
+    @img.id = @id
+    @img.style = 'display: none;'
+    @img.onload = -> d.resolve()
+    $('body').append(@img)
     d.promise()
 
   renderToEditor: ->

@@ -6,10 +6,6 @@ class Tile extends Model
   @attributes('x', 'y')
   @belongsTo('TileSet')
 
-  select: ->
-    $('.tile').removeClass('is-active')
-    @el().addClass('is-active')
-  
   el: ->
     $(".tile[data-model-id='#{@id}']")
 

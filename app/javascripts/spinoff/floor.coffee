@@ -1,18 +1,40 @@
 Model = require 'activer'
 Scene = require './scene.coffee'
+Cell = require './cell.coffee'
 $ = require 'jquery'
 
 class Floor extends Model
   @attributes('name')
   @belongsTo('Scene')
+  @hasMany('Cell')
 
   @STYLES:
     GREY: 'rgba(0, 0, 0, .05)'
     WHITE: '#fff'
 
+  afterCreate: ->
+    @createCells()
+
+  createCells: ->
+    col = 0
+    while col < @scene().width
+      row = 0
+      while row < @scene().height
+        @cells().create({ row: row, col: col })
+        row++
+      col++
+
   canvas: -> $(".floor-container[data-model-id='#{@id}'] canvas")
 
   context: -> @canvas()[0].getContext('2d')
+
+  render: ->
+    @clear()
+    @renderGrid()
+
+  clear: ->
+    @context().fillStyle = Floor.STYLES.WHITE
+    @context().fillRect(0, 0, @scene().width * @scene().game().tileSize, @scene().height * @scene().game().tileSize)
 
   renderToEditor: ->
     tabTmpl = $.templates('#floor-tab')
@@ -39,6 +61,5 @@ class Floor extends Model
           @drawRect(col * @scene().game().tileSize, row * @scene().game().tileSize)
         row++
       col++
-
 
 module.exports = Floor
