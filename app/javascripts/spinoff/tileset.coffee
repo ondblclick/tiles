@@ -27,7 +27,7 @@ class TileSet extends Model
     style.appendChild(document.createTextNode(t))
     document.head.appendChild(style)
 
-  posToPix: (pos) -> pos * (@game().tileSize + @tileOffset) + @tileOffset
+  posToPix: (pos) -> pos * (@game().tileSize + +@tileOffset) + +@tileOffset
 
   renderImage: ->
     d = new $.Deferred

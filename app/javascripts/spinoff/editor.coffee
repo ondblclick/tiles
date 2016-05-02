@@ -5,6 +5,15 @@ Floor = require './floor.coffee'
 $ = require 'jquery'
 require('jsrender')($)
 
+askFor = (attribute) =>
+  res = prompt(attribute)
+  res or askFor(attribute)
+
+promptWizard = (attrs) =>
+  res = {}
+  attrs.forEach (attr) -> res[attr] = askFor(attr)
+  res
+
 class Editor extends Model
   @attributes()
   @hasOne('Game')
@@ -26,6 +35,21 @@ class Editor extends Model
     $('#scene-containers > li:first-child').addClass('is-active')
 
   bindings: ->
+    $(document).on 'click', '#add-scene', (e) =>
+      attrs = promptWizard(['name', 'width', 'height'])
+      scene = @game().scenes().create(attrs)
+      scene.renderToEditor()
+
+    $(document).on 'click', '#add-floor', (e) =>
+      attrs = promptWizard(['name'])
+      floor = @game().scenes().find($(e.target).parents('.scene-container').data('model-id')).floors().create(attrs)
+      floor.renderToEditor()
+
+    $(document).on 'click', '#add-tileset', (e) =>
+      attrs = promptWizard(['name', 'imagePath', 'cols', 'rows', 'tileOffset'])
+      tileSet = @game().tileSets().create(attrs)
+      tileSet.renderToEditor()
+
     $(document).on 'click', '.tile', (e) =>
       if $(e.target).is('.is-active')
         $(e.target).removeClass('is-active')

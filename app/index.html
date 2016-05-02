@@ -10,13 +10,13 @@
     <div class="wrapper">
       <div id='scene'>
         <ul class='scene-tabs tabs' id='scene-tabs' data-tabs-for='#scene-containers' data-tabs-attr='data-model-id'>
-          <li>+</li>
+          <li id='add-scene'>+</li>
         </ul>
         <ul class='scene-containers' id='scene-containers'></ul>
       </div>
       <div id='toolbar'>
         <ul class='tilesets-tabs tabs' id='tilesets-tabs' data-tabs-for='#tilesets-containers' data-tabs-attr='data-model-id'>
-          <li>+</li>
+          <li id='add-tileset'>+</li>
         </ul>
         <ul class='tilesets-containers' id='tilesets-containers'></ul>
       </div>
@@ -45,7 +45,7 @@
     <script id='scene-container' type='text/x-jrender'>
       <li class='scene-container' data-model-id='{{:id}}'>
         <ul class='floor-tabs tabs' id='floor-tabs-{{:id}}' data-tabs-for='#floor-containers-{{:id}}' data-tabs-attr='data-model-id'>
-          <li>+</li>
+          <li id='add-floor'>+</li>
         </ul>
         <ul class='floor-containers' id='floor-containers-{{:id}}'></ul>
       </li>
