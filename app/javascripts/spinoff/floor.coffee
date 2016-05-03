@@ -52,8 +52,17 @@ class Floor extends Model
     $("#floor-containers-#{@sceneId}").append(container)
     @renderGrid()
 
+  removeFromEditor: ->
+    $(".floor-containers li[data-model-id='#{@id}']").remove()
+    $(".floor-tabs li[data-model-id='#{@id}']").remove()
+    
   drawRect: (x, y) ->
     @context().fillRect(x, y, @scene().game().tileSize, @scene().game().tileSize)
+
+  remove: ->
+    @cells().deleteAll()
+    @removeFromEditor()
+    @destroy()
 
   renderGrid: ->
     @context().fillStyle = Floor.STYLES.GREY

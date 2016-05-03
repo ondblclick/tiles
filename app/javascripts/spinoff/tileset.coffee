@@ -17,15 +17,15 @@ class TileSet extends Model
         @tiles().create({ x: @posToPix(col), y: @posToPix(row) })
 
   renderStyles: ->
-    style = document.createElement('style')
-    style.id = @id
+    @style = document.createElement('style')
+    @style.id = @id
     t = ".tileset-container[data-model-id='#{@id}'] .tile {
       background-image: url('#{@imagePath}');
       width: #{@game().tileSize}px;
       height: #{@game().tileSize}px; }"
     t += @tiles().map((tile) -> tile.style()).join('')
-    style.appendChild(document.createTextNode(t))
-    document.head.appendChild(style)
+    @style.appendChild(document.createTextNode(t))
+    document.head.appendChild(@style)
 
   posToPix: (pos) -> pos * (@game().tileSize + +@tileOffset) + +@tileOffset
 
@@ -50,5 +50,17 @@ class TileSet extends Model
     $('#tilesets-containers').append(container)
     @renderStyles()
     @renderImage()
+
+  removeFromEditor: ->
+    $(@img).remove()
+    $(@style).remove()
+    $(".tilesets-containers li[data-model-id='#{@id}']").remove()
+    $(".tilesets-tabs li[data-model-id='#{@id}']").remove()
+
+  remove: ->
+    @tiles().forEach (tile) -> tile.terrains().deleteAll()
+    @tiles().deleteAll()
+    @removeFromEditor()
+    @destroy()
 
 module.exports = TileSet

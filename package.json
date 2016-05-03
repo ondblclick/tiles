@@ -41,6 +41,7 @@
   "dependencies": {
     "activer": "^0.6.0",
     "jquery": "^2.2.3",
-    "jsrender": "^0.9.75"
+    "jsrender": "^0.9.75",
+    "prompty": "0.0.1"
   }
 }

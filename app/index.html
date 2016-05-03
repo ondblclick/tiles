@@ -24,7 +24,7 @@
 
     <!-- TEMPLATES -->
     <script id='tileset-tab' type='text/x-jrender'>
-      <li class='tileset-tab tab' data-model-id='{{:id}}'>{{:name}}</li>
+      <li class='tileset-tab tab' data-model-id='{{:id}}' data-model-name='TileSet'>{{:name}} <span class='tab-delete'>&times;</span></li>
     </script>
 
     <script id='tileset-container' type='text/x-jrender'>
@@ -39,7 +39,7 @@
     </script>
 
     <script id='scene-tab' type='text/x-jrender'>
-      <li class='scene-tab tab' data-model-id='{{:id}}'>{{:name}}</li>
+      <li class='scene-tab tab' data-model-id='{{:id}}' data-model-name='Scene'>{{:name}} <span class='tab-delete'>&times;</span></li>
     </script>
 
     <script id='scene-container' type='text/x-jrender'>
@@ -52,7 +52,7 @@
     </script>
 
     <script id='floor-tab' type='text/x-jrender'>
-      <li class='floor-tab tab' data-model-id='{{:id}}'>{{:name}}</li>
+      <li class='floor-tab tab' data-model-id='{{:id}}' data-model-name='Floor'>{{:name}} <span class='tab-delete'>&times;</span></li>
     </script>
 
     <script id='floor-container' type='text/x-jrender'>

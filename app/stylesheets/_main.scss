@@ -112,5 +112,17 @@
 
     &.is-active { background-color: #eee; }
     &:hover { opacity: .7; }
+
+    .tab-delete {
+      border: 1px solid transparent;
+      border-radius: 5px;
+      padding: 0 3px;
+      margin-left: 5px;
+      
+      &:hover {
+        border-color: red;
+        color: red;
+      }
+    }
   }
 }

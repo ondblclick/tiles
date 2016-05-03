@@ -5,6 +5,7 @@ $ = require 'jquery'
 class Tile extends Model
   @attributes('x', 'y')
   @belongsTo('TileSet')
+  @hasMany('Terrain')
 
   el: ->
     $(".tile[data-model-id='#{@id}']")

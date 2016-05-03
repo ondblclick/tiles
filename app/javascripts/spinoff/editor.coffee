@@ -2,17 +2,11 @@ Model = require 'activer'
 Game = require './game.coffee'
 Tile = require './tile.coffee'
 Floor = require './floor.coffee'
+Scene = require './scene.coffee'
+TileSet = require './tileset.coffee'
 $ = require 'jquery'
+prompty = require 'prompty'
 require('jsrender')($)
-
-askFor = (attribute) =>
-  res = prompt(attribute)
-  res or askFor(attribute)
-
-promptWizard = (attrs) =>
-  res = {}
-  attrs.forEach (attr) -> res[attr] = askFor(attr)
-  res
 
 class Editor extends Model
   @attributes()
@@ -35,18 +29,44 @@ class Editor extends Model
     $('#scene-containers > li:first-child').addClass('is-active')
 
   bindings: ->
+    $(document).on 'click', '.tab-delete', (e) =>
+      e.preventDefault()
+      e.stopPropagation()
+      sure = confirm('Are you sure you want to delete it?')
+      return unless sure
+      model = switch $(e.target).parents('.tab').data('model-name')
+        when 'TileSet' then TileSet
+        when 'Floor' then Floor
+        when 'Scene' then Scene
+      model.find($(e.target).parents('.tab').data('model-id')).remove()
+
     $(document).on 'click', '#add-scene', (e) =>
-      attrs = promptWizard(['name', 'width', 'height'])
+      attrs = prompty([
+        { field: 'name', label: 'Scene name:' }
+        { field: 'width', label: 'Scene width:' }
+        { field: 'height', label: 'Scene height:' }
+      ])
+      return unless attrs
       scene = @game().scenes().create(attrs)
       scene.renderToEditor()
 
     $(document).on 'click', '#add-floor', (e) =>
-      attrs = promptWizard(['name'])
+      attrs = prompty([
+        { field: 'name', label: 'Floor name:' }
+      ])
+      return unless attrs
       floor = @game().scenes().find($(e.target).parents('.scene-container').data('model-id')).floors().create(attrs)
       floor.renderToEditor()
 
     $(document).on 'click', '#add-tileset', (e) =>
-      attrs = promptWizard(['name', 'imagePath', 'cols', 'rows', 'tileOffset'])
+      attrs = prompty([
+        { field: 'name', label: 'Tileset name:' }
+        { field: 'imagePath', label: 'Tileset image url:' }
+        { field: 'cols', label: 'Tileset image columns:' }
+        { field: 'rows', label: 'Tileset image rows:' }
+        { field: 'tileOffset', label: 'Tileset tile offset:' }
+      ])
+      return unless attrs
       tileSet = @game().tileSets().create(attrs)
       tileSet.renderToEditor()
 

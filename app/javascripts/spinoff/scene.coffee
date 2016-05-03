@@ -20,4 +20,13 @@ class Scene extends Model
     $('[id*=floor-tabs] > .tab').first().addClass('is-active')
     $('[id*=floor-containers] > li:first-child').addClass('is-active')
 
+  removeFromEditor: ->
+    $(".scene-containers li[data-model-id='#{@id}']").remove()
+    $(".scene-tabs li[data-model-id='#{@id}']").remove()
+
+  remove: ->
+    @floors().deleteAll()
+    @removeFromEditor()
+    @destroy()
+
 module.exports = Scene
