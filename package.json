@@ -18,7 +18,7 @@
     "watch:images": "onchange 'app/images/*.*' -- npm run build:images",
     "watch:all": "npm-run-all -p serve watch:css watch:js watch:html watch:images",
     "postinstall": "npm run build:all && npm run watch:all",
-    "script": "mkdirp dist/javascripts && browserify -t coffeeify app/javascripts/spinoff/*.coffee -o='dist/javascripts/index.js'",
+    "script": "mkdirp dist/javascripts && browserify -t coffeeify app/javascripts/spinoff/app.coffee -o=dist/javascripts/index.js",
     "test": "./node_modules/karma/bin/karma start --singleRun"
   },
   "devDependencies": {
