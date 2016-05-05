@@ -4,10 +4,22 @@ Tile = require './tile.coffee'
 $ = require 'jquery'
 
 class Terrain extends Model
-  @belongsTo('Cell', 'Tile')
+  @belongsTo('Cell')
+  @belongsTo('Tile')
+  @delegate('game', 'Cell')
 
   render: ->
-    game = @cell().floor().scene().game()
-    @cell().floor().context().drawImage(@tile().tileSet().img, @tile().x, @tile().y, game.tileSize, game.tileSize, @cell().col * game.tileSize, @cell().row * game.tileSize, game.tileSize, game.tileSize)
+    attrs = [
+      @tile().tileSet().img,
+      @tile().x,
+      @tile().y,
+      @game().tileSize,
+      @game().tileSize,
+      @cell().col * @game().tileSize,
+      @cell().row * @game().tileSize,
+      @game().tileSize,
+      @game().tileSize
+    ]
+    @cell().floor().context().drawImage(attrs...)
 
 module.exports = Terrain

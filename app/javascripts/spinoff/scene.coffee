@@ -6,7 +6,7 @@ $ = require 'jquery'
 class Scene extends Model
   @attributes('name', 'width', 'height')
   @belongsTo('Game')
-  @hasMany('Floor')
+  @hasMany('Floor', { dependent: 'destroy' })
 
   renderToEditor: ->
     tabTmpl = $.templates('#scene-tab')
@@ -25,7 +25,7 @@ class Scene extends Model
     $(".scene-tabs li[data-model-id='#{@id}']").remove()
 
   remove: ->
-    @floors().deleteAll()
+    # @floors().deleteAll()
     @removeFromEditor()
     @destroy()
 

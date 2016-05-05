@@ -6,7 +6,7 @@ $ = require 'jquery'
 class TileSet extends Model
   @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset')
   @belongsTo('Game')
-  @hasMany('Tile')
+  @hasMany('Tile', { dependent: 'destroy' })
 
   afterCreate: ->
     @generateTiles()
@@ -44,7 +44,7 @@ class TileSet extends Model
     containerTmpl = $.templates('#tileset-container')
     tab = tabTmpl.render(@toJSON())
     obj = @toJSON()
-    obj.tiles = @tiles().map((tile) => tile.toJSON())
+    obj.tiles = @tiles().map((tile) -> tile.toJSON())
     container = containerTmpl.render(obj)
     $('#tilesets-tabs').append(tab)
     $('#tilesets-containers').append(container)
@@ -58,8 +58,8 @@ class TileSet extends Model
     $(".tilesets-tabs li[data-model-id='#{@id}']").remove()
 
   remove: ->
-    @tiles().forEach (tile) -> tile.terrains().deleteAll()
-    @tiles().deleteAll()
+    # @tiles().forEach (tile) -> tile.terrains().deleteAll()
+    # @tiles().deleteAll()
     @removeFromEditor()
     @destroy()
 

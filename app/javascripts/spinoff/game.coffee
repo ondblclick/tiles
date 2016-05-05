@@ -6,6 +6,7 @@ Scene = require './scene.coffee'
 class Game extends Model
   @attributes('tileSize')
   @belongsTo('Editor')
-  @hasMany('TileSet', 'Scene')
+  @hasMany('TileSet')
+  @hasMany('Scene')
 
 module.exports = Game

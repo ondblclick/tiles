@@ -29,7 +29,7 @@ class Editor extends Model
     $('#scene-containers > li:first-child').addClass('is-active')
 
   bindings: ->
-    $(document).on 'click', '.tab-delete', (e) =>
+    $(document).on 'click', '.tab-delete', (e) ->
       e.preventDefault()
       e.stopPropagation()
       sure = confirm('Are you sure you want to delete it?')

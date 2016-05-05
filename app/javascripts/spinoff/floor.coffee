@@ -6,7 +6,8 @@ $ = require 'jquery'
 class Floor extends Model
   @attributes('name')
   @belongsTo('Scene')
-  @hasMany('Cell')
+  @hasMany('Cell', { dependent: 'destroy' })
+  @delegate('game', 'Scene')
 
   @STYLES:
     GREY: 'rgba(0, 0, 0, .05)'
@@ -38,15 +39,15 @@ class Floor extends Model
 
   clear: ->
     @context().fillStyle = Floor.STYLES.WHITE
-    @context().fillRect(0, 0, @scene().width * @scene().game().tileSize, @scene().height * @scene().game().tileSize)
+    @context().fillRect(0, 0, @scene().width * @game().tileSize, @scene().height * @game().tileSize)
 
   renderToEditor: ->
     tabTmpl = $.templates('#floor-tab')
     containerTmpl = $.templates('#floor-container')
     tab = tabTmpl.render(@toJSON())
     obj = @toJSON()
-    obj.width = @scene().width * @scene().game().tileSize
-    obj.height = @scene().height * @scene().game().tileSize
+    obj.width = @scene().width * @game().tileSize
+    obj.height = @scene().height * @game().tileSize
     container = containerTmpl.render(obj)
     $("#floor-tabs-#{@sceneId}").append(tab)
     $("#floor-containers-#{@sceneId}").append(container)
@@ -55,12 +56,12 @@ class Floor extends Model
   removeFromEditor: ->
     $(".floor-containers li[data-model-id='#{@id}']").remove()
     $(".floor-tabs li[data-model-id='#{@id}']").remove()
-    
+
   drawRect: (x, y) ->
-    @context().fillRect(x, y, @scene().game().tileSize, @scene().game().tileSize)
+    @context().fillRect(x, y, @game().tileSize, @game().tileSize)
 
   remove: ->
-    @cells().deleteAll()
+    # @cells().deleteAll()
     @removeFromEditor()
     @destroy()
 
@@ -71,7 +72,7 @@ class Floor extends Model
       row = 0
       while row < @scene().height
         if (row % 2 is 0 and col % 2 is 1) or (row % 2 is 1 and col % 2 is 0)
-          @drawRect(col * @scene().game().tileSize, row * @scene().game().tileSize)
+          @drawRect(col * @game().tileSize, row * @game().tileSize)
         row++
       col++
 
