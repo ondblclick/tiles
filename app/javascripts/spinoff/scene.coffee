@@ -8,6 +8,11 @@ class Scene extends Model
   @belongsTo('Game')
   @hasMany('Floor', { dependent: 'destroy' })
 
+  toJSON: ->
+    res = super()
+    res.floors = @floors().map((floor) -> floor.toJSON())
+    res
+
   renderToEditor: ->
     tabTmpl = $.templates('#scene-tab')
     containerTmpl = $.templates('#scene-container')

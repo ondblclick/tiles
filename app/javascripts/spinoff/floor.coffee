@@ -13,17 +13,10 @@ class Floor extends Model
     GREY: 'rgba(0, 0, 0, .05)'
     WHITE: '#fff'
 
-  afterCreate: ->
-    @createCells()
-
-  createCells: ->
-    col = 0
-    while col < @scene().width
-      row = 0
-      while row < @scene().height
-        @cells().create({ row: row, col: col })
-        row++
-      col++
+  toJSON: ->
+    res = super()
+    res.cells = @cells().map((cell) -> cell.toJSON())
+    res
 
   canvas: -> $(".floor-container[data-model-id='#{@id}'] canvas")
 

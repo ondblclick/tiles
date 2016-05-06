@@ -9,6 +9,11 @@ class Cell extends Model
   @attributes('col', 'row')
   @delegate('game', 'Floor')
 
+  toJSON: ->
+    res = super()
+    res.terrain = @terrain().toJSON() if @terrain()
+    res
+
   render: ->
     # TODO: allow nil
     @terrain().render() if @terrain()

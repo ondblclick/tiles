@@ -27,6 +27,38 @@
     top: 5px;
     bottom: 5px;
     position: absolute;
+
+    #tilesets {
+      position: absolute;
+      top: 35px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+      border: 1px solid #ccc;
+      padding: 5px;
+    }
+  }
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 5px);
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 3px;
+  z-index: 1000;
+  background-color: #fff;
+
+  &.is-active { display: block; }
+
+  textarea {
+    width: 400px;
+    height: 300px;
+    display: block;
+    padding: 5px;
+    border: 1px solid #ccc;
   }
 }
 
@@ -62,6 +94,11 @@
 }
 
 .tilesets-containers {
+  left: 5px;
+  right: 5px;
+  top: 40px;
+  bottom: 5px;
+
   > li {
     overflow: auto;
 
@@ -96,7 +133,6 @@
 
 .tabs {
   width: 100%;
-  overflow: hidden;
   list-style: none;
 
   > li {
@@ -109,19 +145,26 @@
     border-radius: 3px;
     -webkit-user-select: none;
     user-select: none;
+    position: relative;
 
     &.is-active { background-color: #eee; }
-    &:hover { opacity: .7; }
 
     .tab-delete {
       border: 1px solid transparent;
       border-radius: 5px;
       padding: 0 3px;
       margin-left: 5px;
-      
+
       &:hover {
         border-color: red;
         color: red;
+      }
+    }
+
+    &:last-child {
+      &:after {
+        display: table;
+        clear: both;
       }
     }
   }

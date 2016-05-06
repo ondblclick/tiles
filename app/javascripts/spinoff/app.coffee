@@ -10,6 +10,9 @@ $(document).on 'click', '[data-tabs-for] > .tab', (e) ->
   container = $("#{selector} > li[#{attr}='#{val}']")
   [tab, container].forEach (el) -> el.addClass('is-active').siblings().removeClass('is-active')
 
+$(document).on 'click', ->
+  $('.dropdown.is-active').removeClass('is-active')
+
 $(document).ready ->
   editor = Editor.create()
   game = editor.createGame({ tileSize: 48 })

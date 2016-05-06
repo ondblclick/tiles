@@ -11,6 +11,11 @@ class TileSet extends Model
   afterCreate: ->
     @generateTiles()
 
+  toJSON: ->
+    res = super()
+    res.tiles = @tiles().map((tile) -> tile.toJSON())
+    res
+
   generateTiles: ->
     [0..(@cols - 1)].forEach (col) =>
       [0..(@rows - 1)].forEach (row) =>

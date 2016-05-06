@@ -30,7 +30,19 @@ class Editor extends Model
     $('#scene-tabs > .tab').first().addClass('is-active')
     $('#scene-containers > li:first-child').addClass('is-active')
 
+  toJSON: ->
+    # TODO: toJSON -> asJSON (as it is in rails)
+    # TODO: options: { root: true, only: [], except: [], methods: [], include: [] }
+    res = super()
+    res.game = @game().toJSON()
+    res
+
   bindings: ->
+    $(document).on 'click', '#export-to-json', (e) =>
+      e.stopPropagation()
+      $(e.target).find('.dropdown').toggleClass('is-active')
+      $(e.target).find('textarea').val(JSON.stringify(@toJSON())).select()
+
     $(document).on 'click', '.tab-delete', (e) ->
       e.preventDefault()
       e.stopPropagation()
@@ -87,6 +99,7 @@ class Editor extends Model
       currentY = Math.floor(e.offsetY / @game().tileSize)
       floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
       cell = floor.cells().where({ col: currentX, row: currentY })[0]
+      cell = floor.cells().create({ col: currentX, row: currentY }) unless cell
       cell.terrain().destroy() if cell.terrain()
       cell.createTerrain({ tileId: @tile.id })
       floor.render()

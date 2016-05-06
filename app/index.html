@@ -15,10 +15,24 @@
         <ul class='scene-containers' id='scene-containers'></ul>
       </div>
       <div id='toolbar'>
-        <ul class='tilesets-tabs tabs' id='tilesets-tabs' data-tabs-for='#tilesets-containers' data-tabs-attr='data-model-id'>
-          <li id='add-tileset'>+</li>
+        <ul id="menu" class='tabs'>
+          <li id='export-to-png'>to PNG</li>
+          <li id='export-to-json'>
+            to JSON
+            <div class="dropdown">
+              <textarea></textarea>
+            </div>
+          </li>
+          <li id='import-from-json'>from JSON</li>
+          <li id='export-to-localstorage'>to localStorage</li>
+          <li id='import-from-localstorage'>from localStorage</li>
         </ul>
-        <ul class='tilesets-containers' id='tilesets-containers'></ul>
+        <div id="tilesets">
+          <ul class='tilesets-tabs tabs' id='tilesets-tabs' data-tabs-for='#tilesets-containers' data-tabs-attr='data-model-id'>
+            <li id='add-tileset'>+</li>
+          </ul>
+          <ul class='tilesets-containers' id='tilesets-containers'></ul>
+        </div>
       </div>
     </div>
 
