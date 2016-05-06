@@ -61,7 +61,6 @@ class Floor extends Model
     @context().fillRect(x, y, @game().tileSize, @game().tileSize)
 
   remove: ->
-    # @cells().deleteAll()
     @removeFromEditor()
     @destroy()
 

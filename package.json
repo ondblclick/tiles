@@ -39,9 +39,9 @@
     "phantomjs-prebuilt": "^2.1.4"
   },
   "dependencies": {
-    "activer": "^0.7.3",
+    "activer": "^0.7.4",
     "jquery": "^2.2.3",
     "jsrender": "^0.9.75",
-    "prompty": "0.0.1"
+    "prompty": "0.0.3"
   }
 }

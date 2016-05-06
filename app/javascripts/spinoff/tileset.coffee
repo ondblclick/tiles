@@ -58,8 +58,6 @@ class TileSet extends Model
     $(".tilesets-tabs li[data-model-id='#{@id}']").remove()
 
   remove: ->
-    # @tiles().forEach (tile) -> tile.terrains().deleteAll()
-    # @tiles().deleteAll()
     @removeFromEditor()
     @destroy()
 

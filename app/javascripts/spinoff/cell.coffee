@@ -10,6 +10,7 @@ class Cell extends Model
   @delegate('game', 'Floor')
 
   render: ->
+    # TODO: allow nil
     @terrain().render() if @terrain()
 
 module.exports = Cell

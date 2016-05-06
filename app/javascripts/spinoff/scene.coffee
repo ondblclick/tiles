@@ -25,7 +25,6 @@ class Scene extends Model
     $(".scene-tabs li[data-model-id='#{@id}']").remove()
 
   remove: ->
-    # @floors().deleteAll()
     @removeFromEditor()
     @destroy()
 

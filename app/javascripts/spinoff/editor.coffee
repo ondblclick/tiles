@@ -11,20 +11,22 @@ require('jsrender')($)
 class Editor extends Model
   @attributes()
   @hasOne('Game')
+  @delegate('tileSets', 'Game')
+  @delegate('scenes', 'Game')
 
   afterCreate: ->
     @bindings()
     @tile = undefined
 
   render: ->
-    imagePromises = @game().tileSets().forEach (tileSet) -> tileSet.renderToEditor()
+    imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
     $('#tilesets-tabs > .tab').first().addClass('is-active')
     $('#tilesets-containers > li:first-child').addClass('is-active')
     $.when(imagePromises...).then =>
       @renderScenes()
 
   renderScenes: ->
-    @game().scenes().forEach (scene) -> scene.renderToEditor()
+    @scenes().forEach (scene) -> scene.renderToEditor()
     $('#scene-tabs > .tab').first().addClass('is-active')
     $('#scene-containers > li:first-child').addClass('is-active')
 
@@ -47,7 +49,7 @@ class Editor extends Model
         { field: 'height', label: 'Scene height:' }
       ])
       return unless attrs
-      scene = @game().scenes().create(attrs)
+      scene = @scenes().create(attrs)
       scene.renderToEditor()
 
     $(document).on 'click', '#add-floor', (e) =>
@@ -55,7 +57,7 @@ class Editor extends Model
         { field: 'name', label: 'Floor name:' }
       ])
       return unless attrs
-      floor = @game().scenes().find($(e.target).parents('.scene-container').data('model-id')).floors().create(attrs)
+      floor = @scenes().find($(e.target).parents('.scene-container').data('model-id')).floors().create(attrs)
       floor.renderToEditor()
 
     $(document).on 'click', '#add-tileset', (e) =>
@@ -67,7 +69,7 @@ class Editor extends Model
         { field: 'tileOffset', label: 'Tileset tile offset:' }
       ])
       return unless attrs
-      tileSet = @game().tileSets().create(attrs)
+      tileSet = @tileSets().create(attrs)
       tileSet.renderToEditor()
 
     $(document).on 'click', '.tile', (e) =>
@@ -89,7 +91,7 @@ class Editor extends Model
       cell.createTerrain({ tileId: @tile.id })
       floor.render()
 
-    $(document).on 'mouseout', (e) =>
+    $(document).on 'mouseout', (e) ->
       return unless $(e.target).is('canvas')
       floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
       floor.render()
@@ -104,7 +106,18 @@ class Editor extends Model
       floor.context().fillStyle = Floor.STYLES.WHITE
       floor.drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
       floor.context().globalAlpha = 0.3
-      floor.context().drawImage(@tile.tileSet().img, @tile.x, @tile.y, @game().tileSize, @game().tileSize, pageX * @game().tileSize, pageY * @game().tileSize, @game().tileSize, @game().tileSize)
+      attrs = [
+        @tile.tileSet().img,
+        @tile.x,
+        @tile.y,
+        @game().tileSize,
+        @game().tileSize,
+        pageX * @game().tileSize,
+        pageY * @game().tileSize,
+        @game().tileSize,
+        @game().tileSize
+      ]
+      floor.context().drawImage(attrs...)
       floor.context().globalAlpha = 1
 
 module.exports = Editor
