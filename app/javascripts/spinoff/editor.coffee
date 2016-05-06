@@ -8,6 +8,9 @@ $ = require 'jquery'
 prompty = require 'prompty'
 require('jsrender')($)
 
+# TODO: don't restrict the size of scenes - let's make them 100x100 by default
+# ...or the way to change the scene size dynamically should be implemented
+
 class Editor extends Model
   @attributes()
   @hasOne('Game')
