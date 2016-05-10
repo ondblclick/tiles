@@ -43,6 +43,16 @@ class Editor extends Model
     res
 
   bindContextMenus: ->
+    $('.tile.visible').contextMenu
+      menuSelector: "#tile-visible-context"
+      menuSelected: (invoked, selected) ->
+        Tile.find(invoked.data('model-id')).toggleVisibility()
+
+    $('.tile.hidden').contextMenu
+      menuSelector: "#tile-hidden-context"
+      menuSelected: (invoked, selected) ->
+        Tile.find(invoked.data('model-id')).toggleVisibility()
+
     $('#tileset-tabs li').contextMenu
       menuSelector: "#tileset-tab-context"
       menuSelected: (invoked, selected) ->
@@ -62,10 +72,10 @@ class Editor extends Model
           Scene.find(invoked.data('model-id')).remove()
 
   bindings: ->
-    $(document).on 'click', '#export-to-json', (e) =>
+    $(document).on 'click', '#export-as-json', (e) =>
       e.stopPropagation()
-      # $(e.target).find('.dropdown').toggleClass('is-active')
-      $(e.target).find('textarea').val(JSON.stringify(@toJSON())).select()
+      $('#export-as-json-modal').find('textarea').val(JSON.stringify(@toJSON()))
+      $('#export-as-json-modal').modal('show')
 
     $(document).on 'click', '#add-scene', (e) =>
       attrs = prompty([

@@ -19,7 +19,7 @@ class TileSet extends Model
   generateTiles: ->
     [0..(@cols - 1)].forEach (col) =>
       [0..(@rows - 1)].forEach (row) =>
-        @tiles().create({ x: @posToPix(col), y: @posToPix(row) })
+        @tiles().create({ x: @posToPix(col), y: @posToPix(row), display: 'visible' })
 
   renderStyles: ->
     @style = document.createElement('style')
