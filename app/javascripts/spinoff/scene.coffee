@@ -26,8 +26,8 @@ class Scene extends Model
       $(@).find('li').first().addClass('active')
 
   removeFromEditor: ->
-    $(".scene-containers li[data-model-id='#{@id}']").remove()
-    $(".scene-tabs li[data-model-id='#{@id}']").remove()
+    $("#scene-containers div[data-model-id='#{@id}']").remove()
+    $("#scene-tabs li[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

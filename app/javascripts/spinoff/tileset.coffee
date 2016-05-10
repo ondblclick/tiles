@@ -59,8 +59,8 @@ class TileSet extends Model
   removeFromEditor: ->
     $(@img).remove()
     $(@style).remove()
-    $(".tilesets-containers li[data-model-id='#{@id}']").remove()
-    $(".tilesets-tabs li[data-model-id='#{@id}']").remove()
+    $("#tileset-containers li[data-model-id='#{@id}']").remove()
+    $("#tileset-tabs li[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

@@ -6,6 +6,11 @@ body {
   height: 100vh;
 }
 
+.nav-tabs li {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .nav-tabs li.pull-right a {
   margin-right: 0;
 }

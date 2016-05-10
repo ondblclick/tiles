@@ -49,6 +49,18 @@ class Editor extends Model
         if selected.data('action') is 'remove'
           TileSet.find(invoked.data('model-id')).remove()
 
+    $("[id*='floor-tabs-'] > li").contextMenu
+      menuSelector: "#floor-tab-context"
+      menuSelected: (invoked, selected) ->
+        if selected.data('action') is 'remove'
+          Floor.find(invoked.data('model-id')).remove()
+
+    $('#scene-tabs li').contextMenu
+      menuSelector: "#scene-pill-context"
+      menuSelected: (invoked, selected) ->
+        if selected.data('action') is 'remove'
+          Scene.find(invoked.data('model-id')).remove()
+
   bindings: ->
     $(document).on 'click', '#export-to-json', (e) =>
       e.stopPropagation()
