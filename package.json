@@ -56,6 +56,7 @@
   "dependencies": {
     "activer": "^0.7.4",
     "bootstrap-sass": "^3.3.6",
+    "browserify-shim": "^3.8.12",
     "jquery": "^2.2.3",
     "jsrender": "^0.9.75",
     "prompty": "0.0.3"
