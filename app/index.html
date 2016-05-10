@@ -1,84 +1,110 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Tiles</title>
-    <link rel="stylesheet" href="stylesheets/index.css">
-    <script type="text/javascript" src="javascripts/index.js"></script>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div id='scene'>
-        <ul class='scene-tabs tabs' id='scene-tabs' data-tabs-for='#scene-containers' data-tabs-attr='data-model-id'>
-          <li id='add-scene'>+</li>
-        </ul>
-        <ul class='scene-containers' id='scene-containers'></ul>
+<head>
+  <meta charset="UTF-8">
+  <title>Tiles</title>
+  <link rel="stylesheet" href="stylesheets/index.css">
+  <script type="text/javascript" src="javascripts/index.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Tiles</a>
       </div>
-      <div id='toolbar'>
-        <ul id="menu" class='tabs'>
-          <!-- <li id='export-to-png'>to PNG</li> -->
-          <li id='export-to-json'>
-            to JSON
-            <div class="dropdown">
-              <textarea></textarea>
-            </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Import <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">JSON</a></li>
+            </ul>
           </li>
-          <li id='import-from-json'>
-            from JSON
-            <div class="dropdown">
-              <textarea></textarea>
-            </div>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Export <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">JSON</a></li>
+              <li><a href="#">PNG</a></li>
+            </ul>
           </li>
-          <!-- <li id='export-to-localstorage'>to localStorage</li> -->
-          <!-- <li id='import-from-localstorage'>from localStorage</li> -->
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Scene</a></li>
+              <li><a href="#">Floor</a></li>
+              <li><a href="#">TileSet</a></li>
+            </ul>
+          </li>
         </ul>
-        <div id="tilesets">
-          <ul class='tilesets-tabs tabs' id='tilesets-tabs' data-tabs-for='#tilesets-containers' data-tabs-attr='data-model-id'>
-            <li id='add-tileset'>+</li>
-          </ul>
-          <ul class='tilesets-containers' id='tilesets-containers'></ul>
-        </div>
       </div>
     </div>
-
-    <!-- TEMPLATES -->
-    <script id='tileset-tab' type='text/x-jrender'>
-      <li class='tileset-tab tab' data-model-id='{{:id}}' data-model-name='TileSet'>{{:name}} <span class='tab-delete'>&times;</span></li>
-    </script>
-
-    <script id='tileset-container' type='text/x-jrender'>
-      <li class='tileset-container' data-model-id='{{:id}}'>
-        <ul class='tiles-container'>
-          <!-- TODO: most likely tiles should be rendered using the render method of tile class -->
-          {{for tiles}}
-            <li class='tile' data-model-id='{{:id}}'></li>
-          {{/for}}
+  </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <div id='sidebar' class="col-md-2">
+        <ul class="nav nav-tabs">
+          <li class='active'><a href="#scenes" data-toggle='tab'>Scenes</a></li>
+          <li><a href="#history" data-toggle='tab'>History</a></li>
         </ul>
-      </li>
-    </script>
+        <div class="tab-content" id='sidebar-containers'>
+          <li class="tab-pane active" id='scenes'>
+            <ul class="nav nav-pills nav-stacked" id='scene-tabs'></ul>
+          </li>
+          <li class="tab-pane" id='history'>history goes here</li>
+        </div>
+      </div>
+      <div id='floors' class="col-md-6">
+        <div class="tab-content" id='scene-containers'></div>
+      </div>
+      <div id='tilesets' class="col-md-4">
+        <ul id='tileset-tabs' class="nav nav-tabs"></ul>
+        <ul id='tileset-containers' class='tab-content'></ul>
+      </div>
+    </div>
+  </div>
 
-    <script id='scene-tab' type='text/x-jrender'>
-      <li class='scene-tab tab' data-model-id='{{:id}}' data-model-name='Scene'>{{:name}} <span class='tab-delete'>&times;</span></li>
-    </script>
+  <!-- TEMPLATES -->
+  <script id='tileset-tab' type='text/x-jrender'>
+    <li data-model-id='{{:id}}' data-model-name='TileSet'><a href="#{{:id}}" data-toggle="tab">{{:name}}</a></li>
+  </script>
 
-    <script id='scene-container' type='text/x-jrender'>
-      <li class='scene-container' data-model-id='{{:id}}'>
-        <ul class='floor-tabs tabs' id='floor-tabs-{{:id}}' data-tabs-for='#floor-containers-{{:id}}' data-tabs-attr='data-model-id'>
-          <li id='add-floor'>+</li>
-        </ul>
-        <ul class='floor-containers' id='floor-containers-{{:id}}'></ul>
-      </li>
-    </script>
+  <script id='tileset-container' type='text/x-jrender'>
+    <li class='tab-pane tileset-container' data-model-id='{{:id}}' id='{{:id}}'>
+      <ul class='tiles-container'>
+        <!-- TODO: most likely tiles should be rendered using the render method of tile class -->
+        {{for tiles}}
+          <li class='tile' data-model-id='{{:id}}'></li>
+        {{/for}}
+      </ul>
+    </li>
+  </script>
 
-    <script id='floor-tab' type='text/x-jrender'>
-      <li class='floor-tab tab' data-model-id='{{:id}}' data-model-name='Floor'>{{:name}} <span class='tab-delete'>&times;</span></li>
-    </script>
+  <script id='scene-tab' type='text/x-jrender'>
+    <li data-model-id='{{:id}}' data-model-name='Scene'><a data-toggle='tab' href='#{{:id}}'>{{:name}}</a></li>
+  </script>
 
-    <script id='floor-container' type='text/x-jrender'>
-      <li class='floor-container' data-model-id='{{:id}}'>
-        <canvas width='{{:width}}' height='{{:height}}'></canvas>
-      </li>
-    </script>
-    <!-- / TEMPLATES -->
-  </body>
+  <script id='scene-container' type='text/x-jrender'>
+    <div class="tab-pane" id="{{:id}}" data-model-id="{{:id}}">
+      <ul class="floor-tabs nav nav-tabs" id='floor-tabs-{{:id}}'></ul>
+      <ul class='tab-content floor-containers' id='floor-containers-{{:id}}'></ul>
+    </div>
+  </script>
+
+  <script id='floor-tab' type='text/x-jrender'>
+    <li data-model-id='{{:id}}' data-model-name='Floor'><a data-toggle='tab' href='#{{:id}}'>{{:name}}</a></li>
+  </script>
+
+  <script id='floor-container' type='text/x-jrender'>
+    <li class='floor-container tab-pane' data-model-id='{{:id}}' id='{{:id}}'>
+      <canvas width='{{:width}}' height='{{:height}}'></canvas>
+    </li>
+  </script>
+  <!-- / TEMPLATES -->
+</body>
 </html>

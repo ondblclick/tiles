@@ -1,17 +1,6 @@
 Editor = require './editor.coffee'
-$ = require 'jquery'
-
-$(document).on 'click', '[data-tabs-for] > .tab', (e) ->
-  tab = $(e.target)
-  tabList = tab.parents('[data-tabs-for]')
-  selector = tabList.data('tabs-for')
-  attr = tabList.data('tabs-attr')
-  val = tab.attr(attr)
-  container = $("#{selector} > li[#{attr}='#{val}']")
-  [tab, container].forEach (el) -> el.addClass('is-active').siblings().removeClass('is-active')
-
-$(document).on 'click', ->
-  $('.dropdown.is-active').removeClass('is-active')
+$ = jQuery = require 'jquery'
+require 'bootstrap'
 
 $(document).ready ->
   editor = Editor.create()

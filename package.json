@@ -21,6 +21,21 @@
     "script": "mkdirp dist/javascripts && browserify -t coffeeify app/javascripts/spinoff/app.coffee -o=dist/javascripts/index.js",
     "test": "./node_modules/karma/bin/karma start --singleRun"
   },
+  "browser": {
+    "bootstrap": "./node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "bootstrap": {
+      "depends": [
+        "jquery:jQuery"
+      ]
+    }
+  },
   "devDependencies": {
     "browser-sync": "^2.11.1",
     "browserify": "^13.0.0",
@@ -40,6 +55,7 @@
   },
   "dependencies": {
     "activer": "^0.7.4",
+    "bootstrap-sass": "^3.3.6",
     "jquery": "^2.2.3",
     "jsrender": "^0.9.75",
     "prompty": "0.0.3"

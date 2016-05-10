@@ -23,7 +23,7 @@ class TileSet extends Model
 
   renderStyles: ->
     @style = document.createElement('style')
-    @style.id = @id
+    @style.id = "style-#{@id}"
     t = ".tileset-container[data-model-id='#{@id}'] .tile {
       background-image: url('#{@imagePath}');
       width: #{@game().tileSize}px;
@@ -38,7 +38,7 @@ class TileSet extends Model
     d = new $.Deferred
     @img = new Image()
     @img.src = @imagePath
-    @img.id = @id
+    @img.id = "image-#{@id}"
     @img.style = 'display: none;'
     @img.onload = -> d.resolve()
     $('body').append(@img)
@@ -51,8 +51,8 @@ class TileSet extends Model
     obj = @toJSON()
     obj.tiles = @tiles().map((tile) -> tile.toJSON())
     container = containerTmpl.render(obj)
-    $('#tilesets-tabs').append(tab)
-    $('#tilesets-containers').append(container)
+    $('#tileset-tabs').append(tab)
+    $('#tileset-containers').append(container)
     @renderStyles()
     @renderImage()
 
