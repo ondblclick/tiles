@@ -82,7 +82,7 @@ class Editor extends Model
         { field: 'name', label: 'Floor name:' }
       ])
       return unless attrs
-      floor = @scenes().find($(e.target).parents('.scene-container').data('model-id')).floors().create(attrs)
+      floor = @scenes().find($('#scene-tabs li.active').data('model-id')).floors().create(attrs)
       floor.renderToEditor()
 
     $(document).on 'click', '#add-tileset', (e) =>
