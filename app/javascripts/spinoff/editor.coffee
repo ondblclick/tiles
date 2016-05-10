@@ -64,7 +64,7 @@ class Editor extends Model
   bindings: ->
     $(document).on 'click', '#export-to-json', (e) =>
       e.stopPropagation()
-      $(e.target).find('.dropdown').toggleClass('is-active')
+      # $(e.target).find('.dropdown').toggleClass('is-active')
       $(e.target).find('textarea').val(JSON.stringify(@toJSON())).select()
 
     $(document).on 'click', '#add-scene', (e) =>

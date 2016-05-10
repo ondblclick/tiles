@@ -29,7 +29,7 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Export <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="#">JSON</a></li>
+              <li><a href="#" id='export-to-json'>JSON</a></li>
               <li><a href="#">PNG</a></li>
             </ul>
           </li>
@@ -123,5 +123,23 @@
     <li class='disabled'><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
   </ul>
   <!-- / CONTEXT MENUS -->
+
+  <!-- MODALS -->
+  <!-- Button trigger modal -->
+  <!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+    Launch demo modal
+  </button> -->
+
+  <!-- Modal -->
+  <div class="modal fade" id="export-as-json-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <textarea></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- / MODALS -->
 </body>
 </html>
