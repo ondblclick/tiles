@@ -6,6 +6,7 @@ Scene = require './scene.coffee'
 TileSet = require './tileset.coffee'
 $ = require 'jquery'
 prompty = require 'prompty'
+require './contextmenu.coffee'
 require('jsrender')($)
 
 # TODO: don't restrict the size of scenes - let's make them 100x100 by default
@@ -27,6 +28,7 @@ class Editor extends Model
     $('#tileset-containers > li').first().addClass('active')
     $.when(imagePromises...).then =>
       @renderScenes()
+      @bindContextMenus()
 
   renderScenes: ->
     @scenes().forEach (scene) -> scene.renderToEditor()
@@ -40,22 +42,18 @@ class Editor extends Model
     res.game = @game().toJSON()
     res
 
+  bindContextMenus: ->
+    $('#tileset-tabs li').contextMenu
+      menuSelector: "#tileset-tab-context"
+      menuSelected: (invoked, selected) ->
+        if selected.data('action') is 'remove'
+          TileSet.find(invoked.data('model-id')).remove()
+
   bindings: ->
     $(document).on 'click', '#export-to-json', (e) =>
       e.stopPropagation()
       $(e.target).find('.dropdown').toggleClass('is-active')
       $(e.target).find('textarea').val(JSON.stringify(@toJSON())).select()
-
-    $(document).on 'click', '.tab-delete', (e) ->
-      e.preventDefault()
-      e.stopPropagation()
-      sure = confirm('Are you sure you want to delete it?')
-      return unless sure
-      model = switch $(e.target).parents('.tab').data('model-name')
-        when 'TileSet' then TileSet
-        when 'Floor' then Floor
-        when 'Scene' then Scene
-      model.find($(e.target).parents('.tab').data('model-id')).remove()
 
     $(document).on 'click', '#add-scene', (e) =>
       attrs = prompty([

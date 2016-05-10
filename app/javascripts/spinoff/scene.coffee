@@ -22,8 +22,8 @@ class Scene extends Model
     $('#scene-containers').append(container)
 
     @floors().forEach (floor) -> floor.renderToEditor()
-    $('[id*=floor-tabs] > li').first().addClass('active')
-    $('[id*=floor-containers] > li').first().addClass('active')
+    $('[id*=floor-tabs], [id*=floor-containers]').each ->
+      $(@).find('li').first().addClass('active')
 
   removeFromEditor: ->
     $(".scene-containers li[data-model-id='#{@id}']").remove()
