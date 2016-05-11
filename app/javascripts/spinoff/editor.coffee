@@ -9,9 +9,6 @@ prompty = require 'prompty'
 require './contextmenu.coffee'
 require('jsrender')($)
 
-# TODO: don't restrict the size of scenes - let's make them 100x100 by default
-# ...or the way to change the scene size dynamically should be implemented
-
 class Editor extends Model
   @attributes()
   @hasOne('Game')
@@ -42,6 +39,20 @@ class Editor extends Model
     res.game = @game().toJSON()
     res
 
+  editModalFor: (instance) ->
+    $form = $('#edit-modal form')
+    $form.empty()
+    textFieldTmpl = $.templates('#text-field')
+    instance.constructor.fields.forEach (field) ->
+      $form.append(textFieldTmpl.render({ name: field, value: instance[field] }))
+    $('#edit-modal').off 'click'
+    $('#edit-modal button').on 'click', ->
+      data = {}
+      $form.serializeArray().map (x) -> data[x.name] = x.value
+      instance.updateAttributes(data)
+      $('#edit-modal').modal('hide')
+    $('#edit-modal')
+
   bindContextMenus: ->
     $('.tile').contextMenu
       menuSelector: "#tile-context"
@@ -62,9 +73,11 @@ class Editor extends Model
 
     $('#scene-tabs li').contextMenu
       menuSelector: "#scene-pill-context"
-      menuSelected: (invoked, selected) ->
+      menuSelected: (invoked, selected) =>
         if selected.data('action') is 'remove'
           Scene.find(invoked.data('model-id')).remove()
+        if selected.data('action') is 'edit'
+          @editModalFor(Scene.find(invoked.data('model-id'))).modal('show')
 
   bindings: ->
     $(document).on 'change', '#show-hidden-tiles', (e) ->

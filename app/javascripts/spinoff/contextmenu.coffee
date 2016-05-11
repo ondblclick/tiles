@@ -1,18 +1,34 @@
 $ = require 'jquery'
 
+getSelector = (element) ->
+  pieces = []
+  while element and element.tagName != undefined
+    if element.className
+      classes = element.className.split(' ')
+      for i of classes
+        if classes.hasOwnProperty(i) and classes[i]
+          pieces.unshift classes[i]
+          pieces.unshift '.'
+    if element.id and !/\s/.test(element.id)
+      pieces.unshift element.id
+      pieces.unshift '#'
+    pieces.unshift element.tagName
+    pieces.unshift ' > '
+    element = element.parentNode
+  pieces.slice(1).join ''
+
 $.fn.contextMenu = (settings) ->
   getMenuPosition = (mouse, direction, scrollDir) ->
     win = $(window)[direction]()
     scroll = $(window)[scrollDir]()
     menu = $(settings.menuSelector)[direction]()
     position = mouse + scroll
-    # opening menu would pass the side of the page
     if mouse + menu > win and menu < mouse
       position -= menu
     position
 
-  @each ->
-    $(this).on 'contextmenu', (e) ->
+  @each (args...) ->
+    $(document).on 'contextmenu', getSelector(this), (e) ->
       return if e.ctrlKey
 
       that = this

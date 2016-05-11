@@ -110,6 +110,13 @@
       <canvas width='{{:width}}' height='{{:height}}'></canvas>
     </li>
   </script>
+
+  <script id='text-field' type='text/x-jrender'>
+    <div class="form-group">
+      <label>{{:name}}</label>
+      <input type='text' name='{{:name}}' value='{{:value}}' class='form-control'/>
+    </div>
+  </script>
   <!-- / TEMPLATES -->
 
   <!-- CONTEXT MENUS -->
@@ -129,7 +136,7 @@
 
   <ul id="scene-pill-context" class="dropdown-menu" role="menu" style="display:none" >
     <li><a tabindex="-1" href="#" data-action='remove'>Remove</a></li>
-    <li class='disabled'><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
+    <li><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
   </ul>
   <!-- / CONTEXT MENUS -->
 
@@ -139,6 +146,28 @@
       <div class="modal-content">
         <div class="modal-body">
           <textarea></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="edit-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form></form>
+          <button>Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="add-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form></form>
+          <button>Create</button>
         </div>
       </div>
     </div>

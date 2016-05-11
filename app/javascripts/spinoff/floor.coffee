@@ -45,6 +45,7 @@ class Floor extends Model
     $("#floor-tabs-#{@sceneId}").append(tab)
     $("#floor-containers-#{@sceneId}").append(container)
     @renderGrid()
+    @renderTerrain()
 
   removeFromEditor: ->
     $(".floor-containers li[data-model-id='#{@id}']").remove()
@@ -67,5 +68,10 @@ class Floor extends Model
           @drawRect(col * @game().tileSize, row * @game().tileSize)
         row++
       col++
+
+  updateCellsList: ->
+    @cells().forEach (cell) =>
+      cell.remove() if cell.col > +@scene().width - 1
+      cell.remove() if cell.row > +@scene().height - 1
 
 module.exports = Floor

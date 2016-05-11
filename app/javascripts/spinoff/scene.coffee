@@ -33,4 +33,19 @@ class Scene extends Model
     @removeFromEditor()
     @destroy()
 
+  updateAttributes: (attrs) ->
+    cellsShouldBeUpdated = false
+
+    if attrs.width and +@width isnt +attrs.width or attrs.height and +@height isnt +attrs.height
+      cellsShouldBeUpdated = true
+
+    for k, v of attrs
+      @[k] = v if k in @constructor.fields
+
+    if cellsShouldBeUpdated
+      @floors().forEach (floor) -> floor.updateCellsList()
+
+    @removeFromEditor()
+    @renderToEditor()
+
 module.exports = Scene
