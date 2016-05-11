@@ -69,6 +69,7 @@ class Floor extends Model
         row++
       col++
 
+  # called in case scene size changes in order to keep cells set up to date
   updateCellsList: ->
     @cells().forEach (cell) =>
       cell.remove() if cell.col > +@scene().width - 1
