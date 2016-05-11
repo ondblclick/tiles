@@ -65,7 +65,7 @@
       <div id='tilesets' class="col-md-4">
         <div class="checkbox pull-right">
           <label>
-            <input type="checkbox" id='show-hidden'> Show hidden tiles
+            <input type="checkbox" id='show-hidden-tiles'> Show hidden tiles
           </label>
         </div>
         <ul id='tileset-tabs' class="nav nav-tabs"></ul>
@@ -113,12 +113,8 @@
   <!-- / TEMPLATES -->
 
   <!-- CONTEXT MENUS -->
-  <ul id="tile-visible-context" class="dropdown-menu" role="menu" style="display:none" >
-    <li><a tabindex="-1" href="#" data-action='remove'>Hide</a></li>
-  </ul>
-
-  <ul id="tile-hidden-context" class="dropdown-menu" role="menu" style="display:none" >
-    <li><a tabindex="-1" href="#" data-action='remove'>Show</a></li>
+  <ul id="tile-context" class="dropdown-menu" role="menu" style="display:none" >
+    <li><a tabindex="-1" href="#">Toggle</a></li>
   </ul>
 
   <ul id="tileset-tab-context" class="dropdown-menu" role="menu" style="display:none" >

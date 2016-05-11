@@ -14,11 +14,11 @@ class Tile extends Model
     ".tile[data-model-id='#{@id}'] { background-position-x: -#{@x}px; background-position-y: -#{@y}px; }"
 
   toggleVisibility: ->
-    if @el().is('.visible')
-      @display = 'hidden'
-      @el().removeClass('visible').addClass('hidden')
+    if @el().is('.is-visible')
+      @display = 'is-hidden'
+      @el().removeClass('is-visible').addClass('is-hidden')
     else
-      @display = 'visible'
-      @el().removeClass('hidden').addClass('visible')
+      @display = 'is-visible'
+      @el().removeClass('is-hidden').addClass('is-visible')
 
 module.exports = Tile

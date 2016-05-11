@@ -45,9 +45,7 @@ textarea {
   border-top: none;
 }
 
-.tab-pane {
-  overflow: auto;
-}
+.tab-pane { overflow: auto; }
 
 .tiles-container {
   list-style: none;
@@ -59,6 +57,15 @@ textarea {
   float: left;
   margin: 5px;
 
-  &.hidden { opacity: .5; }
+  &.is-hidden { display: none; }
   &.is-active { box-shadow: 0 0 0 5px #03A9F4; }
+}
+
+.show-hidden-tiles {
+  .tile {
+    &.is-hidden {
+      display: block;
+      opacity: .2;
+    }
+  }
 }
