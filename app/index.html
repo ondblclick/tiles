@@ -1,38 +1,177 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Tiles</title>
-    <link rel="stylesheet" href="stylesheets/index.css">
-    <script type="text/javascript" src="javascripts/index.js"></script>
-  </head>
-  <body>
-    <div class="canvas-wrapper">
-      <div class="toolbar">
-        <input id="map-width" type="text" placeholder='Width' class='toolbar-item' value='10'>
-        <input id="map-height" type="text" placeholder='Height' class='toolbar-item' value='10'>
-        <input id="create-map" type="button" value='Create' class='toolbar-item'>
-        <div class="toolbar-split"></div>
-        <a id="export-as-png" class="toolbar-item" download="map.png">PNG &rarr;</a>
-        <div class="toolbar-split"></div>
-        <a id="save-to-localstorage" class='toolbar-item'>Save</a>
-        <a id="open-from-localstorage" class='toolbar-item'>Open</a>
-        <div class="toolbar-split"></div>
-        <a id="import-as-json" class="toolbar-item">&larr; JSON</a>
-        <a id="export-as-json" class="toolbar-item">JSON &rarr;</a>
+<head>
+  <meta charset="UTF-8">
+  <title>Tiles</title>
+  <link rel="stylesheet" href="stylesheets/index.css">
+  <script type="text/javascript" src="javascripts/index.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Tiles</a>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Import <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">JSON</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Export <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#" id='export-as-json'>JSON</a></li>
+              <li><a href="#">PNG</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a id='add-scene' href="#">Scene</a></li>
+              <li><a id='add-floor' href="#">Floor</a></li>
+              <li><a id='add-tileset' href="#">TileSet</a></li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
-    <div class="panel">
-      <div class="list-sprites">
-        <textarea name="" id="" style='width:100%;height:100%;'>{"tileSize":48,"tileSets":[{"imagePath":"/images/tiles.png","cols":12,"rows":12,"uniqId":"base","tileOffset":2,"id":"tileset_2"},{"imagePath":"/images/tiles_2.png","cols":6,"rows":5,"uniqId":"another","tileOffset":0,"id":"tileset_3"}],"layers":[{"cols":10,"rows":10,"id":"layer_4","tiles":[{"x":0,"y":0,"id":"tile_5","tileSetId":"tileset_2","uniqId":"52-102"},{"x":1,"y":0,"id":"tile_6","tileSetId":"tileset_2","uniqId":"52-102"},{"x":3,"y":0,"id":"tile_7","tileSetId":"tileset_2","uniqId":"52-102"},{"x":2,"y":0,"id":"tile_8","tileSetId":"tileset_2","uniqId":"52-102"},{"x":5,"y":0,"id":"tile_9","tileSetId":"tileset_2","uniqId":"52-102"},{"x":6,"y":0,"id":"tile_10","tileSetId":"tileset_2","uniqId":"52-102"},{"x":4,"y":0,"id":"tile_11","tileSetId":"tileset_2","uniqId":"52-102"},{"x":7,"y":0,"id":"tile_12","tileSetId":"tileset_2","uniqId":"52-102"},{"x":8,"y":0,"id":"tile_13","tileSetId":"tileset_2","uniqId":"52-102"},{"x":9,"y":0,"id":"tile_14","tileSetId":"tileset_2","uniqId":"52-102"},{"x":9,"y":9,"id":"tile_15","tileSetId":"tileset_2","uniqId":"252-152"},{"x":8,"y":9,"id":"tile_16","tileSetId":"tileset_2","uniqId":"252-152"},{"x":7,"y":9,"id":"tile_17","tileSetId":"tileset_2","uniqId":"252-152"},{"x":6,"y":9,"id":"tile_18","tileSetId":"tileset_2","uniqId":"252-152"},{"x":5,"y":9,"id":"tile_19","tileSetId":"tileset_2","uniqId":"252-152"},{"x":4,"y":9,"id":"tile_20","tileSetId":"tileset_2","uniqId":"252-152"},{"x":3,"y":9,"id":"tile_21","tileSetId":"tileset_2","uniqId":"252-152"},{"x":2,"y":9,"id":"tile_22","tileSetId":"tileset_2","uniqId":"252-152"},{"x":1,"y":9,"id":"tile_23","tileSetId":"tileset_2","uniqId":"252-152"},{"x":0,"y":9,"id":"tile_24","tileSetId":"tileset_2","uniqId":"252-152"}]}]}</textarea>
+  </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <div id='sidebar' class="col-md-2">
+        <ul class="nav nav-tabs">
+          <li class='active'><a href="#scenes" data-toggle='tab'>Scenes</a></li>
+          <li><a href="#history" data-toggle='tab'>History</a></li>
+        </ul>
+        <div class="tab-content" id='sidebar-containers'>
+          <li class="tab-pane active" id='scenes'>
+            <ul class="nav nav-pills nav-stacked" id='scene-tabs'></ul>
+          </li>
+          <li class="tab-pane" id='history'>history goes here</li>
+        </div>
       </div>
-      <div class="list-tiles">
+      <div id='floors' class="col-md-6">
+        <div class="tab-content" id='scene-containers'></div>
+      </div>
+      <div id='tilesets' class="col-md-4">
+        <div class="checkbox pull-right">
+          <label>
+            <input type="checkbox" id='show-hidden-tiles'> Show hidden tiles
+          </label>
+        </div>
+        <ul id='tileset-tabs' class="nav nav-tabs"></ul>
+        <ul id='tileset-containers' class='tab-content'></ul>
       </div>
     </div>
-    <script id='tile-library-modal' type='text/x-jrender'>
-      {{for data}}
-        <div class='list-tiles-item' data-tile-id='{{:id}}' data-tileset-id='{{:tileSetId}}'></div>
-      {{/for}}
-    </script>
-  </body>
+  </div>
+
+  <!-- TEMPLATES -->
+  <script id='tileset-tab' type='text/x-jrender'>
+    <li data-model-id='{{:id}}' data-model-name='TileSet'><a href="#{{:id}}" data-toggle="tab">{{:name}}</a></li>
+  </script>
+
+  <script id='tileset-container' type='text/x-jrender'>
+    <li class='tab-pane tileset-container' data-model-id='{{:id}}' id='{{:id}}'>
+      <ul class='tiles-container'>
+        <!-- TODO: most likely tiles should be rendered using the render method of tile class -->
+        {{for tiles}}
+          <li class='tile {{:display}}' data-model-id='{{:id}}'></li>
+        {{/for}}
+      </ul>
+    </li>
+  </script>
+
+  <script id='scene-tab' type='text/x-jrender'>
+    <li data-model-id='{{:id}}' data-model-name='Scene'><a data-toggle='tab' href='#{{:id}}'>{{:name}}</a></li>
+  </script>
+
+  <script id='scene-container' type='text/x-jrender'>
+    <div class="tab-pane" id="{{:id}}" data-model-id="{{:id}}">
+      <ul class="floor-tabs nav nav-tabs" id='floor-tabs-{{:id}}'></ul>
+      <ul class='tab-content floor-containers' id='floor-containers-{{:id}}'></ul>
+    </div>
+  </script>
+
+  <script id='floor-tab' type='text/x-jrender'>
+    <li data-model-id='{{:id}}' data-model-name='Floor'><a data-toggle='tab' href='#{{:id}}'>{{:name}}</a></li>
+  </script>
+
+  <script id='floor-container' type='text/x-jrender'>
+    <li class='floor-container tab-pane' data-model-id='{{:id}}' id='{{:id}}'>
+      <canvas width='{{:width}}' height='{{:height}}'></canvas>
+    </li>
+  </script>
+
+  <script id='text-field' type='text/x-jrender'>
+    <div class="form-group">
+      <label>{{:name}}</label>
+      <input type='text' name='{{:name}}' value='{{:value}}' class='form-control'/>
+    </div>
+  </script>
+  <!-- / TEMPLATES -->
+
+  <!-- CONTEXT MENUS -->
+  <ul id="tile-context" class="dropdown-menu" role="menu" style="display:none" >
+    <li><a tabindex="-1" href="#">Toggle</a></li>
+  </ul>
+
+  <ul id="tileset-tab-context" class="dropdown-menu" role="menu" style="display:none" >
+    <li><a tabindex="-1" href="#" data-action='remove'>Remove</a></li>
+    <li class='disabled'><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
+  </ul>
+
+  <ul id="floor-tab-context" class="dropdown-menu" role="menu" style="display:none" >
+    <li><a tabindex="-1" href="#" data-action='remove'>Remove</a></li>
+    <li class='disabled'><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
+  </ul>
+
+  <ul id="scene-pill-context" class="dropdown-menu" role="menu" style="display:none" >
+    <li><a tabindex="-1" href="#" data-action='remove'>Remove</a></li>
+    <li><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
+  </ul>
+  <!-- / CONTEXT MENUS -->
+
+  <!-- MODALS -->
+  <div class="modal fade" id="export-as-json-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <textarea></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="edit-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form></form>
+          <button>Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="add-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form></form>
+          <button>Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- / MODALS -->
+</body>
 </html>

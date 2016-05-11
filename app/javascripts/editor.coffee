@@ -1,77 +1,176 @@
-Model = require('activer')
-Layer = require('./layer.coffee')
-TileSet = require('./tileset.coffee')
-Tile = require('./tile.coffee')
-$ = require('jquery')
+Model = require 'activer'
+Game = require './game.coffee'
+Tile = require './tile.coffee'
+Floor = require './floor.coffee'
+Scene = require './scene.coffee'
+TileSet = require './tileset.coffee'
+$ = require 'jquery'
+prompty = require 'prompty'
+require './contextmenu.coffee'
+require('jsrender')($)
 
 class Editor extends Model
-  @attributes('tileSize')
-  @hasMany('Layer', 'TileSet')
+  @attributes()
+  @hasOne('Game')
+  @delegate('tileSets', 'Game')
+  @delegate('scenes', 'Game')
 
   afterCreate: ->
-    @_bindings()
+    @bindings()
+    @tile = undefined
 
-  render: (cb) ->
-    $('canvas').remove()
-    $('.list-tiles').empty()
-    promises = @tileSets().map (tileSet) -> tileSet.render()
-    $.when(promises...).then -> cb()
+  render: ->
+    imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
+    $('#tileset-tabs > li').first().addClass('active')
+    $('#tileset-containers > li').first().addClass('active')
+    $.when(imagePromises...).then =>
+      @renderScenes()
+      @bindContextMenus()
 
-  selectedTile: ->
-    $('.list-tiles-item.active')
-
-  selectedSet: ->
-    @tileSets().filter((item) -> item.uniqId is $('.list-tiles-item.active').data('tileset-id'))[0]
-
-  currentLayer: ->
-    @layers()[0]
+  renderScenes: ->
+    @scenes().forEach (scene) -> scene.renderToEditor()
+    $('#scene-tabs > li').first().addClass('active')
+    $('#scene-containers > div').first().addClass('active')
 
   toJSON: ->
-    tileSize: @tileSize
-    tileSets: @tileSets().map((tileSet) -> tileSet.toJSON())
-    layers: @layers().map((layer) -> layer.toJSON())
+    # TODO: toJSON -> asJSON (as it is in rails)
+    # TODO: options: { root: true, only: [], except: [], methods: [], include: [] }
+    res = super()
+    res.game = @game().toJSON()
+    res
 
-  _bindings: ->
-    $(document).on 'click', '#create-map', =>
-      Tile.collection = []
-      Layer.collection = []
-      @layers().create({ cols: $('#map-width').val(), rows: $('#map-height').val() })
-      @currentLayer().prepareCanvas()
-      @currentLayer().render()
+  editModalFor: (instance) ->
+    $form = $('#edit-modal form')
+    $form.empty()
+    textFieldTmpl = $.templates('#text-field')
+    instance.constructor.fields.forEach (field) ->
+      $form.append(textFieldTmpl.render({ name: field, value: instance[field] }))
+    $('#edit-modal').off 'click'
+    $('#edit-modal button').on 'click', ->
+      data = {}
+      $form.serializeArray().map (x) -> data[x.name] = x.value
+      instance.updateAttributes(data)
+      $('#edit-modal').modal('hide')
+    $('#edit-modal')
 
-    $(document).on 'click', '#export-as-png', (e) =>
-      $(e.currentTarget).attr('href', @currentLayer().canvas()[0].toDataURL('image/png'))
+  bindContextMenus: ->
+    $('.tile').contextMenu
+      menuSelector: "#tile-context"
+      menuSelected: (invoked, selected) ->
+        Tile.find(invoked.data('model-id')).toggleVisibility()
 
-    $(document).on 'click', '.list-tiles-item', (e) ->
-      $(e.currentTarget).toggleClass('active').siblings().removeClass('active')
+    $('#tileset-tabs li').contextMenu
+      menuSelector: "#tileset-tab-context"
+      menuSelected: (invoked, selected) ->
+        if selected.data('action') is 'remove'
+          TileSet.find(invoked.data('model-id')).remove()
+
+    $("[id*='floor-tabs-'] > li").contextMenu
+      menuSelector: "#floor-tab-context"
+      menuSelected: (invoked, selected) ->
+        if selected.data('action') is 'remove'
+          Floor.find(invoked.data('model-id')).remove()
+
+    $('#scene-tabs li').contextMenu
+      menuSelector: "#scene-pill-context"
+      menuSelected: (invoked, selected) =>
+        if selected.data('action') is 'remove'
+          Scene.find(invoked.data('model-id')).remove()
+        if selected.data('action') is 'edit'
+          @editModalFor(Scene.find(invoked.data('model-id'))).modal('show')
+
+  bindings: ->
+    # $(document).on 'click', '#export-as-png', (e) =>
+    #   $(e.currentTarget).attr('href', @currentLayer().canvas()[0].toDataURL('image/png'))
+
+    $(document).on 'change', '#show-hidden-tiles', (e) ->
+      if $(e.target).is(':checked')
+        $('#tileset-containers').addClass('show-hidden-tiles')
+      else
+        $('#tileset-containers').removeClass('show-hidden-tiles')
+
+    $(document).on 'click', '#export-as-json', (e) =>
+      e.stopPropagation()
+      $('#export-as-json-modal').find('textarea').val(JSON.stringify(@toJSON()))
+      $('#export-as-json-modal').modal('show')
+
+    $(document).on 'click', '#add-scene', (e) =>
+      attrs = prompty([
+        { field: 'name', label: 'Scene name:' }
+        { field: 'width', label: 'Scene width:' }
+        { field: 'height', label: 'Scene height:' }
+      ])
+      return unless attrs
+      scene = @scenes().create(attrs)
+      scene.renderToEditor()
+
+    $(document).on 'click', '#add-floor', (e) =>
+      attrs = prompty([
+        { field: 'name', label: 'Floor name:' }
+      ])
+      return unless attrs
+      floor = @scenes().find($('#scene-tabs li.active').data('model-id')).floors().create(attrs)
+      floor.renderToEditor()
+
+    $(document).on 'click', '#add-tileset', (e) =>
+      attrs = prompty([
+        { field: 'name', label: 'Tileset name:' }
+        { field: 'imagePath', label: 'Tileset image url:' }
+        { field: 'cols', label: 'Tileset image columns:' }
+        { field: 'rows', label: 'Tileset image rows:' }
+        { field: 'tileOffset', label: 'Tileset tile offset:' }
+      ])
+      return unless attrs
+      tileSet = @tileSets().create(attrs)
+      tileSet.renderToEditor()
+
+    $(document).on 'click', '.tile', (e) =>
+      if $(e.target).is('.is-active')
+        $(e.target).removeClass('is-active')
+        @tile = undefined
+      else
+        $('.tile').removeClass('is-active')
+        $(e.target).addClass('is-active')
+        @tile = Tile.find($(e.target).data('model-id'))
+
+    $(document).on 'click', 'canvas', (e) =>
+      return unless @tile
+      currentX = Math.floor(e.offsetX / @game().tileSize)
+      currentY = Math.floor(e.offsetY / @game().tileSize)
+      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      cell = floor.cells().where({ col: currentX, row: currentY })[0]
+      cell = floor.cells().create({ col: currentX, row: currentY }) unless cell
+      cell.terrain().destroy() if cell.terrain()
+      cell.createTerrain({ tileId: @tile.id })
+      floor.render()
+
+    $(document).on 'mouseout', (e) ->
+      return unless $(e.target).is('canvas')
+      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      floor.render()
 
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('canvas')
-      return unless @selectedTile().length
-      pageX = Math.floor(e.offsetX / @tileSize)
-      pageY = Math.floor(e.offsetY / @tileSize)
-      [imageX, imageY] = @selectedTile().data('tile-id').split('-')
-      @currentLayer().render()
-      @currentLayer().context().fillStyle = Layer.STYLES.WHITE
-      @currentLayer().drawRect(pageX * @tileSize, pageY * @tileSize)
-      @currentLayer().context().globalAlpha = 0.3
-      @currentLayer().context().drawImage(@selectedSet().image(), imageX, imageY, @tileSize, @tileSize, pageX * @tileSize, pageY * @tileSize, @tileSize, @tileSize)
-      @currentLayer().context().globalAlpha = 1
-
-    $(document).on 'mouseleave', 'canvas', =>
-      @currentLayer().render()
-
-    $(document).on 'click', 'canvas', (e) =>
-      return unless @selectedTile().length
-      currentX = Math.floor(e.offsetX / @tileSize)
-      currentY = Math.floor(e.offsetY / @tileSize)
-      existingTile = Tile.findByPosition({ x: currentX, y: currentY })
-      existingTile.destroy() if existingTile
-      @currentLayer().tiles().create
-        x: currentX
-        y: currentY
-        uniqId: @selectedTile().data('tile-id')
-        tileSetId: @selectedSet().id
-      @currentLayer().render()
+      return unless @tile
+      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      pageX = Math.floor(e.offsetX / @game().tileSize)
+      pageY = Math.floor(e.offsetY / @game().tileSize)
+      floor.render()
+      floor.context().fillStyle = Floor.STYLES.WHITE
+      floor.drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
+      floor.context().globalAlpha = 0.3
+      attrs = [
+        @tile.tileSet().img,
+        @tile.x,
+        @tile.y,
+        @game().tileSize,
+        @game().tileSize,
+        pageX * @game().tileSize,
+        pageY * @game().tileSize,
+        @game().tileSize,
+        @game().tileSize
+      ]
+      floor.context().drawImage(attrs...)
+      floor.context().globalAlpha = 1
 
 module.exports = Editor

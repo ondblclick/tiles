@@ -1,25 +1,24 @@
-Model = require('activer')
-Layer = require('./layer.coffee')
-TileSet = require('./tileset.coffee')
+Model = require 'activer'
+TileSet = require './tileset.coffee'
+$ = require 'jquery'
 
 class Tile extends Model
-  @attributes('x', 'y', 'uniqId')
-  @belongsTo('Layer', 'TileSet')
+  @attributes('x', 'y', 'display')
+  @belongsTo('TileSet')
+  @hasMany('Terrain', { dependent: 'destroy' })
 
-  afterCreate: ->
-    [@spriteX, @spriteY] = @uniqId.split('-')
-    @tileSize = @layer().tileSize
+  el: ->
+    $(".tile[data-model-id='#{@id}']")
 
-  toJSON: ->
-    x: @x
-    y: @y
-    id: @id
-    tileSetId: @tileSetId
-    uniqId: @uniqId
+  style: ->
+    ".tile[data-model-id='#{@id}'] { background-position-x: -#{@x}px; background-position-y: -#{@y}px; }"
 
-  render: ->
-    @layer().context().drawImage(@tileSet().image(), @spriteX, @spriteY, @tileSize, @tileSize, @x * @tileSize, @y * @tileSize, @tileSize, @tileSize)
-
-  @findByPosition: (position) -> Tile.where(position)[0]
+  toggleVisibility: ->
+    if @el().is('.is-visible')
+      @display = 'is-hidden'
+      @el().removeClass('is-visible').addClass('is-hidden')
+    else
+      @display = 'is-visible'
+      @el().removeClass('is-hidden').addClass('is-visible')
 
 module.exports = Tile
