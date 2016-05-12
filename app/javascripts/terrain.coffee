@@ -20,6 +20,6 @@ class Terrain extends Model
       @game().tileSize,
       @game().tileSize
     ]
-    @cell().floor().context().drawImage(attrs...)
+    @cell().floor().scene().context().drawImage(attrs...)
 
 module.exports = Terrain

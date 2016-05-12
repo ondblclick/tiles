@@ -8,22 +8,58 @@ class Scene extends Model
   @belongsTo('Game')
   @hasMany('Floor', { dependent: 'destroy' })
 
+  @STYLES:
+    GREY: 'rgba(0, 0, 0, .05)'
+    WHITE: '#fff'
+
+  canvas: -> $("#scene-containers > li[data-model-id='#{@id}'] canvas")
+
+  context: -> @canvas()[0].getContext('2d')
+
+  clear: ->
+    @context().fillStyle = Scene.STYLES.WHITE
+    @context().fillRect(0, 0, @width * @game().tileSize, @height * @game().tileSize)
+
+  drawRect: (x, y) ->
+    @context().fillRect(x, y, @game().tileSize, @game().tileSize)
+
+  sortedLayers: ->
+    @floors().sort (floorA, floorB) ->
+      +floorA.order > +floorB.order
+
+  render: ->
+    @clear()
+    @renderGrid()
+    @sortedLayers().forEach (layer) -> layer.renderTerrain()
+
+  renderGrid: ->
+    @context().fillStyle = Scene.STYLES.GREY
+    col = 0
+    while col < @width
+      row = 0
+      while row < @height
+        if (row % 2 is 0 and col % 2 is 1) or (row % 2 is 1 and col % 2 is 0)
+          @drawRect(col * @game().tileSize, row * @game().tileSize)
+        row++
+      col++
+
   toJSON: ->
     res = super()
-    res.floors = @floors().map((floor) -> floor.toJSON())
+    res.floors = @sortedLayers().map((floor) -> floor.toJSON())
     res
 
   renderToEditor: ->
     tabTmpl = $.templates('#scene-tab')
     containerTmpl = $.templates('#scene-container')
+    obj = @toJSON()
+    obj.width *= @game().tileSize
+    obj.height *= @game().tileSize
     tab = tabTmpl.render(@toJSON())
-    container = containerTmpl.render(@toJSON())
+    container = containerTmpl.render(obj)
     $('#scene-tabs').append(tab)
     $('#scene-containers').append(container)
-
-    @floors().forEach (floor) -> floor.renderToEditor()
-    $('[id*=floor-tabs], [id*=floor-containers]').each ->
-      $(@).find('li').first().addClass('active')
+    $("#scene-containers > li[data-model-id='#{@id}'] .layers-list li").first().addClass('active')
+    @render()
 
   removeFromEditor: ->
     $("#scene-containers div[data-model-id='#{@id}']").remove()

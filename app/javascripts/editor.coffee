@@ -19,6 +19,12 @@ class Editor extends Model
     @bindings()
     @tile = undefined
 
+  activeLayer: ->
+    Floor.find($('#scene-containers > .active .layers-list > .active').data('model-id'))
+
+  activeScene: ->
+    Scene.find($('#scene-tabs > .active').data('model-id'))
+
   render: ->
     imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
     $('#tileset-tabs > li').first().addClass('active')
@@ -30,7 +36,7 @@ class Editor extends Model
   renderScenes: ->
     @scenes().forEach (scene) -> scene.renderToEditor()
     $('#scene-tabs > li').first().addClass('active')
-    $('#scene-containers > div').first().addClass('active')
+    $('#scene-containers > li').first().addClass('active')
 
   toJSON: ->
     # TODO: toJSON -> asJSON (as it is in rails)
@@ -137,28 +143,29 @@ class Editor extends Model
       return unless @tile
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      # floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      floor = @activeLayer()
       cell = floor.cells().where({ col: currentX, row: currentY })[0]
       cell = floor.cells().create({ col: currentX, row: currentY }) unless cell
       cell.terrain().destroy() if cell.terrain()
       cell.createTerrain({ tileId: @tile.id })
-      floor.render()
+      @activeScene().render()
 
-    $(document).on 'mouseout', (e) ->
+    $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
-      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
-      floor.render()
+      # floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      @activeScene().render()
 
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('canvas')
       return unless @tile
-      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      scene = Scene.find($(e.target).parents('#scene-containers > li').data('model-id'))
       pageX = Math.floor(e.offsetX / @game().tileSize)
       pageY = Math.floor(e.offsetY / @game().tileSize)
-      floor.render()
-      floor.context().fillStyle = Floor.STYLES.WHITE
-      floor.drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
-      floor.context().globalAlpha = 0.3
+      scene.render()
+      scene.context().fillStyle = Scene.STYLES.WHITE
+      scene.drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
+      scene.context().globalAlpha = 0.3
       attrs = [
         @tile.tileSet().img,
         @tile.x,
@@ -170,7 +177,7 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       ]
-      floor.context().drawImage(attrs...)
-      floor.context().globalAlpha = 1
+      scene.context().drawImage(attrs...)
+      scene.context().globalAlpha = 1
 
 module.exports = Editor

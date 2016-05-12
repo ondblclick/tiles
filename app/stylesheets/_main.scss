@@ -20,29 +20,43 @@ textarea {
   margin-right: 0;
 }
 
-#floors,
 #tilesets {
   height: calc(100vh - 72px);
   padding-bottom: 15px;
 }
 
-#floors { padding: 0; }
+#scenes { padding-right: 0; }
 
 #scene-containers,
-#tileset-containers,
-.floor-containers {
+#tileset-containers {
   margin: 0;
   padding: 0;
 }
 
-#scene-containers > li,
-#tileset-containers > li,
-.floor-containers > li,
-#sidebar-containers > li {
-  padding: 15px;
-  height: calc(100vh - 72px - 15px - 43px);
-  border: 1px solid #ddd;
-  border-top: none;
+#scene-containers,
+#tileset-containers {
+  > li {
+    padding: 15px;
+    height: calc(100vh - 72px - 15px - 43px);
+    border: 1px solid #ddd;
+    border-top: none;
+  }
+}
+
+#scene-containers {
+  > li {
+    .col-md-9 {
+      padding-left: 0;
+
+      .canvas-container {
+        height: calc(100vh - 72px - 15px - 43px - 31px);
+        overflow: auto;
+        border: 1px solid #ddd;
+
+        canvas { box-shadow: 0 0 0 1px #ddd; }
+      }
+    }
+  }
 }
 
 .tab-pane { overflow: auto; }

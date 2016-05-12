@@ -47,20 +47,9 @@
   </nav>
   <div class="container-fluid">
     <div class="row">
-      <div id='sidebar' class="col-md-2">
-        <ul class="nav nav-tabs">
-          <li class='active'><a href="#scenes" data-toggle='tab'>Scenes</a></li>
-          <li><a href="#history" data-toggle='tab'>History</a></li>
-        </ul>
-        <div class="tab-content" id='sidebar-containers'>
-          <li class="tab-pane active" id='scenes'>
-            <ul class="nav nav-pills nav-stacked" id='scene-tabs'></ul>
-          </li>
-          <li class="tab-pane" id='history'>history goes here</li>
-        </div>
-      </div>
-      <div id='floors' class="col-md-6">
-        <div class="tab-content" id='scene-containers'></div>
+      <div id='scenes' class="col-md-8">
+        <ul id='scene-tabs' class='nav nav-tabs'></ul>
+        <ul id='scene-containers' class="tab-content"></ul>
       </div>
       <div id='tilesets' class="col-md-4">
         <div class="checkbox pull-right">
@@ -95,19 +84,21 @@
   </script>
 
   <script id='scene-container' type='text/x-jrender'>
-    <div class="tab-pane" id="{{:id}}" data-model-id="{{:id}}">
-      <ul class="floor-tabs nav nav-tabs" id='floor-tabs-{{:id}}'></ul>
-      <ul class='tab-content floor-containers' id='floor-containers-{{:id}}'></ul>
-    </div>
-  </script>
-
-  <script id='floor-tab' type='text/x-jrender'>
-    <li data-model-id='{{:id}}' data-model-name='Floor'><a data-toggle='tab' href='#{{:id}}'>{{:name}}</a></li>
-  </script>
-
-  <script id='floor-container' type='text/x-jrender'>
-    <li class='floor-container tab-pane' data-model-id='{{:id}}' id='{{:id}}'>
-      <canvas width='{{:width}}' height='{{:height}}'></canvas>
+    <li class="tab-pane" id="{{:id}}" data-model-id="{{:id}}">
+      <div class="row">
+        <div class="col-md-3">
+          <ul class='nav nav-pills nav-stacked layers-list'>
+            {{for floors}}
+              <li data-toggle='tab' data-model-id='{{:id}}'><a href="#">{{:name}}</a></li>
+            {{/for}}
+          </ul>
+        </div>
+        <div class="col-md-9">
+          <div class="canvas-container">
+            <canvas width='{{:width}}' height='{{:height}}'></canvas>
+          </div>
+        </div>
+      </div>
     </li>
   </script>
 
