@@ -18,14 +18,16 @@ $(document).ready ->
     imagePath: '../../images/tiles_1.png'
     cols: 12
     rows: 12
-    tileOffset: 2
+    tileOffset: 2,
+    tileOpacityColor: '186,186,186'
 
   tileSet2 = game.tileSets().create
     name: 'tileset 2'
     imagePath: '../../images/tiles_2.png'
     cols: 6
     rows: 5
-    tileOffset: 0
+    tileOffset: 0,
+    tileOpacityColor: '255,255,255'
 
   scene1 = game.scenes().create({ name: 'very first scene', width: 10, height: 10 })
   scene2 = game.scenes().create({ name: 'second scene', width: 20, height: 20 })
