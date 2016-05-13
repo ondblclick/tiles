@@ -31,8 +31,7 @@ class Floor extends Model
     @renderTerrain()
 
   removeFromEditor: ->
-    $(".floor-containers li[data-model-id='#{@id}']").remove()
-    $(".floor-tabs li[data-model-id='#{@id}']").remove()
+    $(".layers-list li[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

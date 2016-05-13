@@ -4,7 +4,7 @@ Tile = require './tile.coffee'
 $ = require 'jquery'
 
 class TileSet extends Model
-  @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset')
+  @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset', 'tileOpacityColor')
   @belongsTo('Game')
   @hasMany('Tile', { dependent: 'destroy' })
 

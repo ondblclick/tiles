@@ -71,7 +71,7 @@ class Editor extends Model
         if selected.data('action') is 'remove'
           TileSet.find(invoked.data('model-id')).remove()
 
-    $("[id*='floor-tabs-'] > li").contextMenu
+    $(".layers-list > li").contextMenu
       menuSelector: "#floor-tab-context"
       menuSelected: (invoked, selected) ->
         if selected.data('action') is 'remove'
