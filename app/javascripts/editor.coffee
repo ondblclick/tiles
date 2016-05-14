@@ -1,13 +1,21 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Tile = require './tile.coffee'
-Floor = require './floor.coffee'
+Layer = require './layer.coffee'
 Scene = require './scene.coffee'
 TileSet = require './tileset.coffee'
 $ = require 'jquery'
 prompty = require 'prompty'
 require './contextmenu.coffee'
 require('jsrender')($)
+
+swap = (a, b) ->
+  a = $(a)
+  b = $(b)
+  tmp = $('<span>').hide()
+  a.before(tmp)
+  b.before(a)
+  tmp.replaceWith(b)
 
 class Editor extends Model
   @attributes()
@@ -18,6 +26,12 @@ class Editor extends Model
   afterCreate: ->
     @bindings()
     @tile = undefined
+
+  activeLayer: ->
+    Layer.find($('#scene-containers > .active .layers-list > .active').data('model-id'))
+
+  activeScene: ->
+    Scene.find($('#scene-tabs > .active').data('model-id'))
 
   render: ->
     imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
@@ -30,7 +44,7 @@ class Editor extends Model
   renderScenes: ->
     @scenes().forEach (scene) -> scene.renderToEditor()
     $('#scene-tabs > li').first().addClass('active')
-    $('#scene-containers > div').first().addClass('active')
+    $('#scene-containers > li').first().addClass('active')
 
   toJSON: ->
     # TODO: toJSON -> asJSON (as it is in rails)
@@ -55,23 +69,27 @@ class Editor extends Model
 
   bindContextMenus: ->
     $('.tile').contextMenu
+      itemSelector: '.tile'
       menuSelector: "#tile-context"
       menuSelected: (invoked, selected) ->
         Tile.find(invoked.data('model-id')).toggleVisibility()
 
     $('#tileset-tabs li').contextMenu
+      itemSelector: '#tileset-tabs li'
       menuSelector: "#tileset-tab-context"
       menuSelected: (invoked, selected) ->
         if selected.data('action') is 'remove'
           TileSet.find(invoked.data('model-id')).remove()
 
-    $("[id*='floor-tabs-'] > li").contextMenu
-      menuSelector: "#floor-tab-context"
+    $(".layers-list > li").contextMenu
+      itemSelector: ".layers-list > li"
+      menuSelector: "#layer-tab-context"
       menuSelected: (invoked, selected) ->
         if selected.data('action') is 'remove'
-          Floor.find(invoked.data('model-id')).remove()
+          Layer.find(invoked.data('model-id')).remove()
 
     $('#scene-tabs li').contextMenu
+      itemSelector: '#scene-tabs li'
       menuSelector: "#scene-pill-context"
       menuSelected: (invoked, selected) =>
         if selected.data('action') is 'remove'
@@ -80,8 +98,14 @@ class Editor extends Model
           @editModalFor(Scene.find(invoked.data('model-id'))).modal('show')
 
   bindings: ->
-    # $(document).on 'click', '#export-as-png', (e) =>
-    #   $(e.currentTarget).attr('href', @currentLayer().canvas()[0].toDataURL('image/png'))
+    $(document).on 'click', '.layers-list span', (e) =>
+      $li = $(e.target).parents('.layers-list li')
+      if ($(e.target).next().length) then swap($li, $li.prev()) else swap($li, $li.next())
+
+      $(e.target).parents('.layers-list').find('li').each (index, item) ->
+        Layer.find($(item).data('model-id')).order = index
+
+      @activeScene().render()
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       if $(e.target).is(':checked')
@@ -104,13 +128,13 @@ class Editor extends Model
       scene = @scenes().create(attrs)
       scene.renderToEditor()
 
-    $(document).on 'click', '#add-floor', (e) =>
+    $(document).on 'click', '#add-layer', (e) =>
       attrs = prompty([
-        { field: 'name', label: 'Floor name:' }
+        { field: 'name', label: 'Layer name:' }
       ])
       return unless attrs
-      floor = @scenes().find($('#scene-tabs li.active').data('model-id')).floors().create(attrs)
-      floor.renderToEditor()
+      layer = @activeScene().layers().create(attrs)
+      layer.renderToEditor()
 
     $(document).on 'click', '#add-tileset', (e) =>
       attrs = prompty([
@@ -137,28 +161,27 @@ class Editor extends Model
       return unless @tile
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
-      cell = floor.cells().where({ col: currentX, row: currentY })[0]
-      cell = floor.cells().create({ col: currentX, row: currentY }) unless cell
+      layer = @activeLayer()
+      cell = layer.cells().where({ col: currentX, row: currentY })[0]
+      cell = layer.cells().create({ col: currentX, row: currentY }) unless cell
       cell.terrain().destroy() if cell.terrain()
       cell.createTerrain({ tileId: @tile.id })
-      floor.render()
+      @activeScene().render()
 
-    $(document).on 'mouseout', (e) ->
+    $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
-      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
-      floor.render()
+      @activeScene().render()
 
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('canvas')
       return unless @tile
-      floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
+      scene = Scene.find($(e.target).parents('#scene-containers > li').data('model-id'))
       pageX = Math.floor(e.offsetX / @game().tileSize)
       pageY = Math.floor(e.offsetY / @game().tileSize)
-      floor.render()
-      floor.context().fillStyle = Floor.STYLES.WHITE
-      floor.drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
-      floor.context().globalAlpha = 0.3
+      scene.render()
+      scene.context().fillStyle = Scene.STYLES.WHITE
+      scene.drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
+      scene.context().globalAlpha = 0.3
       attrs = [
         @tile.tileSet().img,
         @tile.x,
@@ -170,7 +193,7 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       ]
-      floor.context().drawImage(attrs...)
-      floor.context().globalAlpha = 1
+      scene.context().drawImage(attrs...)
+      scene.context().globalAlpha = 1
 
 module.exports = Editor

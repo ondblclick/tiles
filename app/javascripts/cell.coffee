@@ -1,13 +1,13 @@
 Model = require 'activer'
-Floor = require './floor.coffee'
+Layer = require './layer.coffee'
 Terrain = require './terrain.coffee'
 $ = require 'jquery'
 
 class Cell extends Model
-  @belongsTo('Floor')
+  @belongsTo('Layer')
   @hasOne('Terrain')
   @attributes('col', 'row')
-  @delegate('game', 'Floor')
+  @delegate('game', 'Layer')
 
   toJSON: ->
     res = super()

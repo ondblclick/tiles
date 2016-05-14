@@ -18,61 +18,31 @@ $(document).ready ->
     imagePath: '../../images/tiles_1.png'
     cols: 12
     rows: 12
-    tileOffset: 2
+    tileOffset: 2,
+    tileOpacityColor: '186,186,186'
 
   tileSet2 = game.tileSets().create
     name: 'tileset 2'
     imagePath: '../../images/tiles_2.png'
     cols: 6
     rows: 5
-    tileOffset: 0
+    tileOffset: 0,
+    tileOpacityColor: '255,255,255'
 
   scene1 = game.scenes().create({ name: 'very first scene', width: 10, height: 10 })
   scene2 = game.scenes().create({ name: 'second scene', width: 20, height: 20 })
   scene3 = game.scenes().create({ name: 'last scene', width: 15, height: 15 })
 
-  floor1 = scene1.floors().create({ name: 'floor 1' })
-  floor2 = scene1.floors().create({ name: 'floor 2' })
-  floor3 = scene1.floors().create({ name: 'floor 3' })
+  layer1 = scene1.layers().create({ name: 'layer 1', order: 1 })
+  layer2 = scene1.layers().create({ name: 'layer 2', order: 3 })
+  layer3 = scene1.layers().create({ name: 'layer 3', order: 2 })
 
-  floor4 = scene2.floors().create({ name: 'floor 4' })
-  floor5 = scene2.floors().create({ name: 'floor 5' })
-  floor6 = scene2.floors().create({ name: 'floor 6' })
+  layer4 = scene2.layers().create({ name: 'layer 4', order: 1 })
+  layer5 = scene2.layers().create({ name: 'layer 5', order: 2 })
+  layer6 = scene2.layers().create({ name: 'layer 6', order: 3 })
 
-  floor7 = scene3.floors().create({ name: 'floor 7' })
-  floor8 = scene3.floors().create({ name: 'floor 8' })
-  floor9 = scene3.floors().create({ name: 'floor 9' })
+  layer7 = scene3.layers().create({ name: 'layer 7', order: 1 })
+  layer8 = scene3.layers().create({ name: 'layer 8', order: 3 })
+  layer9 = scene3.layers().create({ name: 'layer 9', order: 2 })
 
   editor.render()
-
-# class Editor
-#   @hasOne('Game')
-#
-# class GameRunner
-#   @hasOne('Game')
-#
-# class Game
-#   @hasMany('TileSet', 'Scene')
-#   @belongsTo('Editor', 'GameRunner')
-#
-# class TileSet
-#   @belongsTo('Game')
-#
-# class Scene
-#   @hasMany('Floor')
-#   @belongsTo('Game')
-#
-# class Floor
-#   @belongsTo('Scene')
-#   @hasMany('Cell')
-#
-# class Cell
-#   @hasOne('Terrain', 'Unit')
-#   @hasMany('Item')
-#   @belongsTo('Floor')
-#
-# class Terrain
-#   @belongsTo('Cell')
-#
-# class Unit
-#   @belongsTo('Cell')
