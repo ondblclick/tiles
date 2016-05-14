@@ -19,16 +19,8 @@ class Floor extends Model
 
   renderToEditor: ->
     tabTmpl = $.templates('#floor-tab')
-    containerTmpl = $.templates('#floor-container')
     tab = tabTmpl.render(@toJSON())
-    obj = @toJSON()
-    obj.width = @scene().width * @game().tileSize
-    obj.height = @scene().height * @game().tileSize
-    container = containerTmpl.render(obj)
-    $("#floor-tabs-#{@sceneId}").append(tab)
-    $("#floor-containers-#{@sceneId}").append(container)
-    @renderGrid()
-    @renderTerrain()
+    $("#scene-containers > li[data-model-id='#{@scene().id}'] .layers-list").append(tab)
 
   removeFromEditor: ->
     $(".layers-list li[data-model-id='#{@id}']").remove()
