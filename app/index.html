@@ -88,7 +88,7 @@
       <div class="row">
         <div class="col-md-3">
           <ul class='nav nav-pills nav-stacked layers-list'>
-            {{for floors}}
+            {{for layers}}
               <li data-toggle='tab' data-model-id='{{:id}}'><a href="#">{{:name}}</a></li>
             {{/for}}
           </ul>
@@ -102,7 +102,7 @@
     </li>
   </script>
 
-  <script id='floor-tab' type='text/x-jrender'>
+  <script id='layer-tab' type='text/x-jrender'>
     <li data-toggle='tab' data-model-id='{{:id}}'><a href="#">{{:name}}</a></li>
   </script>
 

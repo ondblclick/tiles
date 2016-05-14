@@ -1,12 +1,12 @@
 Model = require 'activer'
 Game = require './game.coffee'
-Floor = require './floor.coffee'
+Layer = require './layer.coffee'
 $ = require 'jquery'
 
 class Scene extends Model
   @attributes('name', 'width', 'height')
   @belongsTo('Game')
-  @hasMany('Floor', { dependent: 'destroy' })
+  @hasMany('Layer', { dependent: 'destroy' })
 
   @STYLES:
     GREY: 'rgba(0, 0, 0, .05)'
@@ -24,8 +24,8 @@ class Scene extends Model
     @context().fillRect(x, y, @game().tileSize, @game().tileSize)
 
   sortedLayers: ->
-    @floors().sort (floorA, floorB) ->
-      +floorA.order > +floorB.order
+    @layers().sort (layerA, layerB) ->
+      +layerA.order > +layerB.order
 
   render: ->
     @clear()
@@ -45,7 +45,7 @@ class Scene extends Model
 
   toJSON: ->
     res = super()
-    res.floors = @sortedLayers().map((floor) -> floor.toJSON())
+    res.layers = @sortedLayers().map((layer) -> layer.toJSON())
     res
 
   renderToEditor: ->
@@ -79,7 +79,7 @@ class Scene extends Model
       @[k] = v if k in @constructor.fields
 
     if cellsShouldBeUpdated
-      @floors().forEach (floor) -> floor.updateCellsList()
+      @layers().forEach (layer) -> layer.updateCellsList()
 
     @removeFromEditor()
     @renderToEditor()

@@ -50,6 +50,6 @@ class Terrain extends Model
     imgData = ctx.getImageData(0, 0, 48, 48)
     ctx.putImageData(@adjustImage(imgData), 0, 0)
     $('#img-buffer')[0].src = $('#buffer')[0].toDataURL('image/png')
-    @cell().floor().scene().context().drawImage(attrs1...)
+    @cell().layer().scene().context().drawImage(attrs1...)
 
 module.exports = Terrain

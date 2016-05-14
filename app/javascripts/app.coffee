@@ -33,16 +33,16 @@ $(document).ready ->
   scene2 = game.scenes().create({ name: 'second scene', width: 20, height: 20 })
   scene3 = game.scenes().create({ name: 'last scene', width: 15, height: 15 })
 
-  floor1 = scene1.floors().create({ name: 'floor 1', order: 1 })
-  floor2 = scene1.floors().create({ name: 'floor 2', order: 3 })
-  floor3 = scene1.floors().create({ name: 'floor 3', order: 2 })
+  layer1 = scene1.layers().create({ name: 'layer 1', order: 1 })
+  layer2 = scene1.layers().create({ name: 'layer 2', order: 3 })
+  layer3 = scene1.layers().create({ name: 'layer 3', order: 2 })
 
-  floor4 = scene2.floors().create({ name: 'floor 4', order: 1 })
-  floor5 = scene2.floors().create({ name: 'floor 5', order: 2 })
-  floor6 = scene2.floors().create({ name: 'floor 6', order: 3 })
+  layer4 = scene2.layers().create({ name: 'layer 4', order: 1 })
+  layer5 = scene2.layers().create({ name: 'layer 5', order: 2 })
+  layer6 = scene2.layers().create({ name: 'layer 6', order: 3 })
 
-  floor7 = scene3.floors().create({ name: 'floor 7', order: 1 })
-  floor8 = scene3.floors().create({ name: 'floor 8', order: 3 })
-  floor9 = scene3.floors().create({ name: 'floor 9', order: 2 })
+  layer7 = scene3.layers().create({ name: 'layer 7', order: 1 })
+  layer8 = scene3.layers().create({ name: 'layer 8', order: 3 })
+  layer9 = scene3.layers().create({ name: 'layer 9', order: 2 })
 
   editor.render()

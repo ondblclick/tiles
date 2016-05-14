@@ -1,7 +1,7 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Tile = require './tile.coffee'
-Floor = require './floor.coffee'
+Layer = require './layer.coffee'
 Scene = require './scene.coffee'
 TileSet = require './tileset.coffee'
 $ = require 'jquery'
@@ -20,7 +20,7 @@ class Editor extends Model
     @tile = undefined
 
   activeLayer: ->
-    Floor.find($('#scene-containers > .active .layers-list > .active').data('model-id'))
+    Layer.find($('#scene-containers > .active .layers-list > .active').data('model-id'))
 
   activeScene: ->
     Scene.find($('#scene-tabs > .active').data('model-id'))
@@ -72,10 +72,10 @@ class Editor extends Model
           TileSet.find(invoked.data('model-id')).remove()
 
     $(".layers-list > li").contextMenu
-      menuSelector: "#floor-tab-context"
+      menuSelector: "#layer-tab-context"
       menuSelected: (invoked, selected) ->
         if selected.data('action') is 'remove'
-          Floor.find(invoked.data('model-id')).remove()
+          Layer.find(invoked.data('model-id')).remove()
 
     $('#scene-tabs li').contextMenu
       menuSelector: "#scene-pill-context"
@@ -86,9 +86,6 @@ class Editor extends Model
           @editModalFor(Scene.find(invoked.data('model-id'))).modal('show')
 
   bindings: ->
-    # $(document).on 'click', '#export-as-png', (e) =>
-    #   $(e.currentTarget).attr('href', @currentLayer().canvas()[0].toDataURL('image/png'))
-
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       if $(e.target).is(':checked')
         $('#tileset-containers').addClass('show-hidden-tiles')
@@ -110,13 +107,13 @@ class Editor extends Model
       scene = @scenes().create(attrs)
       scene.renderToEditor()
 
-    $(document).on 'click', '#add-floor', (e) =>
+    $(document).on 'click', '#add-layer', (e) =>
       attrs = prompty([
-        { field: 'name', label: 'Floor name:' }
+        { field: 'name', label: 'Layer name:' }
       ])
       return unless attrs
-      floor = @activeScene().floors().create(attrs)
-      floor.renderToEditor()
+      layer = @activeScene().layers().create(attrs)
+      layer.renderToEditor()
 
     $(document).on 'click', '#add-tileset', (e) =>
       attrs = prompty([
@@ -143,17 +140,15 @@ class Editor extends Model
       return unless @tile
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      # floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
-      floor = @activeLayer()
-      cell = floor.cells().where({ col: currentX, row: currentY })[0]
-      cell = floor.cells().create({ col: currentX, row: currentY }) unless cell
+      layer = @activeLayer()
+      cell = layer.cells().where({ col: currentX, row: currentY })[0]
+      cell = layer.cells().create({ col: currentX, row: currentY }) unless cell
       cell.terrain().destroy() if cell.terrain()
       cell.createTerrain({ tileId: @tile.id })
       @activeScene().render()
 
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
-      # floor = Floor.find($(e.target).parents('.floor-container').data('model-id'))
       @activeScene().render()
 
     $(document).on 'mousemove', (e) =>
