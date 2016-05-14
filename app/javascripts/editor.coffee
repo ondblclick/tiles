@@ -9,6 +9,14 @@ prompty = require 'prompty'
 require './contextmenu.coffee'
 require('jsrender')($)
 
+swap = (a, b) ->
+  a = $(a)
+  b = $(b)
+  tmp = $('<span>').hide()
+  a.before(tmp)
+  b.before(a)
+  tmp.replaceWith(b)
+
 class Editor extends Model
   @attributes()
   @hasOne('Game')
@@ -90,6 +98,15 @@ class Editor extends Model
           @editModalFor(Scene.find(invoked.data('model-id'))).modal('show')
 
   bindings: ->
+    $(document).on 'click', '.layers-list span', (e) =>
+      $li = $(e.target).parents('.layers-list li')
+      if ($(e.target).next().length) then swap($li, $li.prev()) else swap($li, $li.next())
+
+      $(e.target).parents('.layers-list').find('li').each (index, item) ->
+        Layer.find($(item).data('model-id')).order = index
+
+      @activeScene().render()
+
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       if $(e.target).is(':checked')
         $('#tileset-containers').addClass('show-hidden-tiles')
