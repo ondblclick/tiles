@@ -61,23 +61,27 @@ class Editor extends Model
 
   bindContextMenus: ->
     $('.tile').contextMenu
+      itemSelector: '.tile'
       menuSelector: "#tile-context"
       menuSelected: (invoked, selected) ->
         Tile.find(invoked.data('model-id')).toggleVisibility()
 
     $('#tileset-tabs li').contextMenu
+      itemSelector: '#tileset-tabs li'
       menuSelector: "#tileset-tab-context"
       menuSelected: (invoked, selected) ->
         if selected.data('action') is 'remove'
           TileSet.find(invoked.data('model-id')).remove()
 
     $(".layers-list > li").contextMenu
+      itemSelector: ".layers-list > li"
       menuSelector: "#layer-tab-context"
       menuSelected: (invoked, selected) ->
         if selected.data('action') is 'remove'
           Layer.find(invoked.data('model-id')).remove()
 
     $('#scene-tabs li').contextMenu
+      itemSelector: '#scene-tabs li'
       menuSelector: "#scene-pill-context"
       menuSelected: (invoked, selected) =>
         if selected.data('action') is 'remove'
