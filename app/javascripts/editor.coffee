@@ -4,18 +4,11 @@ Tile = require './tile.coffee'
 Layer = require './layer.coffee'
 Scene = require './scene.coffee'
 TileSet = require './tileset.coffee'
+utils = require './utils.coffee'
+ContextMenu = require './context_menu.coffee'
 $ = require 'jquery'
 prompty = require 'prompty'
-require './contextmenu.coffee'
 require('jsrender')($)
-
-swap = (a, b) ->
-  a = $(a)
-  b = $(b)
-  tmp = $('<span>').hide()
-  a.before(tmp)
-  b.before(a)
-  tmp.replaceWith(b)
 
 class Editor extends Model
   @attributes()
@@ -26,6 +19,15 @@ class Editor extends Model
   afterCreate: ->
     @bindings()
     @tile = undefined
+
+  handleContextMenuFor: (e) ->
+    if e.ctrlKey
+      using: ->
+    else
+      e.preventDefault()
+      using = (selector, callback) ->
+        new ContextMenu(selector, $(e.currentTarget), callback).showAt(e.clientX, e.clientY)
+      using: using
 
   activeLayer: ->
     Layer.find($('#scene-containers > .active .layers-list > .active').data('model-id'))
@@ -68,30 +70,22 @@ class Editor extends Model
     $('#edit-modal')
 
   bindContextMenus: ->
-    $('.tile').contextMenu
-      itemSelector: '.tile'
-      menuSelector: "#tile-context"
-      menuSelected: (invoked, selected) ->
+    $(document).on 'contextmenu', '.tile', (e) =>
+      @handleContextMenuFor(e).using '#tile-context', (invoked, selected) ->
         Tile.find(invoked.data('model-id')).toggleVisibility()
 
-    $('#tileset-tabs li').contextMenu
-      itemSelector: '#tileset-tabs li'
-      menuSelector: "#tileset-tab-context"
-      menuSelected: (invoked, selected) ->
+    $(document).on 'contextmenu', '#tileset-tabs li', (e) =>
+      @handleContextMenuFor(e).using "#tileset-tab-context", (invoked, selected) ->
         if selected.data('action') is 'remove'
           TileSet.find(invoked.data('model-id')).remove()
 
-    $(".layers-list > li").contextMenu
-      itemSelector: ".layers-list > li"
-      menuSelector: "#layer-tab-context"
-      menuSelected: (invoked, selected) ->
+    $(document).on 'contextmenu', '.layers-list > li', (e) =>
+      @handleContextMenuFor(e).using "#layer-tab-context", (invoked, selected) ->
         if selected.data('action') is 'remove'
           Layer.find(invoked.data('model-id')).remove()
 
-    $('#scene-tabs li').contextMenu
-      itemSelector: '#scene-tabs li'
-      menuSelector: "#scene-pill-context"
-      menuSelected: (invoked, selected) =>
+    $(document).on 'contextmenu', '#scene-tabs li', (e) =>
+      @handleContextMenuFor(e).using "#scene-pill-context", (invoked, selected) =>
         if selected.data('action') is 'remove'
           Scene.find(invoked.data('model-id')).remove()
         if selected.data('action') is 'edit'
@@ -100,7 +94,7 @@ class Editor extends Model
   bindings: ->
     $(document).on 'click', '.layers-list span', (e) =>
       $li = $(e.target).parents('.layers-list li')
-      if ($(e.target).next().length) then swap($li, $li.prev()) else swap($li, $li.next())
+      if ($(e.target).next().length) then utils.swap($li, $li.prev()) else utils.swap($li, $li.next())
 
       $(e.target).parents('.layers-list').find('li').each (index, item) ->
         Layer.find($(item).data('model-id')).order = index
