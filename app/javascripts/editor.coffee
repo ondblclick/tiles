@@ -21,13 +21,12 @@ class Editor extends Model
     @tile = undefined
 
   handleContextMenuFor: (e) ->
-    if e.ctrlKey
-      using: ->
-    else
+    res = { using: -> }
+    unless e.ctrlKey
       e.preventDefault()
-      using = (selector, callback) ->
+      res.using = (selector, callback) ->
         new ContextMenu(selector, $(e.currentTarget), callback).showAt(e.clientX, e.clientY)
-      using: using
+    res
 
   activeLayer: ->
     Layer.find($('#scene-containers > .active .layers-list > .active').data('model-id'))

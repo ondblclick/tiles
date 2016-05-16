@@ -16,6 +16,9 @@ class ContextMenu
       $selectedMenu = $(e.target)
       @cb($invokedOn, $selectedMenu)
 
+    $(document).on 'click', ->
+      $menu.hide()
+
   menuPosition: (mouse, direction, scrollDirection) ->
     win = $(window)[direction]()
     scroll = $(window)[scrollDirection]()
