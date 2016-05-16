@@ -58,8 +58,9 @@ class Editor extends Model
     $form = $('#edit-modal form')
     $form.empty()
     textFieldTmpl = $.templates('#text-field')
-    instance.constructor.fields.forEach (field) ->
-      $form.append(textFieldTmpl.render({ name: field, value: instance[field] }))
+    ctor = instance.constructor
+    ctor.fields.forEach (field) ->
+      $form.append(textFieldTmpl.render({ name: field, value: instance[field] })) if field in ctor.WHITELISTED_FIELDS
     $('#edit-modal').off 'click'
     $('#edit-modal button').on 'click', ->
       data = {}

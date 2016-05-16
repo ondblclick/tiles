@@ -12,6 +12,8 @@ class Scene extends Model
     GREY: 'rgba(0, 0, 0, .05)'
     WHITE: '#fff'
 
+  @WHITELISTED_FIELDS: ['name', 'width', 'height']
+
   canvas: -> $("#scene-containers > li[data-model-id='#{@id}'] canvas")
 
   context: -> @canvas()[0].getContext('2d')

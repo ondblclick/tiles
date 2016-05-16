@@ -2,6 +2,8 @@ Editor = require './editor.coffee'
 $ = jQuery = require 'jquery'
 require 'bootstrap'
 
+# TODO: update attributes callback to do a rendering to editor stuff?
+
 $(document).ready ->
   editor = Editor.create()
   game = editor.createGame({ tileSize: 48 })
