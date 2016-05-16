@@ -58,11 +58,12 @@ class Scene extends Model
     container = containerTmpl.render(obj)
     $('#scene-tabs').append(tab)
     $('#scene-containers').append(container)
+    @layers().forEach (layer) -> layer.renderToEditor()
     $("#scene-containers > li[data-model-id='#{@id}'] .layers-list li").first().addClass('active')
     @render()
 
   removeFromEditor: ->
-    $("#scene-containers div[data-model-id='#{@id}']").remove()
+    $("#scene-containers li[data-model-id='#{@id}']").remove()
     $("#scene-tabs li[data-model-id='#{@id}']").remove()
 
   remove: ->

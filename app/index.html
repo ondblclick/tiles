@@ -87,19 +87,7 @@
     <li class="tab-pane" id="{{:id}}" data-model-id="{{:id}}">
       <div class="row">
         <div class="col-md-3">
-          <ul class='nav nav-pills nav-stacked layers-list'>
-            {{for layers}}
-              <li data-toggle='tab' data-model-id='{{:id}}'>
-                <a href="#">
-                  {{:name}}
-                  <div class="pull-right">
-                    <span>&uarr;</span>
-                    <span>&darr;</span>
-                  </div>
-                </a>
-              </li>
-            {{/for}}
-          </ul>
+          <ul class='nav nav-pills nav-stacked layers-list'></ul>
         </div>
         <div class="col-md-9">
           <div class="canvas-container">
