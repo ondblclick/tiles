@@ -154,9 +154,8 @@ class Editor extends Model
       return unless @tile
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      layer = @activeLayer()
-      cell = layer.cells().where({ col: currentX, row: currentY })[0]
-      cell = layer.cells().create({ col: currentX, row: currentY }) unless cell
+      cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
+      cell = @activeLayer().cells().create({ col: currentX, row: currentY }) unless cell
       cell.terrain().destroy() if cell.terrain()
       cell.createTerrain({ tileId: @tile.id })
       @activeScene().render()
@@ -168,13 +167,12 @@ class Editor extends Model
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('canvas')
       return unless @tile
-      scene = Scene.find($(e.target).parents('#scene-containers > li').data('model-id'))
       pageX = Math.floor(e.offsetX / @game().tileSize)
       pageY = Math.floor(e.offsetY / @game().tileSize)
-      scene.render()
-      scene.context().fillStyle = Scene.STYLES.WHITE
-      scene.drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
-      scene.context().globalAlpha = 0.3
+      @activeScene().render()
+      @activeScene().context().fillStyle = Scene.STYLES.WHITE
+      @activeScene().drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
+      @activeScene().context().globalAlpha = 0.3
       attrs = [
         @tile.tileSet().img,
         @tile.x,
@@ -186,7 +184,7 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       ]
-      scene.context().drawImage(attrs...)
-      scene.context().globalAlpha = 1
+      @activeScene().context().drawImage(attrs...)
+      @activeScene().context().globalAlpha = 1
 
 module.exports = Editor
