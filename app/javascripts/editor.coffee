@@ -116,10 +116,7 @@ class Editor extends Model
       @activeScene().render()
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
-      if $(e.target).is(':checked')
-        $('#tileset-containers').addClass('show-hidden-tiles')
-      else
-        $('#tileset-containers').removeClass('show-hidden-tiles')
+      $('#tileset-containers').toggleClass('show-hidden-tiles', $(e.target).is(':checked'))
 
     $(document).on 'click', '#export-as-json', (e) =>
       e.stopPropagation()
