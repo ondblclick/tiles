@@ -72,7 +72,7 @@ class Scene extends Model
     @removeFromEditor()
     @destroy()
 
-  updateAttributes: (attrs) ->
+  updateAttributes: (attrs) =>
     cellsShouldBeUpdated = false
 
     if attrs.width and +@width isnt +attrs.width or attrs.height and +@height isnt +attrs.height

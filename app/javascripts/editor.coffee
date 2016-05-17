@@ -7,7 +7,6 @@ TileSet = require './tileset.coffee'
 utils = require './utils.coffee'
 ContextMenu = require './context_menu.coffee'
 $ = require 'jquery'
-prompty = require 'prompty'
 require('jsrender')($)
 
 class Editor extends Model
@@ -54,7 +53,21 @@ class Editor extends Model
     res.game = @game().toJSON()
     res
 
-  editModalFor: (instance) ->
+  newModalFor: (attributes, onSubmit) ->
+    $form = $('#new-modal form')
+    $form.empty()
+    textFieldTmpl = $.templates('#text-field')
+    attributes.forEach (field) ->
+      $form.append(textFieldTmpl.render({ name: field, value: '' }))
+    $('#new-modal button').off 'click'
+    $('#new-modal button').on 'click', ->
+      data = {}
+      $form.serializeArray().map (x) -> data[x.name] = x.value
+      onSubmit(data)
+      $('#new-modal').modal('hide')
+    $('#new-modal').modal('show')
+
+  editModalFor: (instance, onSubmit) ->
     $form = $('#edit-modal form')
     $form.empty()
     textFieldTmpl = $.templates('#text-field')
@@ -65,9 +78,9 @@ class Editor extends Model
     $('#edit-modal button').on 'click', ->
       data = {}
       $form.serializeArray().map (x) -> data[x.name] = x.value
-      instance.updateAttributes(data)
+      onSubmit(data)
       $('#edit-modal').modal('hide')
-    $('#edit-modal')
+    $('#edit-modal').modal('show')
 
   bindContextMenus: ->
     $(document).on 'contextmenu', '.tile', (e) =>
@@ -89,7 +102,8 @@ class Editor extends Model
         if selected.data('action') is 'remove'
           Scene.find(invoked.data('model-id')).remove()
         if selected.data('action') is 'edit'
-          @editModalFor(Scene.find(invoked.data('model-id'))).modal('show')
+          instance = Scene.find(invoked.data('model-id'))
+          @editModalFor(instance, instance.updateAttributes)
 
   bindings: ->
     $(document).on 'click', '.layers-list span', (e) =>
@@ -113,34 +127,19 @@ class Editor extends Model
       $('#export-as-json-modal').modal('show')
 
     $(document).on 'click', '#add-scene', (e) =>
-      attrs = prompty([
-        { field: 'name', label: 'Scene name:' }
-        { field: 'width', label: 'Scene width:' }
-        { field: 'height', label: 'Scene height:' }
-      ])
-      return unless attrs
-      scene = @scenes().create(attrs)
-      scene.renderToEditor()
+      @newModalFor ['name', 'width', 'height'], (data) =>
+        scene = @scenes().create(data)
+        scene.renderToEditor()
 
     $(document).on 'click', '#add-layer', (e) =>
-      attrs = prompty([
-        { field: 'name', label: 'Layer name:' }
-      ])
-      return unless attrs
-      layer = @activeScene().layers().create(attrs)
-      layer.renderToEditor()
+      @newModalFor ['name'], (data) =>
+        layer = @activeScene().layers().create(data)
+        layer.renderToEditor()
 
     $(document).on 'click', '#add-tileset', (e) =>
-      attrs = prompty([
-        { field: 'name', label: 'Tileset name:' }
-        { field: 'imagePath', label: 'Tileset image url:' }
-        { field: 'cols', label: 'Tileset image columns:' }
-        { field: 'rows', label: 'Tileset image rows:' }
-        { field: 'tileOffset', label: 'Tileset tile offset:' }
-      ])
-      return unless attrs
-      tileSet = @tileSets().create(attrs)
-      tileSet.renderToEditor()
+      @newModalFor ['name', 'imagePath', 'cols', 'rows', 'tileOffset'], (data) =>
+        tileSet = @tileSets().create(attrs)
+        tileSet.renderToEditor()
 
     $(document).on 'click', '.tile', (e) =>
       if $(e.target).is('.is-active')
