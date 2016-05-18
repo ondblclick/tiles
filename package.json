@@ -18,7 +18,7 @@
     "watch:images": "onchange app/images/*.* -- npm run build:images",
     "watch:all": "npm-run-all -p serve watch:css watch:js watch:html watch:images",
     "postinstall": "npm run build:all && npm run watch:all",
-    "script": "mkdirp dist/javascripts && browserify -t coffeeify app/javascripts/app.coffee -o=dist/javascripts/index.js",
+    "script": "mkdirp dist/javascripts && browserify -t coffeeify app/javascripts/app.coffee > app/javascripts/temp.js -t hbsfy app/javascripts/temp.js > dist/javascripts/index.js && rm app/javascripts/temp.js",
     "test": "./node_modules/karma/bin/karma start --singleRun"
   },
   "browser": {
@@ -40,6 +40,8 @@
     "browser-sync": "^2.11.1",
     "browserify": "^13.0.0",
     "coffeeify": "^2.0.1",
+    "handlebars": "^4.0.5",
+    "hbsfy": "^2.7.0",
     "imagemin-cli": "^2.1.0",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.21",

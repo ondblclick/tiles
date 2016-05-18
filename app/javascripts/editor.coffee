@@ -9,6 +9,10 @@ EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
 utils = require './utils.coffee'
 $ = require 'jquery'
+
+# !!!
+templ = require('../templates/template.hbs')
+
 require('jsrender')($)
 
 class Editor extends Model
