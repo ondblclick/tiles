@@ -3,12 +3,11 @@ Game = require './game.coffee'
 Tile = require './tile.coffee'
 Layer = require './layer.coffee'
 Scene = require './scene.coffee'
-TileSet = require './tileset.coffee'
 EditorImporter = require './editor/editor_importer.coffee'
 EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
+EditorContexter = require './editor/editor_contexter.coffee'
 utils = require './utils.coffee'
-ContextMenu = require './context_menu.coffee'
 $ = require 'jquery'
 require('jsrender')($)
 
@@ -18,6 +17,7 @@ class Editor extends Model
   @hasOne('EditorExporter')
   @hasOne('EditorImporter')
   @hasOne('EditorAdder')
+  @hasOne('EditorContexter')
   @delegate('tileSets', 'Game')
   @delegate('scenes', 'Game')
 
@@ -26,15 +26,8 @@ class Editor extends Model
     @createEditorImporter()
     @createEditorExporter()
     @createEditorAdder()
+    @createEditorContexter()
     @tile = undefined
-
-  handleContextMenuFor: (e) ->
-    res = { using: -> }
-    unless e.ctrlKey
-      e.preventDefault()
-      res.using = (selector, callback) ->
-        new ContextMenu(selector, $(e.currentTarget), callback).showAt(e.clientX, e.clientY)
-    res
 
   toolbar: ->
     $('#toolbar')
@@ -51,7 +44,6 @@ class Editor extends Model
     $('#tileset-containers > li').first().addClass('active')
     $.when(imagePromises...).then =>
       @renderScenes()
-      @bindContextMenus()
 
   renderScenes: ->
     @scenes().forEach (scene) -> scene.renderToEditor()
@@ -79,29 +71,6 @@ class Editor extends Model
       onSubmit(data)
       $('#edit-modal').modal('hide')
     $('#edit-modal').modal('show')
-
-  bindContextMenus: ->
-    $(document).on 'contextmenu', '.tile', (e) =>
-      @handleContextMenuFor(e).using '#tile-context', (invoked, selected) ->
-        Tile.find(invoked.data('model-id')).toggleVisibility()
-
-    $(document).on 'contextmenu', '#tileset-tabs li', (e) =>
-      @handleContextMenuFor(e).using "#tileset-tab-context", (invoked, selected) ->
-        if selected.data('action') is 'remove'
-          TileSet.find(invoked.data('model-id')).remove()
-
-    $(document).on 'contextmenu', '.layers-list > li', (e) =>
-      @handleContextMenuFor(e).using "#layer-tab-context", (invoked, selected) ->
-        if selected.data('action') is 'remove'
-          Layer.find(invoked.data('model-id')).remove()
-
-    $(document).on 'contextmenu', '#scene-tabs li', (e) =>
-      @handleContextMenuFor(e).using "#scene-pill-context", (invoked, selected) =>
-        if selected.data('action') is 'remove'
-          Scene.find(invoked.data('model-id')).remove()
-        if selected.data('action') is 'edit'
-          instance = Scene.find(invoked.data('model-id'))
-          @editModalFor(instance, instance.updateAttributes)
 
   bindings: ->
     $(document).on 'click', '.layers-list span', (e) =>
