@@ -42,6 +42,6 @@ class EditorContexter extends Model
           Scene.find(invoked.data('model-id')).remove()
         if selected.data('action') is 'edit'
           instance = Scene.find(invoked.data('model-id'))
-          @editModalFor(instance, instance.updateAttributes)
+          @editor().editModalFor(instance, instance.updateAttributes)
 
 module.exports = EditorContexter
