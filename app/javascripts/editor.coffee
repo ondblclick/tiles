@@ -4,6 +4,9 @@ Tile = require './tile.coffee'
 Layer = require './layer.coffee'
 Scene = require './scene.coffee'
 TileSet = require './tileset.coffee'
+EditorImporter = require './editor/editor_importer.coffee'
+EditorExporter = require './editor/editor_exporter.coffee'
+EditorAdder = require './editor/editor_adder.coffee'
 utils = require './utils.coffee'
 ContextMenu = require './context_menu.coffee'
 $ = require 'jquery'
@@ -12,11 +15,17 @@ require('jsrender')($)
 class Editor extends Model
   @attributes()
   @hasOne('Game')
+  @hasOne('EditorExporter')
+  @hasOne('EditorImporter')
+  @hasOne('EditorAdder')
   @delegate('tileSets', 'Game')
   @delegate('scenes', 'Game')
 
   afterCreate: ->
     @bindings()
+    @createEditorImporter()
+    @createEditorExporter()
+    @createEditorAdder()
     @tile = undefined
 
   handleContextMenuFor: (e) ->
@@ -26,6 +35,9 @@ class Editor extends Model
       res.using = (selector, callback) ->
         new ContextMenu(selector, $(e.currentTarget), callback).showAt(e.clientX, e.clientY)
     res
+
+  toolbar: ->
+    $('#toolbar')
 
   activeLayer: ->
     Layer.find($('#scene-containers > .active .layers-list > .active').data('model-id'))
@@ -52,20 +64,6 @@ class Editor extends Model
     res = super()
     res.game = @game().toJSON()
     res
-
-  newModalFor: (attributes, onSubmit) ->
-    $form = $('#new-modal form')
-    $form.empty()
-    textFieldTmpl = $.templates('#text-field')
-    attributes.forEach (field) ->
-      $form.append(textFieldTmpl.render({ name: field, value: '' }))
-    $('#new-modal button').off 'click'
-    $('#new-modal button').on 'click', ->
-      data = {}
-      $form.serializeArray().map (x) -> data[x.name] = x.value
-      onSubmit(data)
-      $('#new-modal').modal('hide')
-    $('#new-modal').modal('show')
 
   editModalFor: (instance, onSubmit) ->
     $form = $('#edit-modal form')
@@ -117,26 +115,6 @@ class Editor extends Model
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       $('#tileset-containers').toggleClass('show-hidden-tiles', $(e.target).is(':checked'))
-
-    $(document).on 'click', '#export-as-json', (e) =>
-      e.stopPropagation()
-      $('#export-as-json-modal').find('textarea').val(JSON.stringify(@toJSON()))
-      $('#export-as-json-modal').modal('show')
-
-    $(document).on 'click', '#add-scene', (e) =>
-      @newModalFor ['name', 'width', 'height'], (data) =>
-        scene = @scenes().create(data)
-        scene.renderToEditor()
-
-    $(document).on 'click', '#add-layer', (e) =>
-      @newModalFor ['name'], (data) =>
-        layer = @activeScene().layers().create(data)
-        layer.renderToEditor()
-
-    $(document).on 'click', '#add-tileset', (e) =>
-      @newModalFor ['name', 'imagePath', 'cols', 'rows', 'tileOffset'], (data) =>
-        tileSet = @tileSets().create(data)
-        tileSet.renderToEditor()
 
     $(document).on 'click', '.tile', (e) =>
       if $(e.target).is('.is-active')

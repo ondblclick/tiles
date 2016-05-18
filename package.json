@@ -13,7 +13,7 @@
     "build:images": "npm run imagemin",
     "build:all": "npm run build:css && npm run build:js && npm run build:images && npm run build:html",
     "watch:css": "onchange app/stylesheets/*.* -- npm run build:css",
-    "watch:js": "onchange app/javascripts/*.* -- npm run build:js",
+    "watch:js": "onchange app/javascripts/**/*.* -- npm run build:js",
     "watch:html": "onchange app/*.html -- npm run build:html",
     "watch:images": "onchange app/images/*.* -- npm run build:images",
     "watch:all": "npm-run-all -p serve watch:css watch:js watch:html watch:images",
@@ -54,7 +54,7 @@
     "phantomjs-prebuilt": "^2.1.4"
   },
   "dependencies": {
-    "activer": "^0.7.4",
+    "activer": "^0.7.5",
     "bootstrap-sass": "^3.3.6",
     "browserify-shim": "^3.8.12",
     "jquery": "^2.2.3",
