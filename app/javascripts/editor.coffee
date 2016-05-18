@@ -135,7 +135,7 @@ class Editor extends Model
 
     $(document).on 'click', '#add-tileset', (e) =>
       @newModalFor ['name', 'imagePath', 'cols', 'rows', 'tileOffset'], (data) =>
-        tileSet = @tileSets().create(attrs)
+        tileSet = @tileSets().create(data)
         tileSet.renderToEditor()
 
     $(document).on 'click', '.tile', (e) =>
