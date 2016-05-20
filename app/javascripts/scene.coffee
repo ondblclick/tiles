@@ -1,7 +1,7 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Layer = require './layer.coffee'
-$ = require 'jquery'
+# $ = require 'jquery'
 
 class Scene extends Model
   @attributes('name', 'width', 'height')

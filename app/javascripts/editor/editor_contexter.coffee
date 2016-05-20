@@ -5,7 +5,7 @@ Layer = require '../layer.coffee'
 Scene = require '../scene.coffee'
 TileSet = require '../tileset.coffee'
 ContextMenu = require '../context_menu.coffee'
-$ = require 'jquery'
+# $ = require 'jquery'
 
 class EditorContexter extends Model
   @belongsTo('Editor')

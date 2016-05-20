@@ -1,6 +1,6 @@
 Model = require 'activer'
 Editor = require '../editor.coffee'
-$ = require 'jquery'
+# $ = require 'jquery'
 
 class EditorImporter extends Model
   @belongsTo('Editor')

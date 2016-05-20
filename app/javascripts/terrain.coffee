@@ -1,7 +1,7 @@
 Model = require 'activer'
 Cell = require './cell.coffee'
 Tile = require './tile.coffee'
-$ = require 'jquery'
+# $ = require 'jquery'
 
 class Terrain extends Model
   @belongsTo('Cell')

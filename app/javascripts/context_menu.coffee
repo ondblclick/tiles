@@ -1,4 +1,4 @@
-$ = require 'jquery'
+# $ = require 'jquery'
 
 class ContextMenu
   constructor: (@sel, @el, @cb) ->

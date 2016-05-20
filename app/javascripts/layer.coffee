@@ -1,7 +1,7 @@
 Model = require 'activer'
 Scene = require './scene.coffee'
 Cell = require './cell.coffee'
-$ = require 'jquery'
+# $ = require 'jquery'
 
 class Layer extends Model
   @attributes('name', 'order')

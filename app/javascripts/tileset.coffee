@@ -1,7 +1,7 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Tile = require './tile.coffee'
-$ = require 'jquery'
+# $ = require 'jquery'
 
 class TileSet extends Model
   @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset', 'tileOpacityColor')

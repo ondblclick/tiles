@@ -8,7 +8,6 @@ EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
 utils = require './utils.coffee'
-$ = require 'jquery'
 textInputTemplate = require('../templates/text_input.hbs')
 
 require('jsrender')($)
