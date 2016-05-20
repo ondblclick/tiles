@@ -5,20 +5,10 @@
   <title>Tiles</title>
 </head>
 <body>
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-light bg-faded">
     <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">Tiles</a>
-      </div>
-      <div class="collapse navbar-collapse">
-        <ul class="nav navbar-nav" id='toolbar'></ul>
-      </div>
+      <a class="navbar-brand" href="#">Tiles</a>
+      <ul class="nav navbar-nav" id='toolbar'></ul>
     </div>
   </nav>
   <div class="container-fluid">
@@ -94,32 +84,31 @@
   </script>
 
   <script id='import-menu' type='text/x-jrender'>
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Import <span class="caret"></span></a>
-      <ul class="dropdown-menu">
-        <li><a href="#">JSON</a></li>
-      </ul>
+    <li class="nav-item dropdown">
+      <a class="nav-link" type="button" data-toggle="dropdown">Import</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">JSON</a>
+      </div>
     </li>
   </script>
 
   <script id='export-menu' type='text/x-jrender'>
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Export <span class="caret"></span></a>
-      <ul class="dropdown-menu">
-        <li><a href="#" id='export-as-json'>JSON</a></li>
-        <li><a href="#">PNG</a></li>
-      </ul>
+    <li class="nav-item dropdown">
+      <a class="nav-link" type="button" data-toggle="dropdown">Export</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#" id='export-as-json'>JSON</a>
+      </div>
     </li>
   </script>
 
   <script id='add-menu' type='text/x-jrender'>
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add <span class="caret"></span></a>
-      <ul class="dropdown-menu">
-        <li><a id='add-scene' href="#">Scene</a></li>
-        <li><a id='add-layer' href="#">Layer</a></li>
-        <li><a id='add-tileset' href="#">TileSet</a></li>
-      </ul>
+    <li class="nav-item dropdown">
+      <a class="nav-link" type="button" data-toggle="dropdown">Add</a>
+      <div class="dropdown-menu">
+        <a class='dropdown-item' id='add-scene' href="#">Scene</a>
+        <a class='dropdown-item' id='add-layer' href="#">Layer</a>
+        <a class='dropdown-item' id='add-tileset' href="#">TileSet</a>
+      </div>
     </li>
   </script>
   <!-- / TEMPLATES -->
