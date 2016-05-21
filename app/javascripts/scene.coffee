@@ -1,7 +1,8 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Layer = require './layer.coffee'
-$ = require 'jquery'
+tabTmpl = require('../templates/scene_tab.hbs')
+containerTmpl = require('../templates/scene_container.hbs')
 
 class Scene extends Model
   @attributes('name', 'width', 'height')
@@ -51,22 +52,18 @@ class Scene extends Model
     res
 
   renderToEditor: ->
-    tabTmpl = $.templates('#scene-tab')
-    containerTmpl = $.templates('#scene-container')
     obj = @toJSON()
     obj.width *= @game().tileSize
     obj.height *= @game().tileSize
-    tab = tabTmpl.render(@toJSON())
-    container = containerTmpl.render(obj)
-    $('#scene-tabs').append(tab)
-    $('#scene-containers').append(container)
-    @layers().forEach (layer) -> layer.renderToEditor()
-    $("#scene-containers > li[data-model-id='#{@id}'] .layers-list li").first().addClass('active')
+    $('#scene-tabs').append(tabTmpl(@toJSON()))
+    $('#scene-containers').append(containerTmpl(obj))
+    @sortedLayers().forEach (layer) -> layer.renderToEditor()
+    $("#scene-containers > li[data-model-id='#{@id}'] .layers-list > .nav-item").first().addClass('active')
     @render()
 
   removeFromEditor: ->
     $("#scene-containers li[data-model-id='#{@id}']").remove()
-    $("#scene-tabs li[data-model-id='#{@id}']").remove()
+    $("#scene-tabs .nav-item[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

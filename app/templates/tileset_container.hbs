@@ -1,0 +1,8 @@
+<li class='tab-pane tileset-container' data-model-id='{{id}}' id='{{id}}'>
+  <ul class='tiles-container'>
+    <!-- TODO: most likely tiles should be rendered using the render method of tile class -->
+    {{#each tiles}}
+      <li class='tile {{display}}' data-model-id='{{id}}'></li>
+    {{/each}}
+  </ul>
+</li>

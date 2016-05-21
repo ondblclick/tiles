@@ -1,7 +1,8 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Tile = require './tile.coffee'
-$ = require 'jquery'
+tabTmpl = require('../templates/tileset_tab.hbs')
+containerTmpl = require('../templates/tileset_container.hbs')
 
 class TileSet extends Model
   @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset', 'tileOpacityColor')
@@ -45,14 +46,10 @@ class TileSet extends Model
     d.promise()
 
   renderToEditor: ->
-    tabTmpl = $.templates('#tileset-tab')
-    containerTmpl = $.templates('#tileset-container')
-    tab = tabTmpl.render(@toJSON())
     obj = @toJSON()
     obj.tiles = @tiles().map((tile) -> tile.toJSON())
-    container = containerTmpl.render(obj)
-    $('#tileset-tabs').append(tab)
-    $('#tileset-containers').append(container)
+    $('#tileset-tabs').append(tabTmpl(@toJSON()))
+    $('#tileset-containers').append(containerTmpl(obj))
     @renderStyles()
     @renderImage()
 
@@ -60,7 +57,7 @@ class TileSet extends Model
     $(@img).remove()
     $(@style).remove()
     $("#tileset-containers li[data-model-id='#{@id}']").remove()
-    $("#tileset-tabs li[data-model-id='#{@id}']").remove()
+    $("#tileset-tabs .nav-item[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

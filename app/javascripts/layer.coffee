@@ -1,7 +1,7 @@
 Model = require 'activer'
 Scene = require './scene.coffee'
 Cell = require './cell.coffee'
-$ = require 'jquery'
+tabTmpl = require('../templates/layer_tab.hbs')
 
 class Layer extends Model
   @attributes('name', 'order')
@@ -18,12 +18,10 @@ class Layer extends Model
     @cells().map((cell) -> cell.render())
 
   renderToEditor: ->
-    tabTmpl = $.templates('#layer-tab')
-    tab = tabTmpl.render(@toJSON())
-    $("#scene-containers > li[data-model-id='#{@scene().id}'] .layers-list").append(tab)
+    $("#scene-containers > li[data-model-id='#{@scene().id}'] .layers-list").append(tabTmpl(@toJSON()))
 
   removeFromEditor: ->
-    $(".layers-list li[data-model-id='#{@id}']").remove()
+    $(".layers-list .nav-item[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

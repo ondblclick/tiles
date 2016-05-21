@@ -8,8 +8,7 @@ EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
 utils = require './utils.coffee'
-$ = require 'jquery'
-require('jsrender')($)
+textFieldTmpl = require('../templates/text_input.hbs')
 
 class Editor extends Model
   @attributes()
@@ -40,14 +39,14 @@ class Editor extends Model
 
   render: ->
     imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
-    $('#tileset-tabs > li').first().addClass('active')
+    $('#tileset-tabs > .nav-item').first().addClass('active')
     $('#tileset-containers > li').first().addClass('active')
     $.when(imagePromises...).then =>
       @renderScenes()
 
   renderScenes: ->
     @scenes().forEach (scene) -> scene.renderToEditor()
-    $('#scene-tabs > li').first().addClass('active')
+    $('#scene-tabs > .nav-item').first().addClass('active')
     $('#scene-containers > li').first().addClass('active')
 
   toJSON: ->
@@ -60,10 +59,9 @@ class Editor extends Model
   editModalFor: (instance, onSubmit) ->
     $form = $('#edit-modal form')
     $form.empty()
-    textFieldTmpl = $.templates('#text-field')
     ctor = instance.constructor
     ctor.fields.forEach (field) ->
-      $form.append(textFieldTmpl.render({ name: field, value: instance[field] })) if field in ctor.WHITELISTED_FIELDS
+      $form.append(textFieldTmpl({ name: field, value: instance[field] })) if field in ctor.WHITELISTED_FIELDS
     $('#edit-modal').off 'click'
     $('#edit-modal button').on 'click', ->
       data = {}
@@ -74,13 +72,14 @@ class Editor extends Model
 
   bindings: ->
     $(document).on 'click', '.layers-list span', (e) =>
-      $li = $(e.target).parents('.layers-list li')
-      if ($(e.target).next().length) then utils.swap($li, $li.prev()) else utils.swap($li, $li.next())
+      $a = $(e.target).parents('.nav-item')
+      if ($(e.target).next().length) then utils.swap($a, $a.prev()) else utils.swap($a, $a.next())
 
-      $(e.target).parents('.layers-list').find('li').each (index, item) ->
+      $(e.target).parents('.layers-list').find('.nav-item').each (index, item) ->
         Layer.find($(item).data('model-id')).order = index
 
       @activeScene().render()
+      false
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       $('#tileset-containers').toggleClass('show-hidden-tiles', $(e.target).is(':checked'))
