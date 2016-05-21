@@ -1,6 +1,5 @@
 Model = require 'activer'
 TileSet = require './tileset.coffee'
-# $ = require 'jquery'
 
 class Tile extends Model
   @attributes('x', 'y', 'display')

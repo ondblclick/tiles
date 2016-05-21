@@ -41,14 +41,14 @@ class Editor extends Model
 
   render: ->
     imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
-    $('#tileset-tabs > li').first().addClass('active')
+    $('#tileset-tabs > .nav-item').first().addClass('active')
     $('#tileset-containers > li').first().addClass('active')
     $.when(imagePromises...).then =>
       @renderScenes()
 
   renderScenes: ->
     @scenes().forEach (scene) -> scene.renderToEditor()
-    $('#scene-tabs > li').first().addClass('active')
+    $('#scene-tabs > .nav-item').first().addClass('active')
     $('#scene-containers > li').first().addClass('active')
 
   toJSON: ->

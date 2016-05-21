@@ -1,7 +1,6 @@
 Model = require 'activer'
 Scene = require './scene.coffee'
 Cell = require './cell.coffee'
-# $ = require 'jquery'
 
 class Layer extends Model
   @attributes('name', 'order')
@@ -23,7 +22,7 @@ class Layer extends Model
     $("#scene-containers > li[data-model-id='#{@scene().id}'] .layers-list").append(tab)
 
   removeFromEditor: ->
-    $(".layers-list li[data-model-id='#{@id}']").remove()
+    $(".layers-list .nav-item[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

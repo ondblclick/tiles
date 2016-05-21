@@ -1,7 +1,6 @@
 Model = require 'activer'
 Layer = require './layer.coffee'
 Terrain = require './terrain.coffee'
-# $ = require 'jquery'
 
 class Cell extends Model
   @belongsTo('Layer')

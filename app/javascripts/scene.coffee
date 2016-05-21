@@ -1,7 +1,6 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Layer = require './layer.coffee'
-# $ = require 'jquery'
 
 class Scene extends Model
   @attributes('name', 'width', 'height')
@@ -61,12 +60,12 @@ class Scene extends Model
     $('#scene-tabs').append(tab)
     $('#scene-containers').append(container)
     @layers().forEach (layer) -> layer.renderToEditor()
-    $("#scene-containers > li[data-model-id='#{@id}'] .layers-list li").first().addClass('active')
+    $("#scene-containers > li[data-model-id='#{@id}'] .layers-list > .nav-item").first().addClass('active')
     @render()
 
   removeFromEditor: ->
     $("#scene-containers li[data-model-id='#{@id}']").remove()
-    $("#scene-tabs li[data-model-id='#{@id}']").remove()
+    $("#scene-tabs .nav-item[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

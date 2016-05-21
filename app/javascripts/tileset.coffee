@@ -1,7 +1,6 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Tile = require './tile.coffee'
-# $ = require 'jquery'
 
 class TileSet extends Model
   @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset', 'tileOpacityColor')
@@ -60,7 +59,7 @@ class TileSet extends Model
     $(@img).remove()
     $(@style).remove()
     $("#tileset-containers li[data-model-id='#{@id}']").remove()
-    $("#tileset-tabs li[data-model-id='#{@id}']").remove()
+    $("#tileset-tabs .nav-item[data-model-id='#{@id}']").remove()
 
   remove: ->
     @removeFromEditor()

@@ -5,12 +5,13 @@
   <title>Tiles</title>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-faded">
+  <nav class="navbar navbar-dark bg-inverse navbar-full" style='margin-bottom: 15px;'>
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Tiles</a>
       <ul class="nav navbar-nav" id='toolbar'></ul>
     </div>
   </nav>
+
   <div class="container-fluid">
     <div class="row">
       <div id='scenes' class="col-md-8">
@@ -18,8 +19,8 @@
         <ul id='scene-containers' class="tab-content"></ul>
       </div>
       <div id='tilesets' class="col-md-4">
-        <div class="checkbox pull-right">
-          <label>
+        <div class="checkbox pull-xs-right">
+          <label style='margin-top:8px;'>
             <input type="checkbox" id='show-hidden-tiles'> Show hidden tiles
           </label>
         </div>
@@ -31,9 +32,7 @@
 
   <!-- TEMPLATES -->
   <script id='tileset-tab' type='text/x-jrender'>
-    <li data-model-id='{{:id}}' data-model-name='TileSet' class='nav-item'>
-      <a href="#{{:id}}" data-toggle="tab" class='nav-link'>{{:name}}</a>
-    </li>
+    <a href='#{{:id}}' data-toggle='tab' data-model-id='{{:id}}' data-model-name='TileSet' class='nav-item nav-link'>{{:name}}</a>
   </script>
 
   <script id='tileset-container' type='text/x-jrender'>
@@ -48,9 +47,7 @@
   </script>
 
   <script id='scene-tab' type='text/x-jrender'>
-    <li data-model-id='{{:id}}' data-model-name='Scene' class='nav-item'>
-      <a data-toggle='tab' href='#{{:id}}' class='nav-link'>{{:name}}</a>
-    </li>
+    <a href='#{{:id}}' data-toggle='tab' data-model-id='{{:id}}' data-model-name='Scene' class='nav-item nav-link'>{{:name}}</a>
   </script>
 
   <script id='scene-container' type='text/x-jrender'>
@@ -69,15 +66,13 @@
   </script>
 
   <script id='layer-tab' type='text/x-jrender'>
-    <li data-model-id='{{:id}}' class='nav-item'>
-      <a data-toggle='tab' href="#" class='nav-link'>
-        {{:name}}
-        <div class="pull-right">
-          <span>&uarr;</span>
-          <span>&darr;</span>
-        </div>
-      </a>
-    </li>
+    <a data-model-id='{{:id}}' data-toggle='tab' href="#" class='nav-link nav-item'>
+      {{:name}}
+      <div class="pull-xs-right">
+        <span>&uarr;</span>
+        <span>&darr;</span>
+      </div>
+    </a>
   </script>
 
   <script id='text-field' type='text/x-jrender'>
@@ -89,7 +84,7 @@
 
   <script id='import-menu' type='text/x-jrender'>
     <li class="nav-item dropdown">
-      <a class="nav-link" type="button" data-toggle="dropdown">Import</a>
+      <a class="nav-link" href='#' data-toggle="dropdown">Import</a>
       <div class="dropdown-menu">
         <a class="dropdown-item" href="#">JSON</a>
       </div>
@@ -98,7 +93,7 @@
 
   <script id='export-menu' type='text/x-jrender'>
     <li class="nav-item dropdown">
-      <a class="nav-link" type="button" data-toggle="dropdown">Export</a>
+      <a class="nav-link" href='#' data-toggle="dropdown">Export</a>
       <div class="dropdown-menu">
         <a class="dropdown-item" href="#" id='export-as-json'>JSON</a>
       </div>
@@ -107,7 +102,7 @@
 
   <script id='add-menu' type='text/x-jrender'>
     <li class="nav-item dropdown">
-      <a class="nav-link" type="button" data-toggle="dropdown">Add</a>
+      <a class="nav-link" href='#' data-toggle="dropdown">Add</a>
       <div class="dropdown-menu">
         <a class='dropdown-item' id='add-scene' href="#">Scene</a>
         <a class='dropdown-item' id='add-layer' href="#">Layer</a>
@@ -118,24 +113,22 @@
   <!-- / TEMPLATES -->
 
   <!-- CONTEXT MENUS -->
-  <ul id="tile-context" class="dropdown-menu" role="menu" style="display:none" >
-    <li><a tabindex="-1" href="#">Toggle</a></li>
-  </ul>
+  <div id="tile-context" class="dropdown-menu" role="menu" style="display:none" >
+    <a class='dropdown-item' href="#">Toggle</a>
+  </div>
 
-  <ul id="tileset-tab-context" class="dropdown-menu" role="menu" style="display:none" >
-    <li><a tabindex="-1" href="#" data-action='remove'>Remove</a></li>
-    <li class='disabled'><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
-  </ul>
+  <div id="tileset-tab-context" class="dropdown-menu" role="menu" style="display:none" >
+    <a class='dropdown-item' href="#" data-action='remove'>Remove</a>
+  </div>
 
-  <ul id="layer-tab-context" class="dropdown-menu" role="menu" style="display:none" >
-    <li><a tabindex="-1" href="#" data-action='remove'>Remove</a></li>
-    <li class='disabled'><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
-  </ul>
+  <div id="layer-tab-context" class="dropdown-menu" role="menu" style="display:none" >
+    <a class='dropdown-item' href="#" data-action='remove'>Remove</a>
+  </div>
 
-  <ul id="scene-pill-context" class="dropdown-menu" role="menu" style="display:none" >
-    <li><a tabindex="-1" href="#" data-action='remove'>Remove</a></li>
-    <li><a tabindex="-1" href="#" data-action='edit'>Edit</a></li>
-  </ul>
+  <div id="scene-pill-context" class="dropdown-menu" role="menu" style="display:none" >
+    <a class='dropdown-item' href="#" data-action='remove'>Remove</a>
+    <a class='dropdown-item' href="#" data-action='edit'>Edit</a>
+  </div>
   <!-- / CONTEXT MENUS -->
 
   <!-- MODALS -->

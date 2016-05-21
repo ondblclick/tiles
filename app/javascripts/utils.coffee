@@ -1,5 +1,3 @@
-# $ = require 'jquery'
-
 utils = {}
 
 utils.swap = (a, b) ->
