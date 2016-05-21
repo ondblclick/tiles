@@ -8,7 +8,6 @@ EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
 utils = require './utils.coffee'
-textFieldTmpl = require('../templates/text_input.hbs')
 
 class Editor extends Model
   @attributes()
@@ -55,20 +54,6 @@ class Editor extends Model
     res = super()
     res.game = @game().toJSON()
     res
-
-  editModalFor: (instance, onSubmit) ->
-    $form = $('#edit-modal form')
-    $form.empty()
-    ctor = instance.constructor
-    ctor.fields.forEach (field) ->
-      $form.append(textFieldTmpl({ name: field, value: instance[field] })) if field in ctor.WHITELISTED_FIELDS
-    $('#edit-modal').off 'click'
-    $('#edit-modal button').on 'click', ->
-      data = {}
-      $form.serializeArray().map (x) -> data[x.name] = x.value
-      onSubmit(data)
-      $('#edit-modal').modal('hide')
-    $('#edit-modal').modal('show')
 
   bindings: ->
     $(document).on 'click', '.layers-list span', (e) =>

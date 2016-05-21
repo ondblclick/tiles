@@ -5,6 +5,7 @@ Layer = require '../layer.coffee'
 Scene = require '../scene.coffee'
 TileSet = require '../tileset.coffee'
 ContextMenu = require '../context_menu.coffee'
+Modal = require '../modal.coffee'
 
 layerTabContextTmpl = require '../../templates/context_menus/layer_tab_context.hbs'
 scenePillContextTmpl = require '../../templates/context_menus/scene_pill_context.hbs'
@@ -41,11 +42,18 @@ class EditorContexter extends Model
           Layer.find(invoked.data('model-id')).remove()
 
     $(document).on 'contextmenu', '#scene-tabs .nav-item', (e) =>
-      @handleContextMenuFor(e).using scenePillContextTmpl(), (invoked, selected) =>
+      @handleContextMenuFor(e).using scenePillContextTmpl(), (invoked, selected) ->
         if selected.data('action') is 'remove'
           Scene.find(invoked.data('model-id')).remove()
         if selected.data('action') is 'edit'
           instance = Scene.find(invoked.data('model-id'))
-          @editor().editModalFor(instance, instance.updateAttributes)
+          new Modal(
+            fields:
+              name: instance.name
+              width: instance.width
+              height: instance.height
+            actions:
+              Save: instance.updateAttributes
+          ).show()
 
 module.exports = EditorContexter

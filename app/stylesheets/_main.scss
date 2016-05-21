@@ -6,6 +6,10 @@ body {
   height: 100vh;
 }
 
+.btn + .btn {
+  margin-left: 5px;
+}
+
 textarea {
   width: 100%;
   min-height: 500px;

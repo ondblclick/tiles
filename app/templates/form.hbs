@@ -1,0 +1,8 @@
+<form action='#'>
+  {{#each fields}}
+    <div class="form-group">
+      <label>{{name}}</label>
+      <input type='text' name='{{name}}' value='{{value}}' class='form-control'/>
+    </div>
+  {{/each}}
+</form>

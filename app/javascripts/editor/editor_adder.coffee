@@ -1,12 +1,13 @@
 Model = require 'activer'
 Editor = require '../editor.coffee'
-textFieldTmpl = require('../../templates/text_input.hbs')
-addMenuTmpl = require('../../templates/add_menu.hbs')
+Modal = require '../modal.coffee'
+addMenuTmpl = require('../../templates/toolbar_menus/add_menu.hbs')
 
 class EditorAdder extends Model
   @belongsTo('Editor')
   @delegate('scenes', 'Editor')
   @delegate('activeScene', 'Editor')
+  @delegate('tileSets', 'Editor')
 
   afterCreate: ->
     @appendMenu()
@@ -15,33 +16,41 @@ class EditorAdder extends Model
   appendMenu: ->
     @editor().toolbar().append(addMenuTmpl())
 
-  newModalFor: (attributes, onSubmit) ->
-    $form = $('#new-modal form')
-    $form.empty()
-    attributes.forEach (field) ->
-      $form.append(textFieldTmpl({ name: field, value: '' }))
-    $('#new-modal button').off 'click'
-    $('#new-modal button').on 'click', ->
-      data = {}
-      $form.serializeArray().map (x) -> data[x.name] = x.value
-      onSubmit(data)
-      $('#new-modal').modal('hide')
-    $('#new-modal').modal('show')
-
   bindings: ->
     $(document).on 'click', '#add-scene', (e) =>
-      @newModalFor ['name', 'width', 'height'], (data) =>
-        scene = @scenes().create(data)
-        scene.renderToEditor()
+      new Modal(
+        fields:
+          name: ''
+          width: ''
+          height: ''
+        actions:
+          Create: (data) =>
+            scene = @scenes().create(data)
+            scene.renderToEditor()
+      ).show()
 
     $(document).on 'click', '#add-layer', (e) =>
-      @newModalFor ['name'], (data) =>
-        layer = @activeScene().layers().create(data)
-        layer.renderToEditor()
+      new Modal(
+        fields:
+          name: ''
+        actions:
+          Create: (data) =>
+            layer = @activeScene().layers().create(data)
+            layer.renderToEditor()
+      ).show()
 
     $(document).on 'click', '#add-tileset', (e) =>
-      @newModalFor ['name', 'imagePath', 'cols', 'rows', 'tileOffset'], (data) =>
-        tileSet = @tileSets().create(data)
-        tileSet.renderToEditor()
+      new Modal(
+        fields:
+          name: ''
+          imagePath: ''
+          cols: ''
+          rows: ''
+          tileOffset: ''
+        actions:
+          Create: (data) =>
+            tileSet = @tileSets().create(data)
+            tileSet.renderToEditor()
+      ).show()
 
 module.exports = EditorAdder
