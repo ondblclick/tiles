@@ -1,6 +1,8 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Layer = require './layer.coffee'
+sceneTab = require('../templates/scene_tab.hbs')
+sceneContainer = require('../templates/scene_container.hbs')
 
 class Scene extends Model
   @attributes('name', 'width', 'height')
@@ -50,15 +52,11 @@ class Scene extends Model
     res
 
   renderToEditor: ->
-    tabTmpl = $.templates('#scene-tab')
-    containerTmpl = $.templates('#scene-container')
     obj = @toJSON()
     obj.width *= @game().tileSize
     obj.height *= @game().tileSize
-    tab = tabTmpl.render(@toJSON())
-    container = containerTmpl.render(obj)
-    $('#scene-tabs').append(tab)
-    $('#scene-containers').append(container)
+    $('#scene-tabs').append(sceneTab(@toJSON()))
+    $('#scene-containers').append(sceneContainer(obj))
     @layers().forEach (layer) -> layer.renderToEditor()
     $("#scene-containers > li[data-model-id='#{@id}'] .layers-list > .nav-item").first().addClass('active')
     @render()

@@ -11,7 +11,6 @@
       <ul class="nav navbar-nav" id='toolbar'></ul>
     </div>
   </nav>
-
   <div class="container-fluid">
     <div class="row">
       <div id='scenes' class="col-md-8">
@@ -29,88 +28,6 @@
       </div>
     </div>
   </div>
-
-  <!-- TEMPLATES -->
-  <script id='tileset-tab' type='text/x-jrender'>
-    <a href='#{{:id}}' data-toggle='tab' data-model-id='{{:id}}' data-model-name='TileSet' class='nav-item nav-link'>{{:name}}</a>
-  </script>
-
-  <script id='tileset-container' type='text/x-jrender'>
-    <li class='tab-pane tileset-container' data-model-id='{{:id}}' id='{{:id}}'>
-      <ul class='tiles-container'>
-        <!-- TODO: most likely tiles should be rendered using the render method of tile class -->
-        {{for tiles}}
-          <li class='tile {{:display}}' data-model-id='{{:id}}'></li>
-        {{/for}}
-      </ul>
-    </li>
-  </script>
-
-  <script id='scene-tab' type='text/x-jrender'>
-    <a href='#{{:id}}' data-toggle='tab' data-model-id='{{:id}}' data-model-name='Scene' class='nav-item nav-link'>{{:name}}</a>
-  </script>
-
-  <script id='scene-container' type='text/x-jrender'>
-    <li class="tab-pane" id="{{:id}}" data-model-id="{{:id}}">
-      <div class="row">
-        <div class="col-md-3">
-          <ul class='nav nav-pills nav-stacked layers-list'></ul>
-        </div>
-        <div class="col-md-9">
-          <div class="canvas-container">
-            <canvas width='{{:width}}' height='{{:height}}'></canvas>
-          </div>
-        </div>
-      </div>
-    </li>
-  </script>
-
-  <script id='layer-tab' type='text/x-jrender'>
-    <a data-model-id='{{:id}}' data-toggle='tab' href="#" class='nav-link nav-item'>
-      {{:name}}
-      <div class="pull-xs-right">
-        <span>&uarr;</span>
-        <span>&darr;</span>
-      </div>
-    </a>
-  </script>
-
-  <script id='text-field' type='text/x-jrender'>
-    <div class="form-group">
-      <label>{{:name}}</label>
-      <input type='text' name='{{:name}}' value='{{:value}}' class='form-control'/>
-    </div>
-  </script>
-
-  <script id='import-menu' type='text/x-jrender'>
-    <li class="nav-item dropdown">
-      <a class="nav-link" href='#' data-toggle="dropdown">Import</a>
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">JSON</a>
-      </div>
-    </li>
-  </script>
-
-  <script id='export-menu' type='text/x-jrender'>
-    <li class="nav-item dropdown">
-      <a class="nav-link" href='#' data-toggle="dropdown">Export</a>
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="#" id='export-as-json'>JSON</a>
-      </div>
-    </li>
-  </script>
-
-  <script id='add-menu' type='text/x-jrender'>
-    <li class="nav-item dropdown">
-      <a class="nav-link" href='#' data-toggle="dropdown">Add</a>
-      <div class="dropdown-menu">
-        <a class='dropdown-item' id='add-scene' href="#">Scene</a>
-        <a class='dropdown-item' id='add-layer' href="#">Layer</a>
-        <a class='dropdown-item' id='add-tileset' href="#">TileSet</a>
-      </div>
-    </li>
-  </script>
-  <!-- / TEMPLATES -->
 
   <!-- CONTEXT MENUS -->
   <div id="tile-context" class="dropdown-menu" role="menu" style="display:none" >
@@ -159,17 +76,6 @@
         <div class="modal-body">
           <form></form>
           <button>Update</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="add-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-body">
-          <form></form>
-          <button>Create</button>
         </div>
       </div>
     </div>
