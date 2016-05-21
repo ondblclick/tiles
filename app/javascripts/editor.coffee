@@ -72,13 +72,14 @@ class Editor extends Model
 
   bindings: ->
     $(document).on 'click', '.layers-list span', (e) =>
-      $li = $(e.target).parents('.layers-list li')
-      if ($(e.target).next().length) then utils.swap($li, $li.prev()) else utils.swap($li, $li.next())
+      $a = $(e.target).parents('.nav-item')
+      if ($(e.target).next().length) then utils.swap($a, $a.prev()) else utils.swap($a, $a.next())
 
-      $(e.target).parents('.layers-list').find('li').each (index, item) ->
+      $(e.target).parents('.layers-list').find('.nav-item').each (index, item) ->
         Layer.find($(item).data('model-id')).order = index
 
       @activeScene().render()
+      false
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       $('#tileset-containers').toggleClass('show-hidden-tiles', $(e.target).is(':checked'))

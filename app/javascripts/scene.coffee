@@ -57,7 +57,7 @@ class Scene extends Model
     obj.height *= @game().tileSize
     $('#scene-tabs').append(tabTmpl(@toJSON()))
     $('#scene-containers').append(containerTmpl(obj))
-    @layers().forEach (layer) -> layer.renderToEditor()
+    @sortedLayers().forEach (layer) -> layer.renderToEditor()
     $("#scene-containers > li[data-model-id='#{@id}'] .layers-list > .nav-item").first().addClass('active')
     @render()
 
