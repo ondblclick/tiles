@@ -1,8 +1,9 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Layer = require './layer.coffee'
-tabTmpl = require('../templates/scene_tab.hbs')
-containerTmpl = require('../templates/scene_container.hbs')
+
+tabTmpl = require '../templates/scene_tab.hbs'
+containerTmpl = require '../templates/scene_container.hbs'
 
 class Scene extends Model
   @attributes('name', 'width', 'height')

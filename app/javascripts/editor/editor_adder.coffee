@@ -1,7 +1,8 @@
 Model = require 'activer'
 Editor = require '../editor.coffee'
 Modal = require '../modal.coffee'
-addMenuTmpl = require('../../templates/toolbar_menus/add_menu.hbs')
+
+addMenuTmpl = require '../../templates/toolbar_menus/add_menu.hbs'
 
 class EditorAdder extends Model
   @belongsTo('Editor')

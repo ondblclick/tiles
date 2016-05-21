@@ -2,8 +2,8 @@ Model = require 'activer'
 Editor = require '../editor.coffee'
 Modal = require '../modal.coffee'
 
-exportMenuTmpl = require('../../templates/toolbar_menus/export_menu.hbs')
-exportJSONTmpl = require('../../templates/export_json.hbs')
+exportMenuTmpl = require '../../templates/toolbar_menus/export_menu.hbs'
+exportJSONTmpl = require '../../templates/export_json.hbs'
 
 class EditorExporter extends Model
   @belongsTo('Editor')

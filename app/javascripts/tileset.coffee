@@ -1,8 +1,9 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Tile = require './tile.coffee'
-tabTmpl = require('../templates/tile_set_tab.hbs')
-containerTmpl = require('../templates/tile_set_container.hbs')
+
+tabTmpl = require '../templates/tile_set_tab.hbs'
+containerTmpl = require '../templates/tile_set_container.hbs'
 
 class TileSet extends Model
   @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset', 'tileOpacityColor')

@@ -1,7 +1,8 @@
 Model = require 'activer'
 Scene = require './scene.coffee'
 Cell = require './cell.coffee'
-tabTmpl = require('../templates/layer_tab.hbs')
+
+tabTmpl = require '../templates/layer_tab.hbs'
 
 class Layer extends Model
   @attributes('name', 'order')
