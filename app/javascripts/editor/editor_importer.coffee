@@ -1,6 +1,6 @@
 Model = require 'activer'
 Editor = require '../editor.coffee'
-emportMenuTemplate = require('../../templates/import_menu.hbs')
+emportMenuTmpl = require('../../templates/import_menu.hbs')
 
 class EditorImporter extends Model
   @belongsTo('Editor')
@@ -9,6 +9,6 @@ class EditorImporter extends Model
     @appendMenu()
 
   appendMenu: ->
-    @editor().toolbar().append(emportMenuTemplate())
+    @editor().toolbar().append(emportMenuTmpl())
 
 module.exports = EditorImporter

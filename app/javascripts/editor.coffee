@@ -8,9 +8,7 @@ EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
 utils = require './utils.coffee'
-textInputTemplate = require('../templates/text_input.hbs')
-
-require('jsrender')($)
+textFieldTmpl = require('../templates/text_input.hbs')
 
 class Editor extends Model
   @attributes()
@@ -63,7 +61,7 @@ class Editor extends Model
     $form.empty()
     ctor = instance.constructor
     ctor.fields.forEach (field) ->
-      $form.append(textInputTemplate({ name: field, value: instance[field] })) if field in ctor.WHITELISTED_FIELDS
+      $form.append(textFieldTmpl({ name: field, value: instance[field] })) if field in ctor.WHITELISTED_FIELDS
     $('#edit-modal').off 'click'
     $('#edit-modal button').on 'click', ->
       data = {}

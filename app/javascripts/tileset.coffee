@@ -1,8 +1,8 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Tile = require './tile.coffee'
-tileSetTab = require('../templates/tileset_tab.hbs')
-tileSetContainer = require('../templates/tileset_container.hbs')
+tabTmpl = require('../templates/tileset_tab.hbs')
+containerTmpl = require('../templates/tileset_container.hbs')
 
 class TileSet extends Model
   @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset', 'tileOpacityColor')
@@ -48,8 +48,8 @@ class TileSet extends Model
   renderToEditor: ->
     obj = @toJSON()
     obj.tiles = @tiles().map((tile) -> tile.toJSON())
-    $('#tileset-tabs').append(tileSetTab(@toJSON()))
-    $('#tileset-containers').append(tileSetContainer(obj))
+    $('#tileset-tabs').append(tabTmpl(@toJSON()))
+    $('#tileset-containers').append(containerTmpl(obj))
     @renderStyles()
     @renderImage()
 

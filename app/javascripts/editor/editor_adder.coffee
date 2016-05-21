@@ -1,7 +1,7 @@
 Model = require 'activer'
 Editor = require '../editor.coffee'
-textInputTemplate = require('../../templates/text_input.hbs')
-addMenuTemplate = require('../../templates/add_menu.hbs')
+textFieldTmpl = require('../../templates/text_input.hbs')
+addMenuTmpl = require('../../templates/add_menu.hbs')
 
 class EditorAdder extends Model
   @belongsTo('Editor')
@@ -13,13 +13,13 @@ class EditorAdder extends Model
     @bindings()
 
   appendMenu: ->
-    @editor().toolbar().append(addMenuTemplate())
+    @editor().toolbar().append(addMenuTmpl())
 
   newModalFor: (attributes, onSubmit) ->
     $form = $('#new-modal form')
     $form.empty()
     attributes.forEach (field) ->
-      $form.append(textInputTemplate({ name: field, value: '' }))
+      $form.append(textFieldTmpl({ name: field, value: '' }))
     $('#new-modal button').off 'click'
     $('#new-modal button').on 'click', ->
       data = {}

@@ -1,6 +1,6 @@
 Model = require 'activer'
 Editor = require '../editor.coffee'
-exportMenuTemplate = require('../../templates/export_menu.hbs')
+exportMenuTmpl = require('../../templates/export_menu.hbs')
 
 class EditorExporter extends Model
   @belongsTo('Editor')
@@ -10,7 +10,7 @@ class EditorExporter extends Model
     @bindings()
 
   appendMenu: ->
-    @editor().toolbar().append(exportMenuTemplate())
+    @editor().toolbar().append(exportMenuTmpl())
 
   bindings: ->
     $(document).on 'click', '#export-as-json', (e) =>
