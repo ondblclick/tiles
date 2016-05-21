@@ -28,5 +28,6 @@ module.exports = {
       'jQuery': "jquery",
       'window.Tether': "tether"
     })
-  ]
+  ],
+  devtool: "#cheap-module-eval-source-map"
 };

@@ -1,9 +1,12 @@
 class ContextMenu
-  constructor: (@sel, @el, @cb) ->
+  constructor: (@tmpl, @el, @cb) ->
     @
 
   showAt: (x, y) ->
-    $menu = $(@sel).show().css
+    $(document).click()
+    $menu = $($.parseHTML(@tmpl))
+    $('body').append($menu)
+    $menu.show().css
       position: 'absolute'
       left: @menuPosition(x, 'width', 'scrollLeft')
       top: @menuPosition(y, 'height', 'scrollTop')
@@ -15,7 +18,7 @@ class ContextMenu
       @cb($invokedOn, $selectedMenu)
 
     $(document).on 'click', ->
-      $menu.hide()
+      $menu.remove()
 
   menuPosition: (mouse, direction, scrollDirection) ->
     win = $(window)[direction]()
