@@ -9,9 +9,10 @@ class Scene extends Model
   @attributes('name', 'width', 'height')
   @belongsTo('Game')
   @hasMany('Layer', { dependent: 'destroy' })
+  @delegate('editor', 'Game')
 
   @STYLES:
-    GREY: 'rgba(0, 0, 0, .05)'
+    GREY: '#f6f6f6'
     WHITE: '#fff'
 
   @WHITELISTED_FIELDS: ['name', 'width', 'height']
@@ -23,6 +24,22 @@ class Scene extends Model
   clear: ->
     @context().fillStyle = Scene.STYLES.WHITE
     @context().fillRect(0, 0, @width * @game().tileSize, @height * @game().tileSize)
+
+  reRenderSquare: ({ x, y }) ->
+    cells = []
+    @sortedLayers().forEach (layer) ->
+      cell = layer.cells().where({ col: x, row: y })[0]
+      cells.push cell if cell
+
+    if cells.length
+      console.log cells
+      cells.forEach (cell) -> cell.render()
+    else
+      if (y % 2 is 0 and x % 2 is 1) or (y % 2 is 1 and x % 2 is 0)
+        @context().fillStyle = Scene.STYLES.GREY
+      else
+        @context().fillStyle = Scene.STYLES.WHITE
+      @drawRect(x * @game().tileSize,y * @game().tileSize)
 
   drawRect: (x, y) ->
     @context().fillRect(x, y, @game().tileSize, @game().tileSize)

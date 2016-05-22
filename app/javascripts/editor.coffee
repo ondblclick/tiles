@@ -26,6 +26,7 @@ class Editor extends Model
     @createEditorAdder()
     @createEditorContexter()
     @tile = undefined
+    @dummySquare = undefined
 
   toolbar: ->
     $('#toolbar')
@@ -90,14 +91,16 @@ class Editor extends Model
 
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
-      @activeScene().render()
+      return unless @dummySquare
+      @activeScene().reRenderSquare(@dummySquare)
+      @dummySquare = undefined
 
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('canvas')
       return unless @tile
       pageX = Math.floor(e.offsetX / @game().tileSize)
       pageY = Math.floor(e.offsetY / @game().tileSize)
-      @activeScene().render()
+      @activeScene().reRenderSquare(@dummySquare) if @dummySquare
       @activeScene().context().fillStyle = Scene.STYLES.WHITE
       @activeScene().drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
       @activeScene().context().globalAlpha = 0.3
@@ -113,6 +116,7 @@ class Editor extends Model
         @game().tileSize
       ]
       @activeScene().context().drawImage(attrs...)
+      @dummySquare = { x: pageX, y: pageY }
       @activeScene().context().globalAlpha = 1
 
 module.exports = Editor

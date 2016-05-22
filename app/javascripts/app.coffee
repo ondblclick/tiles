@@ -6,12 +6,12 @@ $(document).ready ->
   editor = Editor.create()
   game = editor.createGame({ tileSize: 48 })
 
-  tileSet0 = game.tileSets().create
-    name: 'tielset 0'
-    imagePath: '../../images/tiles_0.png'
-    cols: 0
-    rows: 0
-    tileOffset: 0
+  # tileSet0 = game.tileSets().create
+  #   name: 'tielset 0'
+  #   imagePath: '../../images/tiles_0.png'
+  #   cols: 0
+  #   rows: 0
+  #   tileOffset: 0
 
   tileSet1 = game.tileSets().create
     name: 'tileset 1'
