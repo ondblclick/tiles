@@ -45,6 +45,8 @@ class Terrain extends Model
       @game().tileSize
     ]
 
+    # TODO: работа с изображениями - узкое место
+    # floodfill жутко тормозит при больших размерах сцены
     ctx.drawImage(attrs...)
     imgData = ctx.getImageData(0, 0, 48, 48)
     ctx.putImageData(@adjustImage(imgData), 0, 0)

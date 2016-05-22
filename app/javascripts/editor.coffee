@@ -86,6 +86,17 @@ class Editor extends Model
         @tile = Tile.find($(e.target).data('model-id'))
 
     $(document).on 'click', 'canvas', (e) =>
+      console.time('floodfill')
+      return unless @toolIsSelected('fill')
+      @activeLayer().cells().deleteAll()
+      [0..(@activeScene().width - 1)].forEach (col) =>
+        [0..(@activeScene().height - 1)].forEach (row) =>
+          cell = @activeLayer().cells().create({ col: col, row: row })
+          cell.createTerrain({ tileId: @tile.id })
+      @activeScene().render()
+      console.timeEnd('floodfill')
+
+    $(document).on 'click', 'canvas', (e) =>
       return unless @toolIsSelected('remove')
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)

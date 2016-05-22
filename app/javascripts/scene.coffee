@@ -26,7 +26,6 @@ class Scene extends Model
     @context().fillRect(0, 0, @width * @game().tileSize, @height * @game().tileSize)
 
   renderCell: ({ x, y }) ->
-    console.log x, y
     cells = []
     @sortedLayers().forEach (layer) ->
       cell = layer.cells().where({ col: x, row: y })[0]
