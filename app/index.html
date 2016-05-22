@@ -8,9 +8,23 @@
   <nav class="navbar navbar-dark bg-inverse navbar-full" style='margin-bottom: 15px;'>
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Tiles</a>
-      <ul class="nav navbar-nav" id='toolbar'></ul>
+      <ul class="nav navbar-nav" id='menubar'></ul>
     </div>
   </nav>
+
+  <div class="container-fluid">
+    <div id="toolbar" class='breadcrumb'>
+      <label class="radio-inline">
+        <input type="radio" checked='checked' name="toolbar" id="draw"> draw
+      </label>
+      <label class="radio-inline">
+        <input type="radio" name="toolbar" id="remove"> remove
+      </label>
+      <label class="radio-inline">
+        <input type="radio" name="toolbar" id="fill"> fill
+      </label>
+    </div>
+  </div>
 
   <div class="container-fluid">
     <div class="row">

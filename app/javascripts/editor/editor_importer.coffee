@@ -10,6 +10,6 @@ class EditorImporter extends Model
     @appendMenu()
 
   appendMenu: ->
-    @editor().toolbar().append(emportMenuTmpl())
+    @editor().menubar().append(emportMenuTmpl())
 
 module.exports = EditorImporter

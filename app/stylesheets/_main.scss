@@ -24,8 +24,13 @@ textarea {
   margin-right: 0;
 }
 
+#toolbar {
+  label {
+    margin-right: 10px;
+  }
+}
+
 #tilesets {
-  height: calc(100vh - 72px);
   padding-bottom: 15px;
 }
 
@@ -41,7 +46,7 @@ textarea {
 #tileset-containers {
   > li {
     padding: 15px;
-    height: calc(100vh - 72px - 15px - 43px);
+    height: calc(100vh - 72px - 15px - 43px - 70px);
     border: 1px solid #ddd;
     border-top: none;
   }
@@ -53,7 +58,7 @@ textarea {
       padding-left: 0;
 
       .canvas-container {
-        height: calc(100vh - 72px - 15px - 43px - 31px);
+        height: calc(100vh - 72px - 15px - 43px - 31px - 70px);
         overflow: auto;
         border: 1px solid #ddd;
 

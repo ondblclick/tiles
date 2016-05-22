@@ -13,7 +13,7 @@ class EditorExporter extends Model
     @bindings()
 
   appendMenu: ->
-    @editor().toolbar().append(exportMenuTmpl())
+    @editor().menubar().append(exportMenuTmpl())
 
   bindings: ->
     $(document).on 'click', '#export-as-json', (e) =>

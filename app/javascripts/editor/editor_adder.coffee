@@ -15,7 +15,7 @@ class EditorAdder extends Model
     @bindings()
 
   appendMenu: ->
-    @editor().toolbar().append(addMenuTmpl())
+    @editor().menubar().append(addMenuTmpl())
 
   bindings: ->
     $(document).on 'click', '#add-scene', (e) =>

@@ -25,14 +25,14 @@ class Scene extends Model
     @context().fillStyle = Scene.STYLES.WHITE
     @context().fillRect(0, 0, @width * @game().tileSize, @height * @game().tileSize)
 
-  reRenderSquare: ({ x, y }) ->
+  renderCell: ({ x, y }) ->
+    console.log x, y
     cells = []
     @sortedLayers().forEach (layer) ->
       cell = layer.cells().where({ col: x, row: y })[0]
       cells.push cell if cell
 
     if cells.length
-      console.log cells
       cells.forEach (cell) -> cell.render()
     else
       if (y % 2 is 0 and x % 2 is 1) or (y % 2 is 1 and x % 2 is 0)

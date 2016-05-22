@@ -31,6 +31,9 @@ class Editor extends Model
   toolbar: ->
     $('#toolbar')
 
+  menubar: ->
+    $('#menubar')
+
   activeLayer: ->
     Layer.find($('#scene-containers > .active .layers-list > .active').data('model-id'))
 
@@ -56,6 +59,9 @@ class Editor extends Model
     res.game = @game().toJSON()
     res
 
+  toolIsSelected: (tool) ->
+    $("#toolbar ##{tool}").is(':checked')
+
   bindings: ->
     $(document).on 'click', '.layers-list span', (e) =>
       $a = $(e.target).parents('.nav-item')
@@ -80,6 +86,16 @@ class Editor extends Model
         @tile = Tile.find($(e.target).data('model-id'))
 
     $(document).on 'click', 'canvas', (e) =>
+      return unless @toolIsSelected('remove')
+      currentX = Math.floor(e.offsetX / @game().tileSize)
+      currentY = Math.floor(e.offsetY / @game().tileSize)
+      cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
+      return unless cell
+      cell.destroy()
+      @activeScene().renderCell({ x: currentX, y: currentY })
+
+    $(document).on 'click', 'canvas', (e) =>
+      return unless @toolIsSelected('draw')
       return unless @tile
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
@@ -87,12 +103,12 @@ class Editor extends Model
       cell = @activeLayer().cells().create({ col: currentX, row: currentY }) unless cell
       cell.terrain().destroy() if cell.terrain()
       cell.createTerrain({ tileId: @tile.id })
-      @activeScene().render()
+      @activeScene().renderCell({ x: currentX, y: currentY })
 
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
       return unless @dummySquare
-      @activeScene().reRenderSquare(@dummySquare)
+      @activeScene().renderCell(@dummySquare)
       @dummySquare = undefined
 
     $(document).on 'mousemove', (e) =>
@@ -100,7 +116,7 @@ class Editor extends Model
       return unless @tile
       pageX = Math.floor(e.offsetX / @game().tileSize)
       pageY = Math.floor(e.offsetY / @game().tileSize)
-      @activeScene().reRenderSquare(@dummySquare) if @dummySquare
+      @activeScene().renderCell(@dummySquare) if @dummySquare
       @activeScene().context().fillStyle = Scene.STYLES.WHITE
       @activeScene().drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
       @activeScene().context().globalAlpha = 0.3
