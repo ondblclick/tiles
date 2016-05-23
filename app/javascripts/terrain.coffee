@@ -21,18 +21,6 @@ class Terrain extends Model
   render: ->
     ctx = $('#buffer')[0].getContext('2d')
 
-    attrs1 = [
-      $('#img-buffer')[0],
-      0,
-      0,
-      @game().tileSize,
-      @game().tileSize,
-      @cell().col * @game().tileSize,
-      @cell().row * @game().tileSize,
-      @game().tileSize,
-      @game().tileSize
-    ]
-
     attrs = [
       @tile().tileSet().img,
       @tile().x,
@@ -47,10 +35,22 @@ class Terrain extends Model
 
     # TODO: работа с изображениями - узкое место
     # floodfill жутко тормозит при больших размерах сцены
+
     ctx.drawImage(attrs...)
-    imgData = ctx.getImageData(0, 0, 48, 48)
-    ctx.putImageData(@adjustImage(imgData), 0, 0)
-    $('#img-buffer')[0].src = $('#buffer')[0].toDataURL('image/png')
+    adjusted = @adjustImage(ctx.getImageData(0, 0, 48, 48))
+    ctx.putImageData(adjusted, 0, 0)
+
+    attrs1 = [
+      $('#buffer')[0],
+      0,
+      0,
+      @game().tileSize,
+      @game().tileSize,
+      @cell().col * @game().tileSize,
+      @cell().row * @game().tileSize,
+      @game().tileSize,
+      @game().tileSize
+    ]
     @cell().layer().scene().context().drawImage(attrs1...)
 
 module.exports = Terrain

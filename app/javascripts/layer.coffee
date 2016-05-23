@@ -15,6 +15,9 @@ class Layer extends Model
     res.cells = @cells().map((cell) -> cell.toJSON())
     res
 
+  render: ->
+    @renderTerrain()
+
   renderTerrain: ->
     @cells().map((cell) -> cell.render())
 

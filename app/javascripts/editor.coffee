@@ -89,11 +89,30 @@ class Editor extends Model
       console.time('floodfill')
       return unless @toolIsSelected('fill')
       @activeLayer().cells().deleteAll()
+      cells = @activeLayer().cells()
       [0..(@activeScene().width - 1)].forEach (col) =>
         [0..(@activeScene().height - 1)].forEach (row) =>
-          cell = @activeLayer().cells().create({ col: col, row: row })
+          cell = cells.create({ col: col, row: row })
           cell.createTerrain({ tileId: @tile.id })
-      @activeScene().render()
+
+      # HACK: using context.createPattern here to speed up rendering process
+      ctx = $('#buffer')[0].getContext('2d')
+      attrs = [
+        @tile.tileSet().img,
+        @tile.x,
+        @tile.y,
+        @game().tileSize,
+        @game().tileSize,
+        0,
+        0,
+        @game().tileSize,
+        @game().tileSize
+      ]
+      ctx.drawImage(attrs...)
+      pattern = @activeScene().context().createPattern($('#buffer')[0], 'repeat')
+      @activeScene().context().rect(0, 0, @activeScene().canvas()[0].width, @activeScene().canvas()[0].height)
+      @activeScene().context().fillStyle = pattern
+      @activeScene().context().fill()
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>

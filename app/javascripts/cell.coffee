@@ -14,6 +14,7 @@ class Cell extends Model
     res
 
   render: ->
+    # return false
     # TODO: allow nil
     @terrain().render() if @terrain()
 
