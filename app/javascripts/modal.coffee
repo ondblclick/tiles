@@ -12,12 +12,17 @@ class Modal
     $('#modal .modal-body').html(content)
     $('#modal .modal-footer').empty()
     for k, v of @actions
-      button = $("<button class='btn btn-secondary'>#{k}</button>")
-      button.on 'click', ->
-        data = {}
-        $('#modal .modal-body form').serializeArray().map (x) -> data[x.name] = x.value
-        v(data)
-        $('#modal').modal('hide')
+      if k is 'Download'
+        button = $("<a href='#{v}' download class='btn btn-secondary'>Download</a>")
+        button.on 'click', ->
+          $('#modal').modal('hide')
+      else
+        button = $("<button class='btn btn-secondary'>#{k}</button>")
+        button.on 'click', ->
+          data = {}
+          $('#modal .modal-body form').serializeArray().map (x) -> data[x.name] = x.value
+          v(data)
+          $('#modal').modal('hide')
 
       $('#modal .modal-footer').append(button)
 
