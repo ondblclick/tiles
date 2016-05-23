@@ -29,27 +29,22 @@ class EditorExporter extends Model
 
       @editor().game().scenes().forEach (scene) =>
         width = Math.max(width, scene.width * @editor().game().tileSize)
-        height += scene.height * @editor().game().tileSize
+        height += scene.height * @editor().game().tileSize + @editor().game().tileSize
 
       canvas = document.createElement('canvas')
       canvas.height = height
       canvas.width = width
-      canvas.style = 'display: none;'
-
-      $('body').append(canvas)
+      canvas.style.maxWidth = '100%'
       ctx = canvas.getContext('2d')
 
-      @editor().game().scenes().forEach (scene) ->
+      @editor().game().scenes().forEach (scene) =>
         ctx.drawImage(scene.canvas()[0], 0, heightOffset)
-        heightOffset += scene.canvas()[0].height
+        heightOffset += scene.canvas()[0].height + @editor().game().tileSize
 
-      content = document.createElement('img')
-      content.src = canvas.toDataURL('image/png')
-      content.style = 'max-width: 100%'
       new Modal(
-        content: content
+        content: canvas
         actions:
-          Download: content.src
+          Download: canvas.toDataURL('image/png')
       ).show()
 
 module.exports = EditorExporter
