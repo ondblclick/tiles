@@ -15,6 +15,17 @@ class Layer extends Model
     res.cells = @cells().map((cell) -> cell.toJSON())
     res
 
+  renderCellToHiddenCanvas: (pos) ->
+    @cells().where({ col: pos.x, row: pos.y })[0].render(@canvas.getContext('2d'))
+
+  removeCellFromHiddenCanvas: (pos) ->
+    @canvas.getContext('2d').clearRect(pos.x * @game().tileSize, pos.y * @game().tileSize, @game().tileSize, @game().tileSize)
+
+  afterCreate: ->
+    @canvas = document.createElement('canvas')
+    @canvas.height = @scene().height * @game().tileSize
+    @canvas.width = @scene().width * @game().tileSize
+
   render: ->
     @renderTerrain()
 

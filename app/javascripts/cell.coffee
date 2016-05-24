@@ -29,7 +29,7 @@ class Cell extends Model
     origin
 
   # smells like shit
-  render: ->
+  render: (context = @cachedContext) ->
     attrs = [
       @cachedTileSet.img,
       @cachedTile.x,
@@ -60,6 +60,6 @@ class Cell extends Model
       @cachedTileSize,
       @cachedTileSize
     ]
-    @cachedContext.drawImage(attrs1...)
+    context.drawImage(attrs1...)
 
 module.exports = Cell

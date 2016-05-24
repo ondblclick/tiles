@@ -81,7 +81,8 @@ class Editor extends Model
       # Все же проблема быстрого старта останется нетронутой - первичный рендер будет занимать кучу времени
 
       console.time 'scene ordering'
-      @activeScene().render()
+      @activeScene().sortedLayers().forEach (layer) =>
+        @activeScene().context().drawImage(layer.canvas, 0, 0)
       false
       console.timeEnd 'scene ordering'
 
@@ -124,6 +125,13 @@ class Editor extends Model
       @activeScene().context().rect(0, 0, @activeScene().canvas()[0].width, @activeScene().canvas()[0].height)
       @activeScene().context().fillStyle = pattern
       @activeScene().context().fill()
+
+      # draw to off-dom layer canvas
+      ctx = @activeLayer().canvas.getContext('2d')
+      pattern = ctx.createPattern($('#buffer')[0], 'repeat')
+      ctx.rect(0, 0, @activeScene().canvas()[0].width, @activeScene().canvas()[0].height)
+      ctx.fillStyle = pattern
+      ctx.fill()
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>
@@ -134,6 +142,7 @@ class Editor extends Model
       return unless cell
       cell.destroy()
       @activeScene().renderCell({ x: currentX, y: currentY })
+      @activeLayer().removeCellFromHiddenCanvas({ x: currentX, y: currentY })
 
     $(document).on 'click', 'canvas', (e) =>
       return unless @toolIsSelected('draw')
@@ -143,6 +152,7 @@ class Editor extends Model
       cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
       cell = @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @tile.id }) unless cell
       @activeScene().renderCell({ x: currentX, y: currentY })
+      @activeLayer().renderCellToHiddenCanvas({ x: currentX, y: currentY })
 
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
