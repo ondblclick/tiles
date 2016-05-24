@@ -2,7 +2,8 @@
   "name": "test",
   "version": "1.0.0",
   "scripts": {
-    "postinstall": "webpack-dev-server --content-base dist/"
+    "postinstall": "webpack-dev-server --content-base dist/",
+    "start": "webpack-dev-server --content-base dist/"
   },
   "devDependencies": {
     "coffee-loader": "^0.7.2",
