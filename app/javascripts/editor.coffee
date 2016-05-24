@@ -80,8 +80,10 @@ class Editor extends Model
       # избавится от понятия тиррейн и всю отрисовку переместить в целл?
       # Все же проблема быстрого старта останется нетронутой - первичный рендер будет занимать кучу времени
 
+      console.time 'scene ordering'
       @activeScene().render()
       false
+      console.timeEnd 'scene ordering'
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       $('#tileset-containers').toggleClass('show-hidden-tiles', $(e.target).is(':checked'))
@@ -102,8 +104,7 @@ class Editor extends Model
       cells = @activeLayer().cells()
       [0..(@activeScene().width - 1)].forEach (col) =>
         [0..(@activeScene().height - 1)].forEach (row) =>
-          cell = cells.create({ col: col, row: row })
-          cell.createTerrain({ tileId: @tile.id })
+          cell = cells.create({ col: col, row: row, tileId: @tile.id })
 
       # HACK: using context.createPattern here to speed up rendering process
       ctx = $('#buffer')[0].getContext('2d')
@@ -140,9 +141,7 @@ class Editor extends Model
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
       cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
-      cell = @activeLayer().cells().create({ col: currentX, row: currentY }) unless cell
-      cell.terrain().destroy() if cell.terrain()
-      cell.createTerrain({ tileId: @tile.id })
+      cell = @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @tile.id }) unless cell
       @activeScene().renderCell({ x: currentX, y: currentY })
 
     $(document).on 'mouseout', (e) =>
