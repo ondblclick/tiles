@@ -1,6 +1,7 @@
 Model = require 'activer'
 Layer = require './layer.coffee'
 Tile = require './tile.coffee'
+utils = require './utils.coffee'
 
 class Cell extends Model
   @belongsTo('Layer')
@@ -16,8 +17,8 @@ class Cell extends Model
     @cachedContext = @layer().scene().context()
     @cachedColor = @tile().tileSet().tileOpacityColor.split(',')
     @cachedTileSize = @cachedGame.tileSize
-    @cachedBufferCtx = $('#buffer')[0].getContext('2d')
-    @cachedBuffer = $('#buffer')[0]
+    @buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
+    @bufferContext = @buffer.getContext('2d')
 
   adjustImage: (origin) ->
     data = origin.data
@@ -30,7 +31,7 @@ class Cell extends Model
 
   # smells like shit
   render: (context = @cachedContext) ->
-    @cachedBufferCtx.drawImage(
+    @bufferContext.drawImage(
       @cachedTileSet.img,
       @cachedTile.x,
       @cachedTile.y,
@@ -41,11 +42,11 @@ class Cell extends Model
       @cachedTileSize,
       @cachedTileSize
     )
-    adjusted = @adjustImage(@cachedBufferCtx.getImageData(0, 0, 48, 48))
-    @cachedBufferCtx.putImageData(adjusted, 0, 0)
+    adjusted = @adjustImage(@bufferContext.getImageData(0, 0, 48, 48))
+    @bufferContext.putImageData(adjusted, 0, 0)
 
     context.drawImage(
-      @cachedBuffer,
+      @buffer,
       0,
       0,
       @cachedTileSize,

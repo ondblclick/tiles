@@ -25,8 +25,8 @@ class Editor extends Model
     @createEditorExporter()
     @createEditorAdder()
     @createEditorContexter()
-    @tile = undefined
-    @dummySquare = undefined
+    @selectedTile = undefined
+    @cellBelowCursorPosition = undefined
 
   toolbar: ->
     $('#toolbar')
@@ -82,11 +82,11 @@ class Editor extends Model
     $(document).on 'click', '.tile', (e) =>
       if $(e.target).is('.is-active')
         $(e.target).removeClass('is-active')
-        @tile = undefined
+        @selectedTile = undefined
       else
         $('.tile').removeClass('is-active')
         $(e.target).addClass('is-active')
-        @tile = Tile.find($(e.target).data('model-id'))
+        @selectedTile = Tile.find($(e.target).data('model-id'))
 
     $(document).on 'click', 'canvas', (e) =>
       return unless @toolIsSelected('fill')
@@ -95,14 +95,15 @@ class Editor extends Model
       cells = @activeLayer().cells()
       [0..(@activeScene().width - 1)].forEach (col) =>
         [0..(@activeScene().height - 1)].forEach (row) =>
-          cell = cells.create({ col: col, row: row, tileId: @tile.id })
+          cell = cells.create({ col: col, row: row, tileId: @selectedTile.id })
 
       # HACK: using context.createPattern here to speed up rendering process
-      ctx = $('#buffer')[0].getContext('2d')
+      buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
+      ctx = buffer.getContext('2d')
       ctx.drawImage(
-        @tile.tileSet().img,
-        @tile.x,
-        @tile.y,
+        @selectedTile.tileSet().img,
+        @selectedTile.x,
+        @selectedTile.y,
         @game().tileSize,
         @game().tileSize,
         0,
@@ -110,8 +111,8 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       )
-      utils.canvas.fill(@activeScene().context(), $('#buffer')[0])
-      utils.canvas.fill(@activeLayer().context(), $('#buffer')[0])
+      utils.canvas.fill(@activeScene().context(), buffer)
+      utils.canvas.fill(@activeLayer().context(), buffer)
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>
@@ -126,26 +127,26 @@ class Editor extends Model
 
     $(document).on 'click', 'canvas', (e) =>
       return unless @toolIsSelected('draw')
-      return unless @tile
+      return unless @selectedTile
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
       cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
-      cell = @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @tile.id }) unless cell
+      cell = @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id }) unless cell
       @activeScene().renderCell({ x: currentX, y: currentY })
       @activeLayer().renderCell({ x: currentX, y: currentY })
 
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
-      return unless @dummySquare
-      @activeScene().renderCell(@dummySquare)
-      @dummySquare = undefined
+      return unless @cellBelowCursorPosition
+      @activeScene().renderCell(@cellBelowCursorPosition)
+      @cellBelowCursorPosition = undefined
 
     $(document).on 'mousemove', (e) =>
       return unless $(e.target).is('canvas')
-      return unless @tile
+      return unless @selectedTile
       pageX = Math.floor(e.offsetX / @game().tileSize)
       pageY = Math.floor(e.offsetY / @game().tileSize)
-      @activeScene().renderCell(@dummySquare) if @dummySquare
+      @activeScene().renderCell(@cellBelowCursorPosition) if @cellBelowCursorPosition
       @activeScene().context().clearRect(
         pageX * @game().tileSize,
         pageY * @game().tileSize,
@@ -154,9 +155,9 @@ class Editor extends Model
       )
       @activeScene().context().globalAlpha = 0.3
       @activeScene().context().drawImage(
-        @tile.tileSet().img,
-        @tile.x,
-        @tile.y,
+        @selectedTile.tileSet().img,
+        @selectedTile.x,
+        @selectedTile.y,
         @game().tileSize,
         @game().tileSize,
         pageX * @game().tileSize,
@@ -164,7 +165,7 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       )
-      @dummySquare = { x: pageX, y: pageY }
+      @cellBelowCursorPosition = { x: pageX, y: pageY }
       @activeScene().context().globalAlpha = 1
 
 module.exports = Editor

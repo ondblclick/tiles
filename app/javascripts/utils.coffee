@@ -15,4 +15,10 @@ utils.canvas =
     context.fillStyle = pattern
     context.fill()
 
+  create: (width, height) ->
+    canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    canvas
+
 module.exports = utils
