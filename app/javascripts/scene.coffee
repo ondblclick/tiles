@@ -11,12 +11,6 @@ class Scene extends Model
   @hasMany('Layer', { dependent: 'destroy' })
   @delegate('editor', 'Game')
 
-  @STYLES:
-    GREY: '#f6f6f6'
-    WHITE: '#fff'
-
-  @WHITELISTED_FIELDS: ['name', 'width', 'height']
-
   canvas: -> $("#scene-containers > li[data-model-id='#{@id}'] canvas")
 
   context: -> @canvas()[0].getContext('2d')
