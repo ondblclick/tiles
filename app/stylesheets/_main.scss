@@ -122,3 +122,23 @@ textarea {
     }
   }
 }
+
+.canvas-container {
+  position: relative;
+
+  canvas {
+    position: relative;
+    z-index: 20;
+  }
+
+  .grid {
+    z-index: 10;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: white;
+    background-image:
+    linear-gradient(45deg, #f5f5f5 25%, transparent 25%, transparent 75%, #f5f5f5 75%, #f5f5f5),
+    linear-gradient(45deg, #f5f5f5 25%, transparent 25%, transparent 75%, #f5f5f5 75%, #f5f5f5);
+  }
+}

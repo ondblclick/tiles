@@ -21,10 +21,6 @@ class Scene extends Model
 
   context: -> @canvas()[0].getContext('2d')
 
-  clear: ->
-    @context().fillStyle = Scene.STYLES.WHITE
-    @context().fillRect(0, 0, @width * @game().tileSize, @height * @game().tileSize)
-
   renderCell: ({ x, y }) ->
     cells = []
     @sortedLayers().forEach (layer) ->
@@ -34,34 +30,15 @@ class Scene extends Model
     if cells.length
       cells.forEach (cell) -> cell.render()
     else
-      if (y % 2 is 0 and x % 2 is 1) or (y % 2 is 1 and x % 2 is 0)
-        @context().fillStyle = Scene.STYLES.GREY
-      else
-        @context().fillStyle = Scene.STYLES.WHITE
-      @drawRect(x * @game().tileSize,y * @game().tileSize)
-
-  drawRect: (x, y) ->
-    @context().fillRect(x, y, @game().tileSize, @game().tileSize)
+      @context().clearRect(x * @game().tileSize, y * @game().tileSize, @game().tileSize, @game().tileSize)
 
   sortedLayers: ->
     @layers().sort (layerA, layerB) ->
       +layerA.order > +layerB.order
 
   render: ->
-    @clear()
-    @renderGrid()
+    @context().clearRect(0, 0, @width * @game().tileSize, @height * @game().tileSize)
     @sortedLayers().forEach (layer) -> layer.renderTerrain()
-
-  renderGrid: ->
-    @context().fillStyle = Scene.STYLES.GREY
-    col = 0
-    while col < @width
-      row = 0
-      while row < @height
-        if (row % 2 is 0 and col % 2 is 1) or (row % 2 is 1 and col % 2 is 0)
-          @drawRect(col * @game().tileSize, row * @game().tileSize)
-        row++
-      col++
 
   toJSON: ->
     res = super()
@@ -72,6 +49,8 @@ class Scene extends Model
     obj = @toJSON()
     obj.width *= @game().tileSize
     obj.height *= @game().tileSize
+    obj.tileSize = @game().tileSize
+    obj.tileSizeX2 = @game().tileSize * 2
     $('#scene-tabs').append(tabTmpl(@toJSON()))
     $('#scene-containers').append(containerTmpl(obj))
     @sortedLayers().forEach (layer) -> layer.renderToEditor()

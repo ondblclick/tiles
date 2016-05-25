@@ -70,21 +70,11 @@ class Editor extends Model
       $(e.target).parents('.layers-list').find('.nav-item').each (index, item) ->
         Layer.find($(item).data('model-id')).order = index
 
-      # TODO: еще одно узкое место. нельзя просто рендерить целиком большие сцены со множеством слоев.
-      # хранить кроме джисона еще и картинки, чтобы была возможность быстро стартовать?
-
-      # возвращаемся к одному канвасу на слой?
-      # изменения порядка будет приводить только к изменению взаиморасположения канвасов
-      # и не нужно ничего вообще перерисовывать
-
-      # избавится от понятия тиррейн и всю отрисовку переместить в целл?
-      # Все же проблема быстрого старта останется нетронутой - первичный рендер будет занимать кучу времени
-
-      console.time 'scene ordering'
+      console.time 'scene sorting'
       @activeScene().sortedLayers().forEach (layer) =>
         @activeScene().context().drawImage(layer.canvas, 0, 0)
       false
-      console.timeEnd 'scene ordering'
+      console.timeEnd 'scene sorting'
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       $('#tileset-containers').toggleClass('show-hidden-tiles', $(e.target).is(':checked'))
@@ -109,7 +99,7 @@ class Editor extends Model
 
       # HACK: using context.createPattern here to speed up rendering process
       ctx = $('#buffer')[0].getContext('2d')
-      attrs = [
+      ctx.drawImage(
         @tile.tileSet().img,
         @tile.x,
         @tile.y,
@@ -119,8 +109,7 @@ class Editor extends Model
         0,
         @game().tileSize,
         @game().tileSize
-      ]
-      ctx.drawImage(attrs...)
+      )
       pattern = @activeScene().context().createPattern($('#buffer')[0], 'repeat')
       @activeScene().context().rect(0, 0, @activeScene().canvas()[0].width, @activeScene().canvas()[0].height)
       @activeScene().context().fillStyle = pattern
@@ -166,10 +155,14 @@ class Editor extends Model
       pageX = Math.floor(e.offsetX / @game().tileSize)
       pageY = Math.floor(e.offsetY / @game().tileSize)
       @activeScene().renderCell(@dummySquare) if @dummySquare
-      @activeScene().context().fillStyle = Scene.STYLES.WHITE
-      @activeScene().drawRect(pageX * @game().tileSize, pageY * @game().tileSize)
+      @activeScene().context().clearRect(
+        pageX * @game().tileSize,
+        pageY * @game().tileSize,
+        @game().tileSize,
+        @game().tileSize
+      )
       @activeScene().context().globalAlpha = 0.3
-      attrs = [
+      @activeScene().context().drawImage(
         @tile.tileSet().img,
         @tile.x,
         @tile.y,
@@ -179,8 +172,7 @@ class Editor extends Model
         pageY * @game().tileSize,
         @game().tileSize,
         @game().tileSize
-      ]
-      @activeScene().context().drawImage(attrs...)
+      )
       @dummySquare = { x: pageX, y: pageY }
       @activeScene().context().globalAlpha = 1
 
