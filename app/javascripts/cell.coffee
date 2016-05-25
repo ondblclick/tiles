@@ -30,7 +30,7 @@ class Cell extends Model
 
   # smells like shit
   render: (context = @cachedContext) ->
-    attrs = [
+    @cachedBufferCtx.drawImage(
       @cachedTileSet.img,
       @cachedTile.x,
       @cachedTile.y,
@@ -40,16 +40,11 @@ class Cell extends Model
       0,
       @cachedTileSize,
       @cachedTileSize
-    ]
-
-    # TODO: работа с изображениями - узкое место
-    # floodfill жутко тормозит при больших размерах сцены
-
-    @cachedBufferCtx.drawImage(attrs...)
+    )
     adjusted = @adjustImage(@cachedBufferCtx.getImageData(0, 0, 48, 48))
     @cachedBufferCtx.putImageData(adjusted, 0, 0)
 
-    attrs1 = [
+    context.drawImage(
       @cachedBuffer,
       0,
       0,
@@ -59,7 +54,6 @@ class Cell extends Model
       @row * @cachedTileSize,
       @cachedTileSize,
       @cachedTileSize
-    ]
-    context.drawImage(attrs1...)
+    )
 
 module.exports = Cell

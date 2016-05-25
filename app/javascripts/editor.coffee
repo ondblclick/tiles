@@ -131,7 +131,7 @@ class Editor extends Model
       return unless cell
       cell.destroy()
       @activeScene().renderCell({ x: currentX, y: currentY })
-      @activeLayer().removeCellFromHiddenCanvas({ x: currentX, y: currentY })
+      @activeLayer().renderCell({ x: currentX, y: currentY })
 
     $(document).on 'click', 'canvas', (e) =>
       return unless @toolIsSelected('draw')
@@ -141,7 +141,7 @@ class Editor extends Model
       cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
       cell = @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @tile.id }) unless cell
       @activeScene().renderCell({ x: currentX, y: currentY })
-      @activeLayer().renderCellToHiddenCanvas({ x: currentX, y: currentY })
+      @activeLayer().renderCell({ x: currentX, y: currentY })
 
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')

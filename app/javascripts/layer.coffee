@@ -15,11 +15,15 @@ class Layer extends Model
     res.cells = @cells().map((cell) -> cell.toJSON())
     res
 
-  renderCellToHiddenCanvas: (pos) ->
-    @cells().where({ col: pos.x, row: pos.y })[0].render(@canvas.getContext('2d'))
-
-  removeCellFromHiddenCanvas: (pos) ->
-    @canvas.getContext('2d').clearRect(pos.x * @game().tileSize, pos.y * @game().tileSize, @game().tileSize, @game().tileSize)
+  renderCell: ({ x, y }) ->
+    @canvas.getContext('2d').clearRect(
+      x * @game().tileSize,
+      y * @game().tileSize,
+      @game().tileSize,
+      @game().tileSize
+    )
+    cell = @cells().where({ col: x, row: y })[0]
+    cell.render(@canvas.getContext('2d')) if cell
 
   afterCreate: ->
     @canvas = document.createElement('canvas')
@@ -27,9 +31,6 @@ class Layer extends Model
     @canvas.width = @scene().width * @game().tileSize
 
   render: ->
-    @renderTerrain()
-
-  renderTerrain: ->
     @cells().map((cell) -> cell.render())
 
   renderToEditor: ->

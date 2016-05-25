@@ -16,6 +16,12 @@ class Scene extends Model
   context: -> @canvas()[0].getContext('2d')
 
   renderCell: ({ x, y }) ->
+    @context().clearRect(
+      x * @game().tileSize,
+      y * @game().tileSize,
+      @game().tileSize,
+      @game().tileSize
+    )
     cells = []
     @sortedLayers().forEach (layer) ->
       cell = layer.cells().where({ col: x, row: y })[0]
@@ -23,8 +29,6 @@ class Scene extends Model
 
     if cells.length
       cells.forEach (cell) -> cell.render()
-    else
-      @context().clearRect(x * @game().tileSize, y * @game().tileSize, @game().tileSize, @game().tileSize)
 
   sortedLayers: ->
     @layers().sort (layerA, layerB) ->
@@ -32,7 +36,7 @@ class Scene extends Model
 
   render: ->
     @context().clearRect(0, 0, @width * @game().tileSize, @height * @game().tileSize)
-    @sortedLayers().forEach (layer) -> layer.renderTerrain()
+    @sortedLayers().forEach (layer) -> layer.render()
 
   toJSON: ->
     res = super()
