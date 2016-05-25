@@ -89,8 +89,8 @@ class Editor extends Model
         @tile = Tile.find($(e.target).data('model-id'))
 
     $(document).on 'click', 'canvas', (e) =>
-      console.time('floodfill')
       return unless @toolIsSelected('fill')
+      console.time('floodfill')
       @activeLayer().cells().deleteAll()
       cells = @activeLayer().cells()
       [0..(@activeScene().width - 1)].forEach (col) =>
@@ -110,17 +110,8 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       )
-      pattern = @activeScene().context().createPattern($('#buffer')[0], 'repeat')
-      @activeScene().context().rect(0, 0, @activeScene().canvas()[0].width, @activeScene().canvas()[0].height)
-      @activeScene().context().fillStyle = pattern
-      @activeScene().context().fill()
-
-      # draw to off-dom layer canvas
-      ctx = @activeLayer().canvas.getContext('2d')
-      pattern = ctx.createPattern($('#buffer')[0], 'repeat')
-      ctx.rect(0, 0, @activeScene().canvas()[0].width, @activeScene().canvas()[0].height)
-      ctx.fillStyle = pattern
-      ctx.fill()
+      utils.canvas.fill(@activeScene().context(), $('#buffer')[0])
+      utils.canvas.fill(@activeLayer().context(), $('#buffer')[0])
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>

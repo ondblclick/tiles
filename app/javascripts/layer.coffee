@@ -15,15 +15,18 @@ class Layer extends Model
     res.cells = @cells().map((cell) -> cell.toJSON())
     res
 
+  context: ->
+    @canvas.getContext('2d')
+
   renderCell: ({ x, y }) ->
-    @canvas.getContext('2d').clearRect(
+    @context().clearRect(
       x * @game().tileSize,
       y * @game().tileSize,
       @game().tileSize,
       @game().tileSize
     )
     cell = @cells().where({ col: x, row: y })[0]
-    cell.render(@canvas.getContext('2d')) if cell
+    cell.render(@context()) if cell
 
   afterCreate: ->
     @canvas = document.createElement('canvas')

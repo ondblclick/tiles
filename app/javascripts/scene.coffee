@@ -25,10 +25,7 @@ class Scene extends Model
     cells = []
     @sortedLayers().forEach (layer) ->
       cell = layer.cells().where({ col: x, row: y })[0]
-      cells.push cell if cell
-
-    if cells.length
-      cells.forEach (cell) -> cell.render()
+      cell.render() if cell
 
   sortedLayers: ->
     @layers().sort (layerA, layerB) ->
