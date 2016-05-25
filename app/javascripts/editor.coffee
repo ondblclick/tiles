@@ -131,7 +131,8 @@ class Editor extends Model
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
       cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
-      cell = @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id }) unless cell
+      cell.destroy() if cell
+      @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
       @activeScene().renderCell({ x: currentX, y: currentY })
       @activeLayer().renderCell({ x: currentX, y: currentY })
 
