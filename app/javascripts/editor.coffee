@@ -143,37 +143,39 @@ class Editor extends Model
       cell.render()
       @activeScene().render(sceneChunk)
 
-    # $(document).on 'mouseout', (e) =>
-    #   return unless $(e.target).is('canvas')
-    #   return unless @cellBelowCursorPosition
-    #   @activeScene().renderCell(@cellBelowCursorPosition)
-    #   @cellBelowCursorPosition = undefined
+    $(document).on 'mouseout', (e) =>
+      return unless $(e.target).is('canvas')
+      return unless @selectedTile
+      sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
+      sceneChunk.dirty = true
+      @activeScene().render()
 
-    # $(document).on 'mousemove', (e) =>
-    #   return unless $(e.target).is('canvas')
-    #   return unless @selectedTile
-    #   pageX = Math.floor(e.offsetX / @game().tileSize)
-    #   pageY = Math.floor(e.offsetY / @game().tileSize)
-    #   @activeScene().renderCell(@cellBelowCursorPosition) if @cellBelowCursorPosition
-    #   @activeScene().context().clearRect(
-    #     pageX * @game().tileSize,
-    #     pageY * @game().tileSize,
-    #     @game().tileSize,
-    #     @game().tileSize
-    #   )
-    #   @activeScene().context().globalAlpha = 0.3
-    #   @activeScene().context().drawImage(
-    #     @selectedTile.tileSet().img,
-    #     @selectedTile.x,
-    #     @selectedTile.y,
-    #     @game().tileSize,
-    #     @game().tileSize,
-    #     pageX * @game().tileSize,
-    #     pageY * @game().tileSize,
-    #     @game().tileSize,
-    #     @game().tileSize
-    #   )
-    #   @cellBelowCursorPosition = { x: pageX, y: pageY }
-    #   @activeScene().context().globalAlpha = 1
+    $(document).on 'mousemove', (e) =>
+      return unless $(e.target).is('canvas')
+      return unless @selectedTile
+      currentX = Math.floor(e.offsetX / @game().tileSize)
+      currentY = Math.floor(e.offsetY / @game().tileSize)
+      sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
+      @activeScene().render()
+      sceneChunk.dirty = true
+      sceneChunk.context().clearRect(
+        currentX * @game().tileSize,
+        currentY * @game().tileSize,
+        @game().tileSize,
+        @game().tileSize
+      )
+      sceneChunk.context().globalAlpha = 0.3
+      sceneChunk.context().drawImage(
+        @selectedTile.tileSet().img,
+        @selectedTile.x,
+        @selectedTile.y,
+        @game().tileSize,
+        @game().tileSize,
+        currentX * @game().tileSize,
+        currentY * @game().tileSize,
+        @game().tileSize,
+        @game().tileSize
+      )
+      sceneChunk.context().globalAlpha = 1
 
 module.exports = Editor
