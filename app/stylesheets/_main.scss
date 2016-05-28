@@ -55,14 +55,10 @@ textarea {
 #scene-containers {
   > li {
     .col-md-9 {
-      padding-left: 0;
-
       .canvas-container {
         height: calc(100vh - 72px - 15px - 43px - 31px - 70px);
         overflow: scroll;
         border: 1px solid #ddd;
-
-        // canvas { box-shadow: 0 0 0 1px #ddd; }
       }
     }
   }
