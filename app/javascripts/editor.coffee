@@ -26,7 +26,10 @@ class Editor extends Model
     @createEditorAdder()
     @createEditorContexter()
     @selectedTile = undefined
-    @cellBelowCursorPosition = undefined
+    @spacePressed = false
+    @dragScroll = false
+    @dragScrollStartX = 0
+    @dragScrollStartY = 0
 
   toolbar: ->
     $('#toolbar')
@@ -63,6 +66,34 @@ class Editor extends Model
     $("#toolbar ##{tool}").is(':checked')
 
   bindings: ->
+    $(document).on 'mousedown', 'canvas', (e) =>
+      return unless @spacePressed
+      @dragScroll = true
+      @dragScrollStartX = e.pageX
+      @dragScrollStartY = e.pageY
+
+    $(document).on 'mouseup', (e) =>
+      return unless @dragScroll
+      @dragScroll = false
+
+    $(document).on 'mousemove', (e) =>
+      return unless @dragScroll
+      deltaX = e.pageX - @dragScrollStartX
+      deltaY = e.pageY - @dragScrollStartY
+      el = $('.tab-pane.active .canvas-container')
+      el.scrollLeft(el.scrollLeft() - deltaX)
+      el.scrollTop(el.scrollTop() - deltaY)
+      @dragScrollStartX = e.pageX
+      @dragScrollStartY = e.pageY
+
+    $(document).on 'keydown', (e) =>
+      if e.keyCode is 32
+        @spacePressed = true
+        e.preventDefault()
+
+    $(document).on 'keyup', (e) =>
+      @spacePressed = false if e.keyCode is 32
+
     $(document).on 'click', '.layers-list span', (e) =>
       $a = $(e.target).parents('.nav-item')
       if ($(e.target).next().length) then utils.swap($a, $a.prev()) else utils.swap($a, $a.next())
@@ -89,6 +120,7 @@ class Editor extends Model
         @selectedTile = Tile.find($(e.target).data('model-id'))
 
     $(document).on 'click', 'canvas', (e) =>
+      return if @spacePressed
       return unless @toolIsSelected('fill')
       console.time('floodfill')
 
@@ -118,6 +150,7 @@ class Editor extends Model
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>
+      return if @spacePressed
       return unless @toolIsSelected('remove')
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
@@ -130,6 +163,7 @@ class Editor extends Model
       @activeScene().render(sceneChunk)
 
     $(document).on 'click', 'canvas', (e) =>
+      return if @spacePressed
       return unless @toolIsSelected('draw')
       return unless @selectedTile
       currentX = Math.floor(e.offsetX / @game().tileSize)
