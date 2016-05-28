@@ -9,6 +9,11 @@ class Chunk extends Model
   @hasMany('Cell')
   @attributes('col', 'row', 'dirty')
 
+  toJSON: ->
+    res = super()
+    res.cells = @cells().forEach((cell) -> cell.toJSON())
+    res
+
   clear: ->
     @context().clearRect(0, 0, @scene().chunkSize, @scene().chunkSize)
 

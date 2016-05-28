@@ -12,7 +12,7 @@ class Layer extends Model
 
   toJSON: ->
     res = super()
-    # res.cells = @cells().map((cell) -> cell.toJSON())
+    res.chunks = @chunks().map((chunk) -> chunk.toJSON())
     res
 
   generateChunks: ->

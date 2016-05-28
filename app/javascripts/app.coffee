@@ -40,7 +40,7 @@ $(document).ready ->
   layer4 = scene2.layers().create({ name: 'layer 4', order: 1 })
   layer5 = scene2.layers().create({ name: 'layer 5', order: 2 })
   layer6 = scene2.layers().create({ name: 'layer 6', order: 3 })
-  #
+
   layer7 = scene3.layers().create({ name: 'layer 7', order: 1 })
   layer8 = scene3.layers().create({ name: 'layer 8', order: 3 })
   layer9 = scene3.layers().create({ name: 'layer 9', order: 2 })
