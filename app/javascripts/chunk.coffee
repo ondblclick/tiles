@@ -7,7 +7,7 @@ class Chunk extends Model
   @belongsTo('Layer')
   @belongsTo('Scene')
   @hasMany('Cell')
-  @attributes('col', 'row', 'dirty')
+  @attributes('col', 'row', 'dirty', 'width', 'height')
 
   toJSON: ->
     res = super()
@@ -15,7 +15,7 @@ class Chunk extends Model
     res
 
   clear: ->
-    @context().clearRect(0, 0, @scene().chunkSize, @scene().chunkSize)
+    @context().clearRect(0, 0, @width, @height)
 
   game: ->
     if @scene() then @scene().game() else @layer().game()
@@ -23,8 +23,8 @@ class Chunk extends Model
   afterCreate: ->
     @dirty = @dirty or false
     @canvas = document.createElement('canvas')
-    @canvas.width = if @scene() then @scene().chunkSize else @layer().scene().chunkSize
-    @canvas.height = if @scene() then @scene().chunkSize else @layer().scene().chunkSize
+    @canvas.width = @width
+    @canvas.height = @height
 
   context: ->
     @canvas.getContext('2d')

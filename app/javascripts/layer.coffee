@@ -16,19 +16,22 @@ class Layer extends Model
     res
 
   generateChunks: ->
-    [0..(@scene().width * @game().tileSize / @scene().chunkSize - 1)].forEach (col) =>
-      [0..(@scene().height * @game().tileSize / @scene().chunkSize - 1)].forEach (row) =>
-        @chunks().create({ col: col, row: row, dirty: false })
+    fullW = Math.floor(@scene().width * @game().tileSize / @scene().chunkSize)
+    fullH = Math.floor(@scene().height * @game().tileSize / @scene().chunkSize)
+    partialW = @scene().width * @game().tileSize % @scene().chunkSize
+    partialH = @scene().height * @game().tileSize % @scene().chunkSize
 
-  renderCell: ({ x, y }) ->
-    @context().clearRect(
-      x * @game().tileSize,
-      y * @game().tileSize,
-      @game().tileSize,
-      @game().tileSize
-    )
-    cell = @cells().where({ col: x, row: y })[0]
-    cell.render(@context()) if cell
+    [0..(fullW - 1)].forEach (col) =>
+      [0..(fullH - 1)].forEach (row) =>
+        @chunks().create({ col: col, row: row, dirty: true, height: @scene().chunkSize, width: @scene().chunkSize })
+
+    [0..(fullW - 1)].forEach (col) =>
+      @chunks().create({ col: col, row: fullH, dirty: true, width: @scene().chunkSize, height: partialH })
+
+    [0..(fullH - 1)].forEach (row) =>
+      @chunks().create({ col: fullW, row: row, dirty: true, width: partialW, height: @scene().chunkSize })
+
+    @chunks().create({ col: fullW, row: fullH, dirty: true, width: partialW, height: partialH })
 
   afterCreate: ->
     @generateChunks()

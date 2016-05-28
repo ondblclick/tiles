@@ -15,9 +15,22 @@ class Scene extends Model
   @delegate('editor', 'Game')
 
   generateChunks: ->
-    [0..(@width * @game().tileSize / @chunkSize - 1)].forEach (col) =>
-      [0..(@height * @game().tileSize / @chunkSize - 1)].forEach (row) =>
-        @chunks().create({ col: col, row: row, dirty: true })
+    fullW = Math.floor(@width * @game().tileSize / @chunkSize)
+    fullH = Math.floor(@height * @game().tileSize / @chunkSize)
+    partialW = @width * @game().tileSize % @chunkSize
+    partialH = @height * @game().tileSize % @chunkSize
+
+    [0..(fullW - 1)].forEach (col) =>
+      [0..(fullH - 1)].forEach (row) =>
+        @chunks().create({ col: col, row: row, dirty: true, height: @chunkSize, width: @chunkSize })
+
+    [0..(fullW - 1)].forEach (col) =>
+      @chunks().create({ col: col, row: fullH, dirty: true, width: @chunkSize, height: partialH })
+
+    [0..(fullH - 1)].forEach (row) =>
+      @chunks().create({ col: fullW, row: row, dirty: true, width: partialW, height: @chunkSize })
+
+    @chunks().create({ col: fullW, row: fullH, dirty: true, width: partialW, height: partialH })
 
   afterCreate: ->
     @chunkSize = @game().tileSize * 10
@@ -48,9 +61,9 @@ class Scene extends Model
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
       chunk.dirty = false
-      @sortedLayers().forEach (layer) =>
+      @sortedLayers().forEach (layer) ->
         layerChunk = layer.chunks().where({ col: chunk.col, row: chunk.row })[0]
-        chunk.canvas.getContext('2d').drawImage(layerChunk.canvas, 0, 0, @chunkSize, @chunkSize)
+        chunk.canvas.getContext('2d').drawImage(layerChunk.canvas, 0, 0, chunk.width, chunk.height)
     console.timeEnd 'scene render'
 
   toJSON: ->
