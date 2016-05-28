@@ -71,10 +71,10 @@ class Editor extends Model
         Layer.find($(item).data('model-id')).order = index
 
       console.time 'scene sorting'
-      @activeScene().sortedLayers().forEach (layer) =>
-        @activeScene().context().drawImage(layer.canvas, 0, 0)
-      false
+      @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
+      @activeScene().render()
       console.timeEnd 'scene sorting'
+      false
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       $('#tileset-containers').toggleClass('show-hidden-tiles', $(e.target).is(':checked'))
@@ -113,6 +113,7 @@ class Editor extends Model
           [0..9].forEach (row) =>
             cells.create({ col: col, row: row, tileId: @selectedTile.id })
         utils.canvas.fill(chunk.context(), buffer)
+      @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
       @activeScene().render()
       console.timeEnd('floodfill')
 

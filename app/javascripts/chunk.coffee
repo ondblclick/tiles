@@ -16,7 +16,7 @@ class Chunk extends Model
     if @scene() then @scene().game() else @layer().game()
 
   afterCreate: ->
-    @dirty = false
+    @dirty = @dirty or false
     @canvas = document.createElement('canvas')
     @canvas.width = if @scene() then @scene().chunkSize else @layer().scene().chunkSize
     @canvas.height = if @scene() then @scene().chunkSize else @layer().scene().chunkSize

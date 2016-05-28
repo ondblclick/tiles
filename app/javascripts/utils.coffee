@@ -8,6 +8,22 @@ utils.swap = (a, b) ->
   b.before(a)
   tmp.replaceWith(b)
 
+utils.debounce = (func, wait, immediate) ->
+  timeout = undefined
+  ->
+    context = this
+    args = arguments
+    clearTimeout timeout
+    timeout = setTimeout((->
+      timeout = null
+      if !immediate
+        func.apply context, args
+      return
+    ), wait)
+    if immediate and !timeout
+      func.apply context, args
+    return
+
 utils.canvas =
   fill: (context, image, width, height) ->
     pattern = context.createPattern(image, 'repeat')
