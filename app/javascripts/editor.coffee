@@ -91,11 +91,6 @@ class Editor extends Model
     $(document).on 'click', 'canvas', (e) =>
       return unless @toolIsSelected('fill')
       console.time('floodfill')
-      @activeLayer().cells().deleteAll()
-      cells = @activeLayer().cells()
-      [0..(@activeScene().width - 1)].forEach (col) =>
-        [0..(@activeScene().height - 1)].forEach (row) =>
-          cell = cells.create({ col: col, row: row, tileId: @selectedTile.id })
 
       # HACK: using context.createPattern here to speed up rendering process
       buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
@@ -111,19 +106,27 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       )
-      utils.canvas.fill(@activeScene().context(), buffer)
-      utils.canvas.fill(@activeLayer().context(), buffer)
+      @activeLayer().chunks().forEach (chunk) =>
+        chunk.cells().deleteAll()
+        cells = chunk.cells()
+        [0..9].forEach (col) =>
+          [0..9].forEach (row) =>
+            cells.create({ col: col, row: row, tileId: @selectedTile.id })
+        utils.canvas.fill(chunk.context(), buffer)
+      @activeScene().render()
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>
       return unless @toolIsSelected('remove')
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
+      sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
+      layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
+
+      cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
       return unless cell
       cell.destroy()
-      @activeScene().renderCell({ x: currentX, y: currentY })
-      @activeLayer().renderCell({ x: currentX, y: currentY })
+      @activeScene().render(sceneChunk)
 
     $(document).on 'click', 'canvas', (e) =>
       return unless @toolIsSelected('draw')
@@ -132,17 +135,18 @@ class Editor extends Model
       currentY = Math.floor(e.offsetY / @game().tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
+
       cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
       cell.destroy() if cell
       cell = layerChunk.cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
       cell.render()
       @activeScene().render(sceneChunk)
 
-    $(document).on 'mouseout', (e) =>
-      return unless $(e.target).is('canvas')
-      return unless @cellBelowCursorPosition
-      @activeScene().renderCell(@cellBelowCursorPosition)
-      @cellBelowCursorPosition = undefined
+    # $(document).on 'mouseout', (e) =>
+    #   return unless $(e.target).is('canvas')
+    #   return unless @cellBelowCursorPosition
+    #   @activeScene().renderCell(@cellBelowCursorPosition)
+    #   @cellBelowCursorPosition = undefined
 
     # $(document).on 'mousemove', (e) =>
     #   return unless $(e.target).is('canvas')

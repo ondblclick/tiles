@@ -9,6 +9,9 @@ class Chunk extends Model
   @hasMany('Cell')
   @attributes('col', 'row', 'dirty')
 
+  clear: ->
+    @context().clearRect(0, 0, @scene().chunkSize, @scene().chunkSize)
+
   game: ->
     if @scene() then @scene().game() else @layer().game()
 

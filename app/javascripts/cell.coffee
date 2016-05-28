@@ -9,6 +9,15 @@ class Cell extends Model
   @attributes('col', 'row')
   @delegate('game', 'Chunk')
 
+  destroy: ->
+    super()
+    @chunk().context().clearRect(
+      @col * @game().tileSize,
+      @row * @game().tileSize,
+      @game().tileSize,
+      @game().tileSize
+    )
+
   adjustImage: (origin) ->
     color = @tile().tileSet().tileOpacityColor.split(',')
     data = origin.data
@@ -19,8 +28,8 @@ class Cell extends Model
       i += 4
     origin
 
-  render: (context) ->
-    context = context or @chunk().context()
+  render: ->
+    context = @chunk().context()
     buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
     bufferContext = buffer.getContext('2d')
 

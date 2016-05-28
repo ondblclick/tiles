@@ -18,25 +18,9 @@ class Scene extends Model
       [0..(@height * @game().tileSize / @chunkSize - 1)].forEach (row) =>
         @chunks().create({ col: col, row: row, dirty: false })
 
-  # clearChunks: ->
-  #   @chunks().forEach (chunk) =>
-  #     chunk.context().clearRect(0, 0, @chunkSize, @chunkSize)
-
   afterCreate: ->
     @chunkSize = @game().tileSize * 10
     @generateChunks()
-
-  # renderCell: ({ x, y }) ->
-  #   @context().clearRect(
-  #     x * @game().tileSize,
-  #     y * @game().tileSize,
-  #     @game().tileSize,
-  #     @game().tileSize
-  #   )
-  #   cells = []
-  #   @sortedLayers().forEach (layer) ->
-  #     cell = layer.cells().where({ col: x, row: y })[0]
-  #     cell.render() if cell
 
   visibleChunks: ->
     # something wrong here
@@ -55,6 +39,8 @@ class Scene extends Model
 
   render: (c) ->
     chunks = if c then [c] else @visibleChunks()
+    chunks.forEach (chunk) ->
+      chunk.clear()
     chunks.forEach (chunk) =>
       chunk.dirty = false
       @sortedLayers().forEach (layer) =>
@@ -72,15 +58,10 @@ class Scene extends Model
     obj.height *= @game().tileSize
     obj.tileSize = @game().tileSize
     obj.tileSizeX2 = @game().tileSize * 2
-    # obj.canvases = @chunks().map (c) =>
-    #   height: c.canvas.height
-    #   width: c.canvas.width
-    #   left: c.col * @chunkSize
-    #   top: c.row * @chunkSize
-    #   id: c.id
     $('#scene-tabs').append(tabTmpl(@toJSON()))
     $('#scene-containers').append(containerTmpl(obj))
-    @chunks().forEach (chunk) => chunk.render($("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper")[0])
+    @chunks().forEach (chunk) =>
+      chunk.render($("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper")[0])
 
     @sortedLayers().forEach (layer) -> layer.renderToEditor()
     $("#scene-containers > li[data-model-id='#{@id}'] .layers-list > .nav-item").first().addClass('active')
