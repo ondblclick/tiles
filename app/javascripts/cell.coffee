@@ -1,14 +1,13 @@
 Model = require 'activer'
-Layer = require './layer.coffee'
+Chunk = require './chunk.coffee'
 Tile = require './tile.coffee'
 utils = require './utils.coffee'
 
 class Cell extends Model
-  @belongsTo('Layer')
-  @hasOne('Terrain')
+  @belongsTo('Chunk')
   @belongsTo('Tile')
   @attributes('col', 'row')
-  @delegate('game', 'Layer')
+  @delegate('game', 'Chunk')
 
   adjustImage: (origin) ->
     color = @tile().tileSet().tileOpacityColor.split(',')
@@ -21,9 +20,10 @@ class Cell extends Model
     origin
 
   render: (context) ->
-    context = context or @layer().scene().context()
+    context = context or @chunk().context()
     buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
     bufferContext = buffer.getContext('2d')
+
     bufferContext.drawImage(
       @tile().tileSet().img,
       @tile().x,

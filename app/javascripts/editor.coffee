@@ -130,11 +130,13 @@ class Editor extends Model
       return unless @selectedTile
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
+      sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
+      layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
+      cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
       cell.destroy() if cell
-      @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
-      @activeScene().renderCell({ x: currentX, y: currentY })
-      @activeLayer().renderCell({ x: currentX, y: currentY })
+      cell = layerChunk.cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
+      cell.render()
+      @activeScene().render(sceneChunk)
 
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
@@ -142,31 +144,31 @@ class Editor extends Model
       @activeScene().renderCell(@cellBelowCursorPosition)
       @cellBelowCursorPosition = undefined
 
-    $(document).on 'mousemove', (e) =>
-      return unless $(e.target).is('canvas')
-      return unless @selectedTile
-      pageX = Math.floor(e.offsetX / @game().tileSize)
-      pageY = Math.floor(e.offsetY / @game().tileSize)
-      @activeScene().renderCell(@cellBelowCursorPosition) if @cellBelowCursorPosition
-      @activeScene().context().clearRect(
-        pageX * @game().tileSize,
-        pageY * @game().tileSize,
-        @game().tileSize,
-        @game().tileSize
-      )
-      @activeScene().context().globalAlpha = 0.3
-      @activeScene().context().drawImage(
-        @selectedTile.tileSet().img,
-        @selectedTile.x,
-        @selectedTile.y,
-        @game().tileSize,
-        @game().tileSize,
-        pageX * @game().tileSize,
-        pageY * @game().tileSize,
-        @game().tileSize,
-        @game().tileSize
-      )
-      @cellBelowCursorPosition = { x: pageX, y: pageY }
-      @activeScene().context().globalAlpha = 1
+    # $(document).on 'mousemove', (e) =>
+    #   return unless $(e.target).is('canvas')
+    #   return unless @selectedTile
+    #   pageX = Math.floor(e.offsetX / @game().tileSize)
+    #   pageY = Math.floor(e.offsetY / @game().tileSize)
+    #   @activeScene().renderCell(@cellBelowCursorPosition) if @cellBelowCursorPosition
+    #   @activeScene().context().clearRect(
+    #     pageX * @game().tileSize,
+    #     pageY * @game().tileSize,
+    #     @game().tileSize,
+    #     @game().tileSize
+    #   )
+    #   @activeScene().context().globalAlpha = 0.3
+    #   @activeScene().context().drawImage(
+    #     @selectedTile.tileSet().img,
+    #     @selectedTile.x,
+    #     @selectedTile.y,
+    #     @game().tileSize,
+    #     @game().tileSize,
+    #     pageX * @game().tileSize,
+    #     pageY * @game().tileSize,
+    #     @game().tileSize,
+    #     @game().tileSize
+    #   )
+    #   @cellBelowCursorPosition = { x: pageX, y: pageY }
+    #   @activeScene().context().globalAlpha = 1
 
 module.exports = Editor
