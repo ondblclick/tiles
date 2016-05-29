@@ -7,7 +7,10 @@ class Chunk extends Model
   @belongsTo('Layer')
   @belongsTo('Scene')
   @hasMany('Cell')
-  @attributes('col', 'row', 'dirty', 'width', 'height')
+  @attributes('col', 'row', 'dirty', 'cropped', 'width', 'height')
+
+  # all the chunkSize calls should be replaced
+  @SIZE_IN_CELLS: 10
 
   toJSON: ->
     res = super()

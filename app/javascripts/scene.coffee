@@ -22,18 +22,45 @@ class Scene extends Model
 
     [0..(fullW - 1)].forEach (col) =>
       [0..(fullH - 1)].forEach (row) =>
-        @chunks().create({ col: col, row: row, dirty: true, height: @chunkSize, width: @chunkSize })
+        @chunks().create
+          col: col
+          row: row
+          dirty: true
+          height: @chunkSize
+          width: @chunkSize
+          cropped: false
 
-    [0..(fullW - 1)].forEach (col) =>
-      @chunks().create({ col: col, row: fullH, dirty: true, width: @chunkSize, height: partialH })
+    if partialH
+      [0..(fullW - 1)].forEach (col) =>
+        @chunks().create
+          col: col
+          row: fullH
+          dirty: true
+          width: @chunkSize
+          height: partialH
+          cropped: true
 
-    [0..(fullH - 1)].forEach (row) =>
-      @chunks().create({ col: fullW, row: row, dirty: true, width: partialW, height: @chunkSize })
+    if partialW
+      [0..(fullH - 1)].forEach (row) =>
+        @chunks().create
+          col: fullW
+          row: row
+          dirty: true
+          width: partialW
+          height: @chunkSize
+          cropped: true
 
-    @chunks().create({ col: fullW, row: fullH, dirty: true, width: partialW, height: partialH })
+    if partialW and partialH
+      @chunks().create
+        col: fullW
+        row: fullH
+        dirty: true
+        width: partialW
+        height: partialH
+        cropped: true
 
   afterCreate: ->
-    @chunkSize = @game().tileSize * 10
+    @chunkSize = @game().tileSize * Chunk.SIZE_IN_CELLS
     @debouncedRender = utils.debounce(@renderVisibleChunks, 150)
     @generateChunks()
 
@@ -95,6 +122,8 @@ class Scene extends Model
     @removeFromEditor()
     @destroy()
 
+  # TODO: move update attributes to activer
+  # and make user be able to use before_update, after_update callbacks
   updateAttributes: (attrs) =>
     cellsShouldBeUpdated = false
 
@@ -105,7 +134,12 @@ class Scene extends Model
       @[k] = v if k in @constructor.fields
 
     if cellsShouldBeUpdated
-      @layers().forEach (layer) -> layer.updateCellsList()
+      # chunks should be updated
+      @chunks().deleteAll()
+      @generateChunks()
+
+      # cells should be updated
+      @layers().forEach (layer) -> layer.updateChunks()
 
     @removeFromEditor()
     @renderToEditor()

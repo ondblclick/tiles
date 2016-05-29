@@ -9,6 +9,12 @@ class Cell extends Model
   @attributes('col', 'row')
   @delegate('game', 'Chunk')
 
+  absoluteCol: ->
+    @col + @chunk().col * Chunk.SIZE_IN_CELLS
+
+  absoluteRow: ->
+    @row + @chunk().row * Chunk.SIZE_IN_CELLS
+
   destroy: ->
     super()
     @chunk().context().clearRect(
