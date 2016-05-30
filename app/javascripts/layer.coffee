@@ -54,6 +54,9 @@ class Layer extends Model
 
   # called in case scene size changes in order to keep cells collection up to date
   updateChunks: ->
+    # проще создать пачку временных канвасов, слить на их изображения
+    # удалить все чанки из лейера, создать чанки заново и перелить на них изображения, один за одним
+
     maxChunkSize = Chunk.SIZE_IN_CELLS * @game().tileSize
 
     # 1. remove all chunks are off boundaries
