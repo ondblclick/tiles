@@ -96,6 +96,7 @@ class Layer extends Model
         chunk.height = lastRowHeight
         chunk.canvas.height = chunk.height * @game().tileSize
 
+      chunk.cropped = true
       utils.canvas.drawChunk(chunk.context(), temp, chunk)
 
 module.exports = Layer

@@ -166,6 +166,7 @@ class Editor extends Model
       return if @spacePressed
       return unless @toolIsSelected('draw')
       return unless @selectedTile
+
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
