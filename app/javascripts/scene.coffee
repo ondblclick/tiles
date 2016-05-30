@@ -15,74 +15,27 @@ class Scene extends Model
   @delegate('editor', 'Game')
 
   generateChunks: ->
+    w = Math.ceil(@width / Chunk.SIZE_IN_CELLS)
+    h = Math.ceil(@height / Chunk.SIZE_IN_CELLS)
+
     fullW = Math.floor(@width / Chunk.SIZE_IN_CELLS)
     fullH = Math.floor(@height / Chunk.SIZE_IN_CELLS)
+
     partialW = @width % Chunk.SIZE_IN_CELLS
     partialH = @height % Chunk.SIZE_IN_CELLS
 
-    # smells like shit =[
-    if fullW > 0 and fullH is 0
-      [0..(fullW - 1)].forEach (col) =>
-        @chunks().create
-          col: col
-          row: 0
-          dirty: true
-          height: Chunk.SIZE_IN_CELLS
-          width: Chunk.SIZE_IN_CELLS
-          cropped: false
-
-    if fullH > 0 and fullW is 0
-      [0..(fullH - 1)].forEach (row) =>
-        @chunks().create
-          col: 0
-          row: row
-          dirty: true
-          height: Chunk.SIZE_IN_CELLS
-          width: Chunk.SIZE_IN_CELLS
-          cropped: false
-
-
-    if fullW > 0 and fullH > 0
-      [0..(fullW - 1)].forEach (col) =>
-        [0..(fullH - 1)].forEach (row) =>
+    if w and h
+      [1..w].forEach (col) =>
+        [1..h].forEach (row) =>
+          return if @chunks().where({ col: col - 1, row: row - 1 })[0]
+          width = if col > fullW then partialW else Chunk.SIZE_IN_CELLS
+          height = if row > fullH then partialH else Chunk.SIZE_IN_CELLS
           @chunks().create
-            col: col
-            row: row
+            col: col - 1
+            row: row - 1
             dirty: true
-            height: Chunk.SIZE_IN_CELLS
-            width: Chunk.SIZE_IN_CELLS
-            cropped: false
-
-    if partialH
-      [0..(fullW - 1)].forEach (col) =>
-        return if col < 0
-        @chunks().create
-          col: col
-          row: fullH
-          dirty: true
-          width: Chunk.SIZE_IN_CELLS
-          height: partialH
-          cropped: true
-
-    if partialW
-      [0..(fullH - 1)].forEach (row) =>
-        return if row < 0
-        @chunks().create
-          col: fullW
-          row: row
-          dirty: true
-          width: partialW
-          height: Chunk.SIZE_IN_CELLS
-          cropped: true
-
-    if partialW and partialH
-      @chunks().create
-        col: fullW
-        row: fullH
-        dirty: true
-        width: partialW
-        height: partialH
-        cropped: true
+            height: height
+            width: width
 
   afterCreate: ->
     @debouncedRender = utils.debounce(@renderVisibleChunks, 150)
@@ -107,7 +60,7 @@ class Scene extends Model
     @render()
 
   render: (c) ->
-    # console.time 'scene render'
+    console.time 'scene render'
     chunks = if c then [c] else @visibleChunks().filter((c) -> c.dirty is true)
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
