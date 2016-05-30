@@ -16,10 +16,10 @@ class Layer extends Model
     res
 
   generateChunks: ->
-    fullW = Math.floor(@scene().width * @game().tileSize / @scene().chunkSize)
-    fullH = Math.floor(@scene().height * @game().tileSize / @scene().chunkSize)
-    partialW = @scene().width * @game().tileSize % @scene().chunkSize
-    partialH = @scene().height * @game().tileSize % @scene().chunkSize
+    fullW = Math.floor(@scene().width / Chunk.SIZE_IN_CELLS)
+    fullH = Math.floor(@scene().height / Chunk.SIZE_IN_CELLS)
+    partialW = @scene().width % Chunk.SIZE_IN_CELLS
+    partialH = @scene().height % Chunk.SIZE_IN_CELLS
 
     [0..(fullW - 1)].forEach (col) =>
       [0..(fullH - 1)].forEach (row) =>
@@ -29,8 +29,8 @@ class Layer extends Model
           col: col
           row: row
           dirty: true
-          height: @scene().chunkSize
-          width: @scene().chunkSize
+          height: Chunk.SIZE_IN_CELLS
+          width: Chunk.SIZE_IN_CELLS
           cropped: false
 
     if partialH
@@ -41,7 +41,7 @@ class Layer extends Model
           col: col
           row: fullH
           dirty: true
-          width: @scene().chunkSize
+          width: Chunk.SIZE_IN_CELLS
           height: partialH
           cropped: true
 
@@ -54,7 +54,7 @@ class Layer extends Model
           row: row
           dirty: true
           width: partialW
-          height: @scene().chunkSize
+          height: Chunk.SIZE_IN_CELLS
           cropped: true
 
     if partialH and partialW
@@ -90,8 +90,37 @@ class Layer extends Model
 
     # 2. check if there are cropped chunks and make them of full-size
     @chunks().where({ cropped: true }).forEach (chunk) =>
-      chunk.width = @scene().chunkSize
-      chunk.height = @scene().chunkSize
+      chunk.cropped = false
+
+      # HACK: temp canvas magic
+      temp = document.createElement('canvas')
+      temp.width = Chunk.SIZE_IN_CELLS * @game().tileSize
+      temp.height = Chunk.SIZE_IN_CELLS * @game().tileSize
+      temp.getContext('2d').drawImage(
+        chunk.canvas,
+        0,
+        0,
+        chunk.width * @game().tileSize,
+        chunk.height * @game().tileSize,
+        0,
+        0,
+        chunk.width * @game().tileSize,
+        chunk.height * @game().tileSize
+      )
+
+      chunk.width = Chunk.SIZE_IN_CELLS
+      chunk.height = Chunk.SIZE_IN_CELLS
+      chunk.context().drawImage(
+        temp,
+        0,
+        0,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        0,
+        0,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        Chunk.SIZE_IN_CELLS * @game().tileSize
+      )
 
     # 3. run generateChunks method
     @generateChunks()
@@ -105,10 +134,67 @@ class Layer extends Model
 
     # TODO: should be moved to chunk update attributes
     @chunks().where({ col: col }).forEach (chunk) =>
+
+      # HACK: temp canvas magic
+      temp = document.createElement('canvas')
+      temp.width = Chunk.SIZE_IN_CELLS * @game().tileSize
+      temp.height = Chunk.SIZE_IN_CELLS * @game().tileSize
+      temp.getContext('2d').drawImage(
+        chunk.canvas
+        0,
+        0,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        0,
+        0,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        Chunk.SIZE_IN_CELLS * @game().tileSize
+      )
+
       chunk.width = lastColumnWidth * @game().tileSize
       chunk.canvas.width = chunk.width
+      chunk.context().drawImage(
+        temp,
+        0,
+        0,
+        chunk.widthInPx(),
+        chunk.heightInPx(),
+        0,
+        0,
+        chunk.widthInPx(),
+        chunk.heightInPx()
+      )
+
     @chunks().where({ row: row }).forEach (chunk) =>
+
+      # HACK: temp canvas magic
+      temp = document.createElement('canvas')
+      temp.width = Chunk.SIZE_IN_CELLS * @game().tileSize
+      temp.height = Chunk.SIZE_IN_CELLS * @game().tileSize
+      temp.getContext('2d').drawImage(
+        chunk.canvas
+        0,
+        0,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        0,
+        0,
+        Chunk.SIZE_IN_CELLS * @game().tileSize,
+        Chunk.SIZE_IN_CELLS * @game().tileSize
+      )
+
       chunk.height = lastRowHeight * @game().tileSize
       chunk.canvas.height = chunk.height
+      chunk.context().drawImage(
+        temp,
+        0,
+        0,
+        chunk.widthInPx(),
+        chunk.heightInPx(),
+        0,
+        0,
+        chunk.widthInPx(),
+        chunk.heightInPx()
+      )
 
 module.exports = Layer

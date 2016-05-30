@@ -8,17 +8,17 @@ tabTmpl = require '../templates/scene_tab.hbs'
 containerTmpl = require '../templates/scene_container.hbs'
 
 class Scene extends Model
-  @attributes('name', 'width', 'height', 'chunkSize')
+  @attributes('name', 'width', 'height')
   @belongsTo('Game')
   @hasMany('Layer', { dependent: 'destroy' })
   @hasMany('Chunk', { dependent: 'destroy' })
   @delegate('editor', 'Game')
 
   generateChunks: ->
-    fullW = Math.floor(@width * @game().tileSize / @chunkSize)
-    fullH = Math.floor(@height * @game().tileSize / @chunkSize)
-    partialW = @width * @game().tileSize % @chunkSize
-    partialH = @height * @game().tileSize % @chunkSize
+    fullW = Math.floor(@width / Chunk.SIZE_IN_CELLS)
+    fullH = Math.floor(@height / Chunk.SIZE_IN_CELLS)
+    partialW = @width % Chunk.SIZE_IN_CELLS
+    partialH = @height % Chunk.SIZE_IN_CELLS
 
     [0..(fullW - 1)].forEach (col) =>
       [0..(fullH - 1)].forEach (row) =>
@@ -26,8 +26,8 @@ class Scene extends Model
           col: col
           row: row
           dirty: true
-          height: @chunkSize
-          width: @chunkSize
+          height: Chunk.SIZE_IN_CELLS
+          width: Chunk.SIZE_IN_CELLS
           cropped: false
 
     if partialH
@@ -36,7 +36,7 @@ class Scene extends Model
           col: col
           row: fullH
           dirty: true
-          width: @chunkSize
+          width: Chunk.SIZE_IN_CELLS
           height: partialH
           cropped: true
 
@@ -47,7 +47,7 @@ class Scene extends Model
           row: row
           dirty: true
           width: partialW
-          height: @chunkSize
+          height: Chunk.SIZE_IN_CELLS
           cropped: true
 
     if partialW and partialH
@@ -60,18 +60,17 @@ class Scene extends Model
         cropped: true
 
   afterCreate: ->
-    @chunkSize = @game().tileSize * Chunk.SIZE_IN_CELLS
     @debouncedRender = utils.debounce(@renderVisibleChunks, 150)
     @generateChunks()
 
   visibleChunks: ->
     # something wrong here
     w = $("#scene-containers > li[data-model-id='#{@id}'] .canvas-container")[0]
-    res = @chunks().filter (chunk) =>
-      cond1 = chunk.col >= Math.floor(w.scrollLeft / @chunkSize)
-      cond2 = chunk.col < Math.ceil((w.scrollLeft + 1000) / @chunkSize)
-      cond3 = chunk.row >= Math.floor(w.scrollTop / @chunkSize)
-      cond4 = chunk.row < Math.ceil((w.scrollTop + 1000) / @chunkSize)
+    res = @chunks().filter (chunk) ->
+      cond1 = chunk.col >= Math.floor(w.scrollLeft / chunk.widthInPx())
+      cond2 = chunk.col < Math.ceil((w.scrollLeft + 1000) / chunk.widthInPx())
+      cond3 = chunk.row >= Math.floor(w.scrollTop / chunk.heightInPx())
+      cond4 = chunk.row < Math.ceil((w.scrollTop + 1000) / chunk.heightInPx())
       cond1 and cond2 and cond3 and cond4
     res
 
@@ -83,14 +82,14 @@ class Scene extends Model
     @render()
 
   render: (c) ->
-    console.time 'scene render'
+    # console.time 'scene render'
     chunks = if c then [c] else @visibleChunks().filter((c) -> c.dirty is true)
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
       chunk.dirty = false
       @sortedLayers().forEach (layer) ->
         layerChunk = layer.chunks().where({ col: chunk.col, row: chunk.row })[0]
-        chunk.canvas.getContext('2d').drawImage(layerChunk.canvas, 0, 0, chunk.width, chunk.height)
+        chunk.canvas.getContext('2d').drawImage(layerChunk.canvas, 0, 0, chunk.widthInPx(), chunk.heightInPx())
     console.timeEnd 'scene render'
 
   toJSON: ->
@@ -99,13 +98,17 @@ class Scene extends Model
     res
 
   renderToEditor: ->
-    obj = @toJSON()
-    obj.width *= @game().tileSize
-    obj.height *= @game().tileSize
-    obj.tileSize = @game().tileSize
-    obj.tileSizeX2 = @game().tileSize * 2
-    $('#scene-tabs').append(tabTmpl(@toJSON()))
-    $('#scene-containers').append(containerTmpl(obj))
+    tabObj = @toJSON()
+    tabObj.activeClass = if @editor().activeScene() is @ then 'active' else ''
+    containerObj = @toJSON()
+    containerObj.width *= @game().tileSize
+    containerObj.height *= @game().tileSize
+    containerObj.tileSize = @game().tileSize
+    containerObj.tileSizeX2 = @game().tileSize * 2
+    containerObj.activeClass = if @editor().activeScene() is @ then 'active' else ''
+    $('#scene-tabs').append(tabTmpl(tabObj))
+    $('#scene-containers').append(containerTmpl(containerObj))
+
     @chunks().forEach (chunk) =>
       chunk.render($("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper")[0])
 
