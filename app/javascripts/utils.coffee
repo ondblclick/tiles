@@ -37,4 +37,17 @@ utils.canvas =
     canvas.height = height
     canvas
 
+  drawChunk: (onContext, fromCanvas, chunk) ->
+    onContext.drawImage(
+      fromCanvas
+      0,
+      0,
+      chunk.widthInPx(),
+      chunk.heightInPx(),
+      0,
+      0,
+      chunk.widthInPx(),
+      chunk.heightInPx()
+    )
+
 module.exports = utils

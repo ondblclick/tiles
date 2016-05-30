@@ -1,6 +1,7 @@
 Model = require 'activer'
 Scene = require './scene.coffee'
 Chunk = require './chunk.coffee'
+utils = require './utils.coffee'
 
 tabTmpl = require '../templates/layer_tab.hbs'
 
@@ -82,6 +83,7 @@ class Layer extends Model
 
   # called in case scene size changes in order to keep cells collection up to date
   updateChunks: ->
+    maxChunkSize = Chunk.SIZE_IN_CELLS * @game().tileSize
 
     # 1. remove all chunks are off boundaries
     @chunks().forEach (chunk) =>
@@ -89,38 +91,17 @@ class Layer extends Model
       chunk.destroy() if chunk.row * Chunk.SIZE_IN_CELLS > @scene().height
 
     # 2. check if there are cropped chunks and make them of full-size
-    @chunks().where({ cropped: true }).forEach (chunk) =>
+    @chunks().where({ cropped: true }).forEach (chunk) ->
       chunk.cropped = false
 
       # HACK: temp canvas magic
-      temp = document.createElement('canvas')
-      temp.width = Chunk.SIZE_IN_CELLS * @game().tileSize
-      temp.height = Chunk.SIZE_IN_CELLS * @game().tileSize
-      temp.getContext('2d').drawImage(
-        chunk.canvas,
-        0,
-        0,
-        chunk.width * @game().tileSize,
-        chunk.height * @game().tileSize,
-        0,
-        0,
-        chunk.width * @game().tileSize,
-        chunk.height * @game().tileSize
-      )
-
+      temp = utils.canvas.create(maxChunkSize, maxChunkSize)
+      utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
       chunk.width = Chunk.SIZE_IN_CELLS
       chunk.height = Chunk.SIZE_IN_CELLS
-      chunk.context().drawImage(
-        temp,
-        0,
-        0,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        0,
-        0,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        Chunk.SIZE_IN_CELLS * @game().tileSize
-      )
+      chunk.canvas.width = maxChunkSize
+      chunk.canvas.height = maxChunkSize
+      utils.canvas.drawChunk(chunk.context(), temp, chunk)
 
     # 3. run generateChunks method
     @generateChunks()
@@ -130,71 +111,27 @@ class Layer extends Model
     lastRowHeight = @scene().height % Chunk.SIZE_IN_CELLS
     return if lastColumnWidth is 0
     return if lastRowHeight is 0
-    { col, row } = @chunks()[@chunks().length - 1] # TODO: handle if no chunks
+    lastChunk = @chunks()[@chunks().length - 1]
+    return unless lastChunk
+    { col, row } = @chunks()[@chunks().length - 1]
 
     # TODO: should be moved to chunk update attributes
     @chunks().where({ col: col }).forEach (chunk) =>
 
       # HACK: temp canvas magic
-      temp = document.createElement('canvas')
-      temp.width = Chunk.SIZE_IN_CELLS * @game().tileSize
-      temp.height = Chunk.SIZE_IN_CELLS * @game().tileSize
-      temp.getContext('2d').drawImage(
-        chunk.canvas
-        0,
-        0,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        0,
-        0,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        Chunk.SIZE_IN_CELLS * @game().tileSize
-      )
-
+      temp = utils.canvas.create(maxChunkSize, maxChunkSize)
+      utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
       chunk.width = lastColumnWidth * @game().tileSize
       chunk.canvas.width = chunk.width
-      chunk.context().drawImage(
-        temp,
-        0,
-        0,
-        chunk.widthInPx(),
-        chunk.heightInPx(),
-        0,
-        0,
-        chunk.widthInPx(),
-        chunk.heightInPx()
-      )
+      utils.canvas.drawChunk(chunk.context(), temp, chunk)
 
     @chunks().where({ row: row }).forEach (chunk) =>
 
       # HACK: temp canvas magic
-      temp = document.createElement('canvas')
-      temp.width = Chunk.SIZE_IN_CELLS * @game().tileSize
-      temp.height = Chunk.SIZE_IN_CELLS * @game().tileSize
-      temp.getContext('2d').drawImage(
-        chunk.canvas
-        0,
-        0,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        0,
-        0,
-        Chunk.SIZE_IN_CELLS * @game().tileSize,
-        Chunk.SIZE_IN_CELLS * @game().tileSize
-      )
-
+      temp = utils.canvas.create(maxChunkSize, maxChunkSize)
+      utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
       chunk.height = lastRowHeight * @game().tileSize
       chunk.canvas.height = chunk.height
-      chunk.context().drawImage(
-        temp,
-        0,
-        0,
-        chunk.widthInPx(),
-        chunk.heightInPx(),
-        0,
-        0,
-        chunk.widthInPx(),
-        chunk.heightInPx()
-      )
+      utils.canvas.drawChunk(chunk.context(), temp, chunk)
 
 module.exports = Layer
