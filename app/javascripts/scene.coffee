@@ -60,14 +60,14 @@ class Scene extends Model
     @render()
 
   render: (c) ->
-    console.time 'scene render'
+    # console.time 'scene render'
     chunks = if c then [c] else @visibleChunks().filter((c) -> c.dirty is true)
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
       chunk.dirty = false
       @sortedLayers().forEach (layer) ->
         layerChunk = layer.chunks().where({ col: chunk.col, row: chunk.row })[0]
-        chunk.canvas.getContext('2d').drawImage(layerChunk.canvas, 0, 0, chunk.widthInPx(), chunk.heightInPx())
+        utils.canvas.drawChunk(chunk.context(), layerChunk.canvas, chunk)
     console.timeEnd 'scene render'
 
   toJSON: ->

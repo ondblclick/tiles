@@ -39,57 +39,6 @@ class Layer extends Model
             width: width
             cropped: height isnt Chunk.SIZE_IN_CELLS or width isnt Chunk.SIZE_IN_CELLS
 
-    # fullW = Math.floor(@scene().width / Chunk.SIZE_IN_CELLS)
-    # fullH = Math.floor(@scene().height / Chunk.SIZE_IN_CELLS)
-    # partialW = @scene().width % Chunk.SIZE_IN_CELLS
-    # partialH = @scene().height % Chunk.SIZE_IN_CELLS
-    #
-    # [0..(fullW - 1)].forEach (col) =>
-    #   [0..(fullH - 1)].forEach (row) =>
-    #     return if @chunks().where({ col: col, row: row })[0]
-    #     return if col < 0 or row < 0
-    #     @chunks().create
-    #       col: col
-    #       row: row
-    #       dirty: true
-    #       height: Chunk.SIZE_IN_CELLS
-    #       width: Chunk.SIZE_IN_CELLS
-    #       cropped: false
-    #
-    # if partialH
-    #   [0..(fullW - 1)].forEach (col) =>
-    #     return if @chunks().where({ col: col, row: fullH })[0]
-    #     return if col < 0
-    #     @chunks().create
-    #       col: col
-    #       row: fullH
-    #       dirty: true
-    #       width: Chunk.SIZE_IN_CELLS
-    #       height: partialH
-    #       cropped: true
-    #
-    # if partialW
-    #   [0..(fullH - 1)].forEach (row) =>
-    #     return if @chunks().where({ col: fullW, row: row })[0]
-    #     return if row < 0
-    #     @chunks().create
-    #       col: fullW
-    #       row: row
-    #       dirty: true
-    #       width: partialW
-    #       height: Chunk.SIZE_IN_CELLS
-    #       cropped: true
-    #
-    # if partialH and partialW
-    #   unless @chunks().where({ col: fullW, row: fullH })[0]
-    #     @chunks().create
-    #       col: fullW
-    #       row: fullH
-    #       dirty: true
-    #       width: partialW
-    #       height: partialH
-    #       cropped: true
-
   afterCreate: ->
     @generateChunks()
 
@@ -113,17 +62,13 @@ class Layer extends Model
       chunk.destroy() if chunk.row * Chunk.SIZE_IN_CELLS > @scene().height
 
     # 2. check if there are cropped chunks and make them of full-size
-    @chunks().where({ cropped: true }).forEach (chunk) =>
+    @chunks().where({ cropped: true }).forEach (chunk) ->
       chunk.cropped = false
-
-      # HACK: temp canvas magic
       temp = utils.canvas.create(maxChunkSize, maxChunkSize)
       utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
       chunk.width = Chunk.SIZE_IN_CELLS
       chunk.height = Chunk.SIZE_IN_CELLS
-      chunk.canvas.width = chunk.width * @game().tileSize
-      chunk.canvas.height = chunk.height * @game().tileSize
-      utils.canvas.drawChunk(chunk.context(), temp, chunk)
+      chunk.canvas = temp
 
     # 3. run generateChunks method
     @generateChunks()
@@ -138,22 +83,19 @@ class Layer extends Model
     { col, row } = lastChunk
 
     # TODO: should be moved to chunk update attributes
-    @chunks().where({ col: col }).forEach (chunk) =>
-
-      # HACK: temp canvas magic
+    @chunks().forEach (chunk) =>
+      return unless chunk.col is col or chunk.row is row
       temp = utils.canvas.create(maxChunkSize, maxChunkSize)
       utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
-      chunk.width = lastColumnWidth
-      chunk.canvas.width = chunk.width * @game().tileSize
-      utils.canvas.drawChunk(chunk.context(), temp, chunk)
 
-    @chunks().where({ row: row }).forEach (chunk) =>
+      if chunk.col is col
+        chunk.width = lastColumnWidth
+        chunk.canvas.width = chunk.width * @game().tileSize
 
-      # HACK: temp canvas magic
-      temp = utils.canvas.create(maxChunkSize, maxChunkSize)
-      utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
-      chunk.height = lastRowHeight
-      chunk.canvas.height = chunk.height * @game().tileSize
+      if chunk.row is row
+        chunk.height = lastRowHeight
+        chunk.canvas.height = chunk.height * @game().tileSize
+
       utils.canvas.drawChunk(chunk.context(), temp, chunk)
 
 module.exports = Layer
