@@ -91,7 +91,7 @@ class Layer extends Model
       chunk.destroy() if chunk.row * Chunk.SIZE_IN_CELLS > @scene().height
 
     # 2. check if there are cropped chunks and make them of full-size
-    @chunks().where({ cropped: true }).forEach (chunk) ->
+    @chunks().where({ cropped: true }).forEach (chunk) =>
       chunk.cropped = false
 
       # HACK: temp canvas magic
@@ -99,39 +99,39 @@ class Layer extends Model
       utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
       chunk.width = Chunk.SIZE_IN_CELLS
       chunk.height = Chunk.SIZE_IN_CELLS
-      chunk.canvas.width = maxChunkSize
-      chunk.canvas.height = maxChunkSize
+      chunk.canvas.width = chunk.width * @game().tileSize
+      chunk.canvas.height = chunk.height * @game().tileSize
       utils.canvas.drawChunk(chunk.context(), temp, chunk)
 
-    # 3. run generateChunks method
-    @generateChunks()
-
-    # 4. crop chunks if needed
-    lastColumnWidth = @scene().width % Chunk.SIZE_IN_CELLS
-    lastRowHeight = @scene().height % Chunk.SIZE_IN_CELLS
-    return if lastColumnWidth is 0
-    return if lastRowHeight is 0
-    lastChunk = @chunks()[@chunks().length - 1]
-    return unless lastChunk
-    { col, row } = @chunks()[@chunks().length - 1]
-
-    # TODO: should be moved to chunk update attributes
-    @chunks().where({ col: col }).forEach (chunk) =>
-
-      # HACK: temp canvas magic
-      temp = utils.canvas.create(maxChunkSize, maxChunkSize)
-      utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
-      chunk.width = lastColumnWidth * @game().tileSize
-      chunk.canvas.width = chunk.width
-      utils.canvas.drawChunk(chunk.context(), temp, chunk)
-
-    @chunks().where({ row: row }).forEach (chunk) =>
-
-      # HACK: temp canvas magic
-      temp = utils.canvas.create(maxChunkSize, maxChunkSize)
-      utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
-      chunk.height = lastRowHeight * @game().tileSize
-      chunk.canvas.height = chunk.height
-      utils.canvas.drawChunk(chunk.context(), temp, chunk)
+    # # 3. run generateChunks method
+    # @generateChunks()
+    #
+    # # 4. crop chunks if needed
+    # lastColumnWidth = @scene().width % Chunk.SIZE_IN_CELLS
+    # lastRowHeight = @scene().height % Chunk.SIZE_IN_CELLS
+    # return if lastColumnWidth is 0
+    # return if lastRowHeight is 0
+    # lastChunk = @chunks()[@chunks().length - 1]
+    # return unless lastChunk
+    # { col, row } = lastChunk
+    #
+    # # TODO: should be moved to chunk update attributes
+    # @chunks().where({ col: col }).forEach (chunk) =>
+    #
+    #   # HACK: temp canvas magic
+    #   temp = utils.canvas.create(maxChunkSize, maxChunkSize)
+    #   utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
+    #   chunk.width = lastColumnWidth
+    #   chunk.canvas.width = chunk.width * @game().tileSize
+    #   utils.canvas.drawChunk(chunk.context(), temp, chunk)
+    #
+    # @chunks().where({ row: row }).forEach (chunk) =>
+    #
+    #   # HACK: temp canvas magic
+    #   temp = utils.canvas.create(maxChunkSize, maxChunkSize)
+    #   utils.canvas.drawChunk(temp.getContext('2d'), chunk.canvas, chunk)
+    #   chunk.height = lastRowHeight
+    #   chunk.canvas.height = chunk.height * @game().tileSize
+    #   utils.canvas.drawChunk(chunk.context(), temp, chunk)
 
 module.exports = Layer

@@ -20,18 +20,42 @@ class Scene extends Model
     partialW = @width % Chunk.SIZE_IN_CELLS
     partialH = @height % Chunk.SIZE_IN_CELLS
 
-    [0..(fullW - 1)].forEach (col) =>
-      [0..(fullH - 1)].forEach (row) =>
+    # smells like shit =[
+    if fullW > 0 and fullH is 0
+      [0..(fullW - 1)].forEach (col) =>
         @chunks().create
           col: col
+          row: 0
+          dirty: true
+          height: Chunk.SIZE_IN_CELLS
+          width: Chunk.SIZE_IN_CELLS
+          cropped: false
+
+    if fullH > 0 and fullW is 0
+      [0..(fullH - 1)].forEach (row) =>
+        @chunks().create
+          col: 0
           row: row
           dirty: true
           height: Chunk.SIZE_IN_CELLS
           width: Chunk.SIZE_IN_CELLS
           cropped: false
 
+
+    if fullW > 0 and fullH > 0
+      [0..(fullW - 1)].forEach (col) =>
+        [0..(fullH - 1)].forEach (row) =>
+          @chunks().create
+            col: col
+            row: row
+            dirty: true
+            height: Chunk.SIZE_IN_CELLS
+            width: Chunk.SIZE_IN_CELLS
+            cropped: false
+
     if partialH
       [0..(fullW - 1)].forEach (col) =>
+        return if col < 0
         @chunks().create
           col: col
           row: fullH
@@ -42,6 +66,7 @@ class Scene extends Model
 
     if partialW
       [0..(fullH - 1)].forEach (row) =>
+        return if row < 0
         @chunks().create
           col: fullW
           row: row
