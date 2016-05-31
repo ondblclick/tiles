@@ -24,17 +24,15 @@ class Scene extends Model
   visibleChunks: ->
     # TODO: should be refactored
     w = $("#scene-containers > li[data-model-id='#{@id}'] .canvas-container")[0]
-
-    # works
-    # setTimeout(->
-    #   console.log w.getBoundingClientRect()
-    # , 1)
+    rect = w.getBoundingClientRect()
+    width = if rect.width is 0 then 1000 else rect.width
+    height = if rect.height is 0 then 1000 else rect.height
 
     # magic numbers
     res = @chunks().filter (chunk) =>
-      cond1 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize < 917 + w.scrollLeft
+      cond1 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize < width + w.scrollLeft
       cond2 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize + chunk.widthInPx() > w.scrollLeft
-      cond3 = chunk.row * Chunk.SIZE_IN_CELLS * @game().tileSize < 754 + w.scrollTop
+      cond3 = chunk.row * Chunk.SIZE_IN_CELLS * @game().tileSize < height + w.scrollTop
       cond4 = chunk.row * Chunk.SIZE_IN_CELLS * @game().tileSize + chunk.heightInPx() > w.scrollTop
       cond1 and cond2 and cond3 and cond4
     res

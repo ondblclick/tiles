@@ -32,6 +32,8 @@ textarea {
   padding: .5rem 15px;
   background-color: #eee;
   border-bottom: 1px solid #ccc;
+  -webkit-user-select: none;
+  user-select: none;
 
   label {
     margin: 0 10px 0 0;
@@ -69,7 +71,7 @@ textarea {
   padding: 15px;
   height: calc(100% - 42px);
   padding-top: 15px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-top: none;
 
   .tab-pane {
@@ -156,6 +158,12 @@ textarea {
         }
       }
     }
+  }
+}
+
+.space-pressed {
+  canvas {
+    cursor: -webkit-grab;
   }
 }
 

@@ -89,10 +89,13 @@ class Editor extends Model
     $(document).on 'keydown', (e) =>
       if e.keyCode is 32
         @spacePressed = true
+        $('body').addClass('space-pressed')
         e.preventDefault()
 
     $(document).on 'keyup', (e) =>
-      @spacePressed = false if e.keyCode is 32
+      if e.keyCode is 32
+        @spacePressed = false
+        $('body').removeClass('space-pressed')
 
     $(document).on 'click', '.layers-list span', (e) =>
       $a = $(e.target).parents('.nav-item')
