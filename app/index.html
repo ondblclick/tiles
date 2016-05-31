@@ -5,42 +5,38 @@
   <title>Tiles</title>
 </head>
 <body>
-  <nav class="navbar navbar-dark bg-inverse navbar-full" style='margin-bottom: 15px;'>
+  <nav id='navbar' class="navbar navbar-dark bg-inverse navbar-full">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Tiles</a>
       <ul class="nav navbar-nav" id='menubar'></ul>
     </div>
   </nav>
 
-  <div class="container-fluid">
-    <div id="toolbar" class='breadcrumb'>
-      <label class="radio-inline">
-        <input type="radio" checked='checked' name="toolbar" id="draw"> draw
-      </label>
-      <label class="radio-inline">
-        <input type="radio" name="toolbar" id="remove"> remove
-      </label>
-      <label class="radio-inline">
-        <input type="radio" name="toolbar" id="fill"> fill
-      </label>
-    </div>
+  <div id="toolbar">
+    <label class="radio-inline">
+      <input type="radio" checked='checked' name="toolbar" id="draw"> draw
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="toolbar" id="remove"> remove
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="toolbar" id="fill"> fill
+    </label>
   </div>
 
-  <div class="container-fluid">
-    <div class="row">
-      <div id='scenes' class="col-md-8">
-        <ul id='scene-tabs' class='nav nav-tabs'></ul>
-        <ul id='scene-containers' class="tab-content"></ul>
+  <div id='content' class='container-fluid'>
+    <div id='scenes'>
+      <ul id='scene-tabs' class='nav nav-tabs'></ul>
+      <ul id='scene-containers' class="tab-content"></ul>
+    </div>
+    <div id='tilesets'>
+      <div class="checkbox pull-xs-right">
+        <label style='margin-top:8px;'>
+          <input type="checkbox" id='show-hidden-tiles'> Show hidden tiles
+        </label>
       </div>
-      <div id='tilesets' class="col-md-4">
-        <div class="checkbox pull-xs-right">
-          <label style='margin-top:8px;'>
-            <input type="checkbox" id='show-hidden-tiles'> Show hidden tiles
-          </label>
-        </div>
-        <ul id='tileset-tabs' class="nav nav-tabs"></ul>
-        <ul id='tileset-containers' class='tab-content'></ul>
-      </div>
+      <ul id='tileset-tabs' class="nav nav-tabs"></ul>
+      <ul id='tileset-containers' class='tab-content'></ul>
     </div>
   </div>
 

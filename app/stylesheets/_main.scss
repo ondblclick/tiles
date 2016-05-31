@@ -10,6 +10,10 @@ body {
   margin-left: 5px;
 }
 
+.navbar {
+  padding: 0;
+}
+
 textarea {
   width: 100%;
   min-height: 500px;
@@ -25,51 +29,84 @@ textarea {
 }
 
 #toolbar {
+  padding: .5rem 15px;
+  background-color: #eee;
+  border-bottom: 1px solid #ccc;
+
   label {
-    margin-right: 10px;
+    margin: 0 10px 0 0;
+
+    input {
+      vertical-align: middle;
+      margin-top: -2px;
+    }
   }
 }
 
-#tilesets {
-  padding-bottom: 15px;
+#content {
+  padding: 15px;
+  height: calc(100vh - 38px - 41px);
 }
 
-#scenes { padding-right: 0; }
+#tilesets,
+#scenes {
+  height: 100%;
+}
+
+#tilesets {
+  float: right;
+  width: calc(30vw - 15px - 15px);
+  overflow: auto;
+}
+
+#scenes {
+  float: left;width: calc(70vw - 15px);
+}
 
 #scene-containers,
 #tileset-containers {
   margin: 0;
-  padding: 0;
-}
+  padding: 15px;
+  height: calc(100% - 42px);
+  padding-top: 15px;
+  border: 1px solid #ccc;
+  border-top: none;
 
-#scene-containers,
-#tileset-containers {
-  > li {
-    padding: 15px;
-    height: calc(100vh - 72px - 15px - 43px - 70px);
-    border: 1px solid #ddd;
-    border-top: none;
+  .tab-pane {
+    height: 100%;
   }
 }
 
 #scene-containers {
-  > li {
-    .col-md-9 {
-      .canvas-container {
-        height: calc(100vh - 72px - 15px - 43px - 31px - 70px);
-        overflow: scroll;
-        border: 1px solid #ddd;
+  .layers-list {
+    height: 100%;
+  }
+
+  .tab-pane {
+    .row {
+      height: 100%;
+
+      [class*='col-'] {
+        height: 100%;
+
+        &.col-md-10 {
+          padding-left: 0;
+        }
+
+        .canvas-container {
+          height: 100%;
+        }
       }
     }
   }
 }
 
-.tab-pane { overflow: auto; }
-
 .tiles-container {
   list-style: none;
-  margin: 0;
   padding: 0;
+  overflow-y: scroll;
+  height: 100%;
+  margin: -5px 0 0 -5px;
 }
 
 .tile {
@@ -90,6 +127,9 @@ textarea {
 }
 
 .layers-list {
+  -webkit-user-select: none;
+  user-select: none;
+
   .nav-item {
     span {
       padding: 5px 7px;
@@ -120,6 +160,9 @@ textarea {
 }
 
 .canvas-container {
+  height: calc(100vh - 72px - 15px - 43px - 31px - 70px);
+  overflow: scroll;
+  border: 1px solid #ddd;
   position: relative;
 
   .wrapper {
