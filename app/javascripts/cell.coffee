@@ -17,11 +17,12 @@ class Cell extends Model
 
   destroy: ->
     super()
+    tileSize = @game().tileSize
     @chunk().context().clearRect(
-      @col * @game().tileSize,
-      @row * @game().tileSize,
-      @game().tileSize,
-      @game().tileSize
+      @col * tileSize,
+      @row * tileSize,
+      tileSize,
+      tileSize
     )
 
   adjustImage: (origin) ->
@@ -35,20 +36,22 @@ class Cell extends Model
     origin
 
   render: ->
+    tileSize = @game().tileSize
     context = @chunk().context()
-    buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
+    buffer = utils.canvas.create(tileSize, tileSize)
     bufferContext = buffer.getContext('2d')
+    tile = @tile()
 
     bufferContext.drawImage(
-      @tile().tileSet().img,
-      @tile().x,
-      @tile().y,
-      @game().tileSize,
-      @game().tileSize,
+      tile.tileSet().img,
+      tile.x,
+      tile.y,
+      tileSize,
+      tileSize,
       0,
       0,
-      @game().tileSize,
-      @game().tileSize
+      tileSize,
+      tileSize
     )
     adjusted = @adjustImage(bufferContext.getImageData(0, 0, 48, 48))
     bufferContext.putImageData(adjusted, 0, 0)
@@ -57,12 +60,12 @@ class Cell extends Model
       buffer,
       0,
       0,
-      @game().tileSize,
-      @game().tileSize,
-      @col * @game().tileSize,
-      @row * @game().tileSize,
-      @game().tileSize,
-      @game().tileSize
+      tileSize,
+      tileSize,
+      @col * tileSize,
+      @row * tileSize,
+      tileSize,
+      tileSize
     )
 
 module.exports = Cell

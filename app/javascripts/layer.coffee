@@ -17,27 +17,35 @@ class Layer extends Model
     res
 
   generateChunks: ->
-    w = Math.ceil(@scene().width / Chunk.SIZE_IN_CELLS)
-    h = Math.ceil(@scene().height / Chunk.SIZE_IN_CELLS)
+    # optimization
+    scene = @scene()
 
-    fullW = Math.floor(@scene().width / Chunk.SIZE_IN_CELLS)
-    fullH = Math.floor(@scene().height / Chunk.SIZE_IN_CELLS)
+    w = Math.ceil(scene.width / Chunk.SIZE_IN_CELLS)
+    h = Math.ceil(scene.height / Chunk.SIZE_IN_CELLS)
 
-    partialW = @scene().width % Chunk.SIZE_IN_CELLS
-    partialH = @scene().height % Chunk.SIZE_IN_CELLS
+    fullW = Math.floor(scene.width / Chunk.SIZE_IN_CELLS)
+    fullH = Math.floor(scene.height / Chunk.SIZE_IN_CELLS)
 
+    partialW = scene.width % Chunk.SIZE_IN_CELLS
+    partialH = scene.height % Chunk.SIZE_IN_CELLS
+
+    # optimization
+    chunks = @chunks()
+
+    console.time('layer chunk creation')
     if w and h
-      [1..w].forEach (col) =>
-        [1..h].forEach (row) =>
-          return if @chunks().where({ col: col - 1, row: row - 1 })[0]
+      [1..w].forEach (col) ->
+        [1..h].forEach (row) ->
+          return if chunks.where({ col: col - 1, row: row - 1 })[0]
           width = if col > fullW then partialW else Chunk.SIZE_IN_CELLS
           height = if row > fullH then partialH else Chunk.SIZE_IN_CELLS
-          @chunks().create
+          chunks.create
             col: col - 1
             row: row - 1
             height: height
             width: width
             cropped: height isnt Chunk.SIZE_IN_CELLS or width isnt Chunk.SIZE_IN_CELLS
+    console.timeEnd('chunk creation')
 
   afterCreate: ->
     @generateChunks()

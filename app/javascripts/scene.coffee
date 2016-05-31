@@ -24,18 +24,23 @@ class Scene extends Model
     partialW = @width % Chunk.SIZE_IN_CELLS
     partialH = @height % Chunk.SIZE_IN_CELLS
 
+    # optimization
+    chunks = @chunks()
+
+    console.time('scene chunk creation')
     if w and h
-      [1..w].forEach (col) =>
-        [1..h].forEach (row) =>
-          return if @chunks().where({ col: col - 1, row: row - 1 })[0]
+      [1..w].forEach (col) ->
+        [1..h].forEach (row) ->
+          return if chunks.where({ col: col - 1, row: row - 1 })[0]
           width = if col > fullW then partialW else Chunk.SIZE_IN_CELLS
           height = if row > fullH then partialH else Chunk.SIZE_IN_CELLS
-          @chunks().create
+          chunks.create
             col: col - 1
             row: row - 1
             dirty: true
             height: height
             width: width
+    console.timeEnd('scene chunk creation')
 
   afterCreate: ->
     @debouncedRender = utils.debounce(@renderVisibleChunks, 150)
@@ -60,7 +65,8 @@ class Scene extends Model
     @render()
 
   render: (c) ->
-    # console.time 'scene render'
+    console.time 'scene render'
+    # guessing visibleChunks method takes a good amount of time for big amount of chunks
     chunks = if c then [c] else @visibleChunks().filter((c) -> c.dirty is true)
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>

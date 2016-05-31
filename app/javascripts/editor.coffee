@@ -122,6 +122,8 @@ class Editor extends Model
     $(document).on 'click', 'canvas', (e) =>
       return if @spacePressed
       return unless @toolIsSelected('fill')
+
+      # still the most lagging thing in the app =\
       console.time('floodfill')
 
       # HACK: using context.createPattern here to speed up rendering process
@@ -138,13 +140,17 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       )
+
       @activeLayer().chunks().forEach (chunk) =>
+        console.time("chunk #{chunk.id} filling")
         chunk.cells().deleteAll()
         cells = chunk.cells()
         [0..9].forEach (col) =>
           [0..9].forEach (row) =>
             cells.create({ col: col, row: row, tileId: @selectedTile.id })
+        console.timeEnd("chunk #{chunk.id} filling")
         utils.canvas.fill(chunk.context(), buffer)
+
       @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
       @activeScene().render()
       console.timeEnd('floodfill')
@@ -186,30 +192,34 @@ class Editor extends Model
       @activeScene().render()
 
     $(document).on 'mousemove', (e) =>
+      # optimization
+      tileSize = @game().tileSize
+
+      # the second most lagging thing in the app =\
       return unless $(e.target).is('canvas')
       return unless @selectedTile
-      currentX = Math.floor(e.offsetX / @game().tileSize)
-      currentY = Math.floor(e.offsetY / @game().tileSize)
+      currentX = Math.floor(e.offsetX / tileSize)
+      currentY = Math.floor(e.offsetY / tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       @activeScene().render()
       sceneChunk.dirty = true
       sceneChunk.context().clearRect(
-        currentX * @game().tileSize,
-        currentY * @game().tileSize,
-        @game().tileSize,
-        @game().tileSize
+        currentX * tileSize,
+        currentY * tileSize,
+        tileSize,
+        tileSize
       )
       sceneChunk.context().globalAlpha = 0.3
       sceneChunk.context().drawImage(
         @selectedTile.tileSet().img,
         @selectedTile.x,
         @selectedTile.y,
-        @game().tileSize,
-        @game().tileSize,
-        currentX * @game().tileSize,
-        currentY * @game().tileSize,
-        @game().tileSize,
-        @game().tileSize
+        tileSize,
+        tileSize,
+        currentX * tileSize,
+        currentY * tileSize,
+        tileSize,
+        tileSize
       )
       sceneChunk.context().globalAlpha = 1
 
