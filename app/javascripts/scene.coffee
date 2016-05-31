@@ -73,6 +73,16 @@ class Scene extends Model
       chunk.dirty = false
       @sortedLayers().forEach (layer) ->
         layerChunk = layer.chunks().where({ col: chunk.col, row: chunk.row })[0]
+
+        if layerChunk.queue.length
+          action = layerChunk.queue.pop()
+          layerChunk.cells().deleteAll()
+          cells = layerChunk.cells()
+          [0..9].forEach (col) ->
+            [0..9].forEach (row) ->
+              cells.create({ col: col, row: row, tileId: action.params.tile.id })
+          utils.canvas.fill(layerChunk.context(), action.params.buffer)
+
         utils.canvas.drawChunk(chunk.context(), layerChunk.canvas, chunk)
     console.timeEnd 'scene render'
 

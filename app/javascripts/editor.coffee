@@ -143,11 +143,18 @@ class Editor extends Model
 
       @activeLayer().chunks().forEach (chunk) =>
         console.time("chunk #{chunk.id} filling")
-        chunk.cells().deleteAll()
-        cells = chunk.cells()
-        [0..9].forEach (col) =>
-          [0..9].forEach (row) =>
-            cells.create({ col: col, row: row, tileId: @selectedTile.id })
+        chunk.queue = []
+        chunk.queue.push
+          type: 'floodfill'
+          params:
+            tile: @selectedTile
+            buffer: buffer
+
+        # chunk.cells().deleteAll()
+        # cells = chunk.cells()
+        # [0..9].forEach (col) =>
+        #   [0..9].forEach (row) =>
+        #     cells.create({ col: col, row: row, tileId: @selectedTile.id })
         console.timeEnd("chunk #{chunk.id} filling")
         utils.canvas.fill(chunk.context(), buffer)
 

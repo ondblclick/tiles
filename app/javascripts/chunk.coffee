@@ -33,6 +33,7 @@ class Chunk extends Model
     @canvas = document.createElement('canvas')
     @canvas.width = @widthInPx()
     @canvas.height = @heightInPx()
+    @queue = []
 
   context: ->
     @canvas.getContext('2d')
