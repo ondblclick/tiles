@@ -47,9 +47,8 @@ class Scene extends Model
     @render()
 
   render: (c) ->
-    # console.time 'scene render'
+    console.time 'scene render'
     chunks = if c then [c] else @visibleChunks().filter((chunk) -> chunk.dirty is true)
-    console.log chunks
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
       chunk.dirty = false

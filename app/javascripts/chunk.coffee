@@ -6,7 +6,7 @@ Scene = require './scene.coffee'
 class Chunk extends Model
   @belongsTo('Layer')
   @belongsTo('Scene')
-  @hasMany('Cell')
+  @hasMany('Cell', { dependent: 'destroy' })
   @attributes('col', 'row', 'dirty', 'cropped', 'width', 'height')
 
   @SIZE_IN_CELLS: 10

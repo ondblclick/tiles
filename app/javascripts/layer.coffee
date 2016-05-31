@@ -57,6 +57,7 @@ class Layer extends Model
     @createChunks()
 
     # 4. crop chunks if needed
+    # TODO: cells should be removed here as well
     lastColumnWidth = @scene().width % Chunk.SIZE_IN_CELLS
     lastRowHeight = @scene().height % Chunk.SIZE_IN_CELLS
     return if lastColumnWidth is 0
