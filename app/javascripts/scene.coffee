@@ -14,46 +14,28 @@ class Scene extends Model
   @hasMany('Chunk', { dependent: 'destroy' })
   @delegate('editor', 'Game')
 
-  generateChunks: ->
-    w = Math.ceil(@width / Chunk.SIZE_IN_CELLS)
-    h = Math.ceil(@height / Chunk.SIZE_IN_CELLS)
-
-    fullW = Math.floor(@width / Chunk.SIZE_IN_CELLS)
-    fullH = Math.floor(@height / Chunk.SIZE_IN_CELLS)
-
-    partialW = @width % Chunk.SIZE_IN_CELLS
-    partialH = @height % Chunk.SIZE_IN_CELLS
-
-    # optimization
-    chunks = @chunks()
-
-    console.time('scene chunk creation')
-    if w and h
-      [1..w].forEach (col) ->
-        [1..h].forEach (row) ->
-          return if chunks.where({ col: col - 1, row: row - 1 })[0]
-          width = if col > fullW then partialW else Chunk.SIZE_IN_CELLS
-          height = if row > fullH then partialH else Chunk.SIZE_IN_CELLS
-          chunks.create
-            col: col - 1
-            row: row - 1
-            dirty: true
-            height: height
-            width: width
-    console.timeEnd('scene chunk creation')
+  createChunks: ->
+    Chunk.createChunksFor(@, @)
 
   afterCreate: ->
-    @debouncedRender = utils.debounce(@renderVisibleChunks, 150)
-    @generateChunks()
+    @debouncedRender = utils.debounce(@renderVisibleChunks, 50)
+    @createChunks()
 
   visibleChunks: ->
-    # something wrong here
+    # TODO: should be refactored
     w = $("#scene-containers > li[data-model-id='#{@id}'] .canvas-container")[0]
-    res = @chunks().filter (chunk) ->
-      cond1 = chunk.col >= Math.floor(w.scrollLeft / chunk.widthInPx())
-      cond2 = chunk.col < Math.ceil((w.scrollLeft + 1000) / chunk.widthInPx())
-      cond3 = chunk.row >= Math.floor(w.scrollTop / chunk.heightInPx())
-      cond4 = chunk.row < Math.ceil((w.scrollTop + 1000) / chunk.heightInPx())
+
+    # works
+    # setTimeout(->
+    #   console.log w.getBoundingClientRect()
+    # , 1)
+
+    # magic numbers
+    res = @chunks().filter (chunk) =>
+      cond1 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize < 917 + w.scrollLeft
+      cond2 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize + chunk.widthInPx() > w.scrollLeft
+      cond3 = chunk.row * Chunk.SIZE_IN_CELLS * @game().tileSize < 754 + w.scrollTop
+      cond4 = chunk.row * Chunk.SIZE_IN_CELLS * @game().tileSize + chunk.heightInPx() > w.scrollTop
       cond1 and cond2 and cond3 and cond4
     res
 
@@ -65,15 +47,17 @@ class Scene extends Model
     @render()
 
   render: (c) ->
-    console.time 'scene render'
-    # guessing visibleChunks method takes a good amount of time for big amount of chunks
-    chunks = if c then [c] else @visibleChunks().filter((c) -> c.dirty is true)
+    # console.time 'scene render'
+    chunks = if c then [c] else @visibleChunks().filter((chunk) -> chunk.dirty is true)
+    console.log chunks
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
       chunk.dirty = false
       @sortedLayers().forEach (layer) ->
         layerChunk = layer.chunks().where({ col: chunk.col, row: chunk.row })[0]
 
+        # process floodfilling
+        # (can be moved to background job)
         if layerChunk.queue.length
           action = layerChunk.queue.pop()
           layerChunk.cells().deleteAll()
@@ -83,6 +67,7 @@ class Scene extends Model
               cells.create({ col: col, row: row, tileId: action.params.tile.id })
           utils.canvas.fill(layerChunk.context(), action.params.buffer)
 
+        # draw layer to scene
         utils.canvas.drawChunk(chunk.context(), layerChunk.canvas, chunk)
     console.timeEnd 'scene render'
 
@@ -133,7 +118,7 @@ class Scene extends Model
     if cellsShouldBeUpdated
       # chunks should be updated
       @chunks().deleteAll()
-      @generateChunks()
+      @createChunks()
 
       # cells should be updated
       @layers().forEach (layer) -> layer.updateChunks()

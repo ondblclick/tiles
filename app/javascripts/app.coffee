@@ -29,7 +29,7 @@ $(document).ready ->
     tileOffset: 0,
     tileOpacityColor: '255,255,255'
 
-  scene1 = game.scenes().create({ name: 'very first scene', width: 5, height: 5 })
+  scene1 = game.scenes().create({ name: 'very first scene', width: 45, height: 45 })
   scene2 = game.scenes().create({ name: 'second scene', width: 25, height: 25 })
   scene3 = game.scenes().create({ name: 'last scene', width: 10, height: 10 })
 

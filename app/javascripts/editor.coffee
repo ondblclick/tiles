@@ -142,20 +142,12 @@ class Editor extends Model
       )
 
       @activeLayer().chunks().forEach (chunk) =>
-        console.time("chunk #{chunk.id} filling")
         chunk.queue = []
         chunk.queue.push
           type: 'floodfill'
           params:
             tile: @selectedTile
             buffer: buffer
-
-        # chunk.cells().deleteAll()
-        # cells = chunk.cells()
-        # [0..9].forEach (col) =>
-        #   [0..9].forEach (row) =>
-        #     cells.create({ col: col, row: row, tileId: @selectedTile.id })
-        console.timeEnd("chunk #{chunk.id} filling")
         utils.canvas.fill(chunk.context(), buffer)
 
       @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
@@ -191,15 +183,14 @@ class Editor extends Model
       cell.render()
       @activeScene().render(sceneChunk)
 
+    # can get rid of two handlers below
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
       return unless @selectedTile
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
-      sceneChunk.dirty = true
-      @activeScene().render()
+      @activeScene().render(sceneChunk)
 
     $(document).on 'mousemove', (e) =>
-      # optimization
       tileSize = @game().tileSize
 
       # the second most lagging thing in the app =\
@@ -208,14 +199,7 @@ class Editor extends Model
       currentX = Math.floor(e.offsetX / tileSize)
       currentY = Math.floor(e.offsetY / tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
-      @activeScene().render()
-      sceneChunk.dirty = true
-      sceneChunk.context().clearRect(
-        currentX * tileSize,
-        currentY * tileSize,
-        tileSize,
-        tileSize
-      )
+      @activeScene().render(sceneChunk)
       sceneChunk.context().globalAlpha = 0.3
       sceneChunk.context().drawImage(
         @selectedTile.tileSet().img,

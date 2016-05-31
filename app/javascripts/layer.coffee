@@ -16,39 +16,11 @@ class Layer extends Model
     res.chunks = @chunks().map((chunk) -> chunk.toJSON())
     res
 
-  generateChunks: ->
-    # optimization
-    scene = @scene()
-
-    w = Math.ceil(scene.width / Chunk.SIZE_IN_CELLS)
-    h = Math.ceil(scene.height / Chunk.SIZE_IN_CELLS)
-
-    fullW = Math.floor(scene.width / Chunk.SIZE_IN_CELLS)
-    fullH = Math.floor(scene.height / Chunk.SIZE_IN_CELLS)
-
-    partialW = scene.width % Chunk.SIZE_IN_CELLS
-    partialH = scene.height % Chunk.SIZE_IN_CELLS
-
-    # optimization
-    chunks = @chunks()
-
-    console.time('layer chunk creation')
-    if w and h
-      [1..w].forEach (col) ->
-        [1..h].forEach (row) ->
-          return if chunks.where({ col: col - 1, row: row - 1 })[0]
-          width = if col > fullW then partialW else Chunk.SIZE_IN_CELLS
-          height = if row > fullH then partialH else Chunk.SIZE_IN_CELLS
-          chunks.create
-            col: col - 1
-            row: row - 1
-            height: height
-            width: width
-            cropped: height isnt Chunk.SIZE_IN_CELLS or width isnt Chunk.SIZE_IN_CELLS
-    console.timeEnd('chunk creation')
+  createChunks: ->
+    Chunk.createChunksFor(@, @scene())
 
   afterCreate: ->
-    @generateChunks()
+    @createChunks()
 
   renderToEditor: ->
     $("#scene-containers > li[data-model-id='#{@scene().id}'] .layers-list").append(tabTmpl(@toJSON()))
@@ -81,8 +53,8 @@ class Layer extends Model
       chunk.height = Chunk.SIZE_IN_CELLS
       chunk.canvas = temp
 
-    # 3. run generateChunks method
-    @generateChunks()
+    # 3. run createChunks method
+    @createChunks()
 
     # 4. crop chunks if needed
     lastColumnWidth = @scene().width % Chunk.SIZE_IN_CELLS
