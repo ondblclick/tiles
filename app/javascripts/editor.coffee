@@ -26,7 +26,10 @@ class Editor extends Model
     @createEditorAdder()
     @createEditorContexter()
     @selectedTile = undefined
-    @cellBelowCursorPosition = undefined
+    @spacePressed = false
+    @dragScroll = false
+    @dragScrollStartX = 0
+    @dragScrollStartY = 0
 
   toolbar: ->
     $('#toolbar')
@@ -63,6 +66,37 @@ class Editor extends Model
     $("#toolbar ##{tool}").is(':checked')
 
   bindings: ->
+    $(document).on 'mousedown', 'canvas', (e) =>
+      return unless @spacePressed
+      @dragScroll = true
+      @dragScrollStartX = e.pageX
+      @dragScrollStartY = e.pageY
+
+    $(document).on 'mouseup', (e) =>
+      return unless @dragScroll
+      @dragScroll = false
+
+    $(document).on 'mousemove', (e) =>
+      return unless @dragScroll
+      deltaX = e.pageX - @dragScrollStartX
+      deltaY = e.pageY - @dragScrollStartY
+      el = $('.tab-pane.active .canvas-container')
+      el.scrollLeft(el.scrollLeft() - deltaX)
+      el.scrollTop(el.scrollTop() - deltaY)
+      @dragScrollStartX = e.pageX
+      @dragScrollStartY = e.pageY
+
+    $(document).on 'keydown', (e) =>
+      if e.keyCode is 32
+        @spacePressed = true
+        $('body').addClass('space-pressed')
+        e.preventDefault()
+
+    $(document).on 'keyup', (e) =>
+      if e.keyCode is 32
+        @spacePressed = false
+        $('body').removeClass('space-pressed')
+
     $(document).on 'click', '.layers-list span', (e) =>
       $a = $(e.target).parents('.nav-item')
       if ($(e.target).next().length) then utils.swap($a, $a.prev()) else utils.swap($a, $a.next())
@@ -71,10 +105,10 @@ class Editor extends Model
         Layer.find($(item).data('model-id')).order = index
 
       console.time 'scene sorting'
-      @activeScene().sortedLayers().forEach (layer) =>
-        @activeScene().context().drawImage(layer.canvas, 0, 0)
-      false
+      @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
+      @activeScene().render()
       console.timeEnd 'scene sorting'
+      false
 
     $(document).on 'change', '#show-hidden-tiles', (e) ->
       $('#tileset-containers').toggleClass('show-hidden-tiles', $(e.target).is(':checked'))
@@ -89,13 +123,11 @@ class Editor extends Model
         @selectedTile = Tile.find($(e.target).data('model-id'))
 
     $(document).on 'click', 'canvas', (e) =>
+      return if @spacePressed
       return unless @toolIsSelected('fill')
+
+      # still the most lagging thing in the app =\
       console.time('floodfill')
-      @activeLayer().cells().deleteAll()
-      cells = @activeLayer().cells()
-      [0..(@activeScene().width - 1)].forEach (col) =>
-        [0..(@activeScene().height - 1)].forEach (row) =>
-          cell = cells.create({ col: col, row: row, tileId: @selectedTile.id })
 
       # HACK: using context.createPattern here to speed up rendering process
       buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
@@ -111,62 +143,78 @@ class Editor extends Model
         @game().tileSize,
         @game().tileSize
       )
-      utils.canvas.fill(@activeScene().context(), buffer)
-      utils.canvas.fill(@activeLayer().context(), buffer)
+
+      @activeLayer().chunks().forEach (chunk) =>
+        chunk.queue = []
+        chunk.queue.push
+          type: 'floodfill'
+          params:
+            tile: @selectedTile
+            buffer: buffer
+        utils.canvas.fill(chunk.context(), buffer)
+
+      @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
+      @activeScene().render()
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>
+      return if @spacePressed
       return unless @toolIsSelected('remove')
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
+      sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
+      layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
+
+      cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
       return unless cell
       cell.destroy()
-      @activeScene().renderCell({ x: currentX, y: currentY })
-      @activeLayer().renderCell({ x: currentX, y: currentY })
+      @activeScene().render(sceneChunk)
 
     $(document).on 'click', 'canvas', (e) =>
+      return if @spacePressed
       return unless @toolIsSelected('draw')
       return unless @selectedTile
+
       currentX = Math.floor(e.offsetX / @game().tileSize)
       currentY = Math.floor(e.offsetY / @game().tileSize)
-      cell = @activeLayer().cells().where({ col: currentX, row: currentY })[0]
-      cell.destroy() if cell
-      @activeLayer().cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
-      @activeScene().renderCell({ x: currentX, y: currentY })
-      @activeLayer().renderCell({ x: currentX, y: currentY })
+      sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
+      layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
+      cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
+      cell.destroy() if cell
+      cell = layerChunk.cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
+      cell.render()
+      @activeScene().render(sceneChunk)
+
+    # can get rid of two handlers below
     $(document).on 'mouseout', (e) =>
       return unless $(e.target).is('canvas')
-      return unless @cellBelowCursorPosition
-      @activeScene().renderCell(@cellBelowCursorPosition)
-      @cellBelowCursorPosition = undefined
+      return unless @selectedTile
+      sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
+      @activeScene().render(sceneChunk)
 
     $(document).on 'mousemove', (e) =>
+      tileSize = @game().tileSize
+
+      # the second most lagging thing in the app =\
       return unless $(e.target).is('canvas')
       return unless @selectedTile
-      pageX = Math.floor(e.offsetX / @game().tileSize)
-      pageY = Math.floor(e.offsetY / @game().tileSize)
-      @activeScene().renderCell(@cellBelowCursorPosition) if @cellBelowCursorPosition
-      @activeScene().context().clearRect(
-        pageX * @game().tileSize,
-        pageY * @game().tileSize,
-        @game().tileSize,
-        @game().tileSize
-      )
-      @activeScene().context().globalAlpha = 0.3
-      @activeScene().context().drawImage(
+      currentX = Math.floor(e.offsetX / tileSize)
+      currentY = Math.floor(e.offsetY / tileSize)
+      sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
+      @activeScene().render(sceneChunk)
+      sceneChunk.context().globalAlpha = 0.3
+      sceneChunk.context().drawImage(
         @selectedTile.tileSet().img,
         @selectedTile.x,
         @selectedTile.y,
-        @game().tileSize,
-        @game().tileSize,
-        pageX * @game().tileSize,
-        pageY * @game().tileSize,
-        @game().tileSize,
-        @game().tileSize
+        tileSize,
+        tileSize,
+        currentX * tileSize,
+        currentY * tileSize,
+        tileSize,
+        tileSize
       )
-      @cellBelowCursorPosition = { x: pageX, y: pageY }
-      @activeScene().context().globalAlpha = 1
+      sceneChunk.context().globalAlpha = 1
 
 module.exports = Editor

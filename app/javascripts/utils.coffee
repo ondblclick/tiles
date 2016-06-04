@@ -8,6 +8,22 @@ utils.swap = (a, b) ->
   b.before(a)
   tmp.replaceWith(b)
 
+utils.debounce = (func, wait, immediate) ->
+  timeout = undefined
+  ->
+    context = this
+    args = arguments
+    clearTimeout timeout
+    timeout = setTimeout((->
+      timeout = null
+      if !immediate
+        func.apply context, args
+      return
+    ), wait)
+    if immediate and !timeout
+      func.apply context, args
+    return
+
 utils.canvas =
   fill: (context, image, width, height) ->
     pattern = context.createPattern(image, 'repeat')
@@ -20,5 +36,18 @@ utils.canvas =
     canvas.width = width
     canvas.height = height
     canvas
+
+  drawChunk: (onContext, fromCanvas, chunk) ->
+    onContext.drawImage(
+      fromCanvas
+      0,
+      0,
+      chunk.widthInPx(),
+      chunk.heightInPx(),
+      0,
+      0,
+      chunk.widthInPx(),
+      chunk.heightInPx()
+    )
 
 module.exports = utils

@@ -1,6 +1,8 @@
 Model = require 'activer'
 Game = require './game.coffee'
 Layer = require './layer.coffee'
+Chunk = require './chunk.coffee'
+utils = require './utils.coffee'
 
 tabTmpl = require '../templates/scene_tab.hbs'
 containerTmpl = require '../templates/scene_container.hbs'
@@ -9,31 +11,62 @@ class Scene extends Model
   @attributes('name', 'width', 'height')
   @belongsTo('Game')
   @hasMany('Layer', { dependent: 'destroy' })
+  @hasMany('Chunk', { dependent: 'destroy' })
   @delegate('editor', 'Game')
 
-  canvas: -> $("#scene-containers > li[data-model-id='#{@id}'] canvas")
+  createChunks: ->
+    Chunk.createChunksFor(@, @)
 
-  context: -> @canvas()[0].getContext('2d')
+  afterCreate: ->
+    @debouncedRender = utils.debounce(@renderVisibleChunks, 50)
+    @createChunks()
 
-  renderCell: ({ x, y }) ->
-    @context().clearRect(
-      x * @game().tileSize,
-      y * @game().tileSize,
-      @game().tileSize,
-      @game().tileSize
-    )
-    cells = []
-    @sortedLayers().forEach (layer) ->
-      cell = layer.cells().where({ col: x, row: y })[0]
-      cell.render() if cell
+  visibleChunks: ->
+    # TODO: should be refactored
+    w = $("#scene-containers > li[data-model-id='#{@id}'] .canvas-container")[0]
+    rect = w.getBoundingClientRect()
+    width = if rect.width is 0 then 1000 else rect.width
+    height = if rect.height is 0 then 1000 else rect.height
+
+    # magic numbers
+    res = @chunks().filter (chunk) =>
+      cond1 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize < width + w.scrollLeft
+      cond2 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize + chunk.widthInPx() > w.scrollLeft
+      cond3 = chunk.row * Chunk.SIZE_IN_CELLS * @game().tileSize < height + w.scrollTop
+      cond4 = chunk.row * Chunk.SIZE_IN_CELLS * @game().tileSize + chunk.heightInPx() > w.scrollTop
+      cond1 and cond2 and cond3 and cond4
+    res
 
   sortedLayers: ->
     @layers().sort (layerA, layerB) ->
       +layerA.order > +layerB.order
 
-  render: ->
-    @context().clearRect(0, 0, @width * @game().tileSize, @height * @game().tileSize)
-    @sortedLayers().forEach (layer) -> layer.render()
+  renderVisibleChunks: =>
+    @render()
+
+  render: (c) ->
+    console.time 'scene render'
+    chunks = if c then [c] else @visibleChunks().filter((chunk) -> chunk.dirty is true)
+    chunks.forEach (chunk) -> chunk.clear()
+    chunks.forEach (chunk) =>
+      chunk.dirty = false
+      @sortedLayers().forEach (layer) ->
+        layerChunk = layer.chunks().where({ col: chunk.col, row: chunk.row })[0]
+
+        # process floodfilling
+        # (can be moved to background job)
+        if layerChunk.queue.length
+          action = layerChunk.queue.pop()
+          layerChunk.cells().deleteAll()
+          cells = layerChunk.cells()
+          [0..9].forEach (col) ->
+            [0..9].forEach (row) ->
+              cells.create({ col: col, row: row, tileId: action.params.tile.id })
+          utils.canvas.fill(layerChunk.context(), action.params.buffer)
+
+        # draw layer to scene
+        utils.canvas.drawChunk(chunk.context(), layerChunk.canvas, chunk)
+    console.timeEnd 'scene render'
 
   toJSON: ->
     res = super()
@@ -41,16 +74,24 @@ class Scene extends Model
     res
 
   renderToEditor: ->
-    obj = @toJSON()
-    obj.width *= @game().tileSize
-    obj.height *= @game().tileSize
-    obj.tileSize = @game().tileSize
-    obj.tileSizeX2 = @game().tileSize * 2
-    $('#scene-tabs').append(tabTmpl(@toJSON()))
-    $('#scene-containers').append(containerTmpl(obj))
+    tabObj = @toJSON()
+    tabObj.activeClass = if @editor().activeScene() is @ then 'active' else ''
+    containerObj = @toJSON()
+    containerObj.width *= @game().tileSize
+    containerObj.height *= @game().tileSize
+    containerObj.tileSize = @game().tileSize
+    containerObj.tileSizeX2 = @game().tileSize * 2
+    containerObj.activeClass = if @editor().activeScene() is @ then 'active' else ''
+    $('#scene-tabs').append(tabTmpl(tabObj))
+    $('#scene-containers').append(containerTmpl(containerObj))
+
+    @chunks().forEach (chunk) =>
+      chunk.render($("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper")[0])
+
     @sortedLayers().forEach (layer) -> layer.renderToEditor()
     $("#scene-containers > li[data-model-id='#{@id}'] .layers-list > .nav-item").first().addClass('active')
     @render()
+    $("#scene-containers > li[data-model-id='#{@id}'] .canvas-container").on 'scroll', @debouncedRender
 
   removeFromEditor: ->
     $("#scene-containers li[data-model-id='#{@id}']").remove()
@@ -60,6 +101,8 @@ class Scene extends Model
     @removeFromEditor()
     @destroy()
 
+  # TODO: move update attributes to activer
+  # and make user be able to use before_update, after_update callbacks
   updateAttributes: (attrs) =>
     cellsShouldBeUpdated = false
 
@@ -70,7 +113,12 @@ class Scene extends Model
       @[k] = v if k in @constructor.fields
 
     if cellsShouldBeUpdated
-      @layers().forEach (layer) -> layer.updateCellsList()
+      # chunks should be updated
+      @chunks().deleteAll()
+      @createChunks()
+
+      # cells should be updated
+      @layers().forEach (layer) -> layer.updateChunks()
 
     @removeFromEditor()
     @renderToEditor()

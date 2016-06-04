@@ -1,14 +1,29 @@
 Model = require 'activer'
-Layer = require './layer.coffee'
+Chunk = require './chunk.coffee'
 Tile = require './tile.coffee'
 utils = require './utils.coffee'
 
 class Cell extends Model
-  @belongsTo('Layer')
-  @hasOne('Terrain')
+  @belongsTo('Chunk')
   @belongsTo('Tile')
   @attributes('col', 'row')
-  @delegate('game', 'Layer')
+  @delegate('game', 'Chunk')
+
+  absoluteCol: ->
+    @col + @chunk().col * Chunk.SIZE_IN_CELLS
+
+  absoluteRow: ->
+    @row + @chunk().row * Chunk.SIZE_IN_CELLS
+
+  destroy: ->
+    super()
+    tileSize = @game().tileSize
+    @chunk().context().clearRect(
+      @col * tileSize,
+      @row * tileSize,
+      tileSize,
+      tileSize
+    )
 
   adjustImage: (origin) ->
     color = @tile().tileSet().tileOpacityColor.split(',')
@@ -20,20 +35,23 @@ class Cell extends Model
       i += 4
     origin
 
-  render: (context) ->
-    context = context or @layer().scene().context()
-    buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
+  render: ->
+    tileSize = @game().tileSize
+    context = @chunk().context()
+    buffer = utils.canvas.create(tileSize, tileSize)
     bufferContext = buffer.getContext('2d')
+    tile = @tile()
+
     bufferContext.drawImage(
-      @tile().tileSet().img,
-      @tile().x,
-      @tile().y,
-      @game().tileSize,
-      @game().tileSize,
+      tile.tileSet().img,
+      tile.x,
+      tile.y,
+      tileSize,
+      tileSize,
       0,
       0,
-      @game().tileSize,
-      @game().tileSize
+      tileSize,
+      tileSize
     )
     adjusted = @adjustImage(bufferContext.getImageData(0, 0, 48, 48))
     bufferContext.putImageData(adjusted, 0, 0)
@@ -42,12 +60,12 @@ class Cell extends Model
       buffer,
       0,
       0,
-      @game().tileSize,
-      @game().tileSize,
-      @col * @game().tileSize,
-      @row * @game().tileSize,
-      @game().tileSize,
-      @game().tileSize
+      tileSize,
+      tileSize,
+      @col * tileSize,
+      @row * tileSize,
+      tileSize,
+      tileSize
     )
 
 module.exports = Cell
