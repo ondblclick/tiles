@@ -5,20 +5,29 @@ EditorImporter = require './editor/editor_importer.coffee'
 EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
+EditorScroller = require './editor/editor_scroller.coffee'
 utils = require './utils.coffee'
 
 class Editor
+  @KEY_PRESS_CALLBACKS: {
+    32: {
+      down: -> $('body').addClass('space-pressed')
+      up: -> $('body').removeClass('space-pressed')
+    }
+  }
+
   constructor: (@game) ->
+    @keysPressed = {}
     @bindings()
     new EditorImporter(@)
     new EditorExporter(@)
     new EditorContexter(@)
     new EditorAdder(@)
+    new EditorScroller(@)
     @selectedTile = undefined
-    @spacePressed = false
-    @dragScroll = false
-    @dragScrollStartX = 0
-    @dragScrollStartY = 0
+
+  keyPressed: (keyCode) ->
+    @keysPressed[keyCode]
 
   tileSets: ->
     @game.tileSets()
@@ -59,36 +68,15 @@ class Editor
     $("#toolbar ##{tool}").is(':checked')
 
   bindings: ->
-    $(document).on 'mousedown', 'canvas', (e) =>
-      return unless @spacePressed
-      @dragScroll = true
-      @dragScrollStartX = e.pageX
-      @dragScrollStartY = e.pageY
-
-    $(document).on 'mouseup', (e) =>
-      return unless @dragScroll
-      @dragScroll = false
-
-    $(document).on 'mousemove', (e) =>
-      return unless @dragScroll
-      deltaX = e.pageX - @dragScrollStartX
-      deltaY = e.pageY - @dragScrollStartY
-      el = $('.tab-pane.active .canvas-container')
-      el.scrollLeft(el.scrollLeft() - deltaX)
-      el.scrollTop(el.scrollTop() - deltaY)
-      @dragScrollStartX = e.pageX
-      @dragScrollStartY = e.pageY
-
     $(document).on 'keydown', (e) =>
-      if e.keyCode is 32
-        @spacePressed = true
-        $('body').addClass('space-pressed')
-        e.preventDefault()
+      e.preventDefault() if Editor.KEY_PRESS_CALLBACKS[e.keyCode]
+      @keysPressed[e.keyCode] = true
+      Editor.KEY_PRESS_CALLBACKS[e.keyCode].down() if Editor.KEY_PRESS_CALLBACKS[e.keyCode].down
 
     $(document).on 'keyup', (e) =>
-      if e.keyCode is 32
-        @spacePressed = false
-        $('body').removeClass('space-pressed')
+      e.preventDefault() if Editor.KEY_PRESS_CALLBACKS[e.keyCode]
+      @keysPressed[e.keyCode] = false
+      Editor.KEY_PRESS_CALLBACKS[e.keyCode].up() if Editor.KEY_PRESS_CALLBACKS[e.keyCode].up
 
     $(document).on 'click', '.layers-list span', (e) =>
       $a = $(e.target).parents('.nav-item')
@@ -118,7 +106,7 @@ class Editor
         @selectedTile = Tile.find($(e.target).data('model-id'))
 
     $(document).on 'click', 'canvas', (e) =>
-      return if @spacePressed
+      return if @keyPressed(32)
       return unless @toolIsSelected('fill')
 
       # still the most lagging thing in the app =\
@@ -156,7 +144,7 @@ class Editor
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>
-      return if @spacePressed
+      return if @keyPressed(32)
       return unless @toolIsSelected('remove')
       currentX = Math.floor(e.offsetX / @game.tileSize)
       currentY = Math.floor(e.offsetY / @game.tileSize)
@@ -169,7 +157,7 @@ class Editor
       @activeScene().render(sceneChunk)
 
     $(document).on 'click', 'canvas', (e) =>
-      return if @spacePressed
+      return if @keyPressed(32)
       return unless @toolIsSelected('draw')
       return unless @selectedTile
 
