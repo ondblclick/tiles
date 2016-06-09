@@ -55,14 +55,15 @@ class Scene extends Model
 
         # process floodfilling
         # (can be moved to background job)
-        if layerChunk.queue.length
-          action = layerChunk.queue.pop()
+        if layerChunk.jobs().length
+          job = layerChunk.jobs()[0]
           layerChunk.cells().deleteAll()
           cells = layerChunk.cells()
           [0..9].forEach (col) ->
             [0..9].forEach (row) ->
-              cells.create({ col: col, row: row, tileId: action.params.tile.id })
-          utils.canvas.fill(layerChunk.context(), action.params.buffer)
+              cells.create({ col: col, row: row, tileId: job.params.tile.id })
+          utils.canvas.fill(layerChunk.context(), job.params.buffer)
+          job.destroy()
 
         # draw layer to scene
         utils.canvas.drawChunk(chunk.context(), layerChunk.canvas, chunk)

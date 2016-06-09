@@ -145,8 +145,8 @@ class Editor extends Model
       )
 
       @activeLayer().chunks().forEach (chunk) =>
-        chunk.queue = []
-        chunk.queue.push
+        chunk.jobs().deleteAll()
+        chunk.jobs().create
           type: 'floodfill'
           params:
             tile: @selectedTile

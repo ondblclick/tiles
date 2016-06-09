@@ -2,12 +2,17 @@ Model = require 'activer'
 Layer = require './layer.coffee'
 Cell = require './cell.coffee'
 Scene = require './scene.coffee'
+Job = require './job.coffee'
+utils = require './utils.coffee'
 
 class Chunk extends Model
   @belongsTo('Layer')
   @belongsTo('Scene')
   @hasMany('Cell', { dependent: 'destroy' })
-  @attributes('col', 'row', 'dirty', 'cropped', 'width', 'height')
+  @hasMany('Job', { dependent: 'destroy' })
+
+  # TODO: canvas shouldn't be here
+  @attributes('col', 'row', 'dirty', 'cropped', 'width', 'height', 'canvas')
 
   @SIZE_IN_CELLS: 10
 
@@ -60,7 +65,7 @@ class Chunk extends Model
     @canvas = document.createElement('canvas')
     @canvas.width = @widthInPx()
     @canvas.height = @heightInPx()
-    @queue = []
+    @save()
 
   context: ->
     @canvas.getContext('2d')

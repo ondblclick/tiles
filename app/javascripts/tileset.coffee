@@ -6,7 +6,7 @@ tabTmpl = require '../templates/tile_set_tab.hbs'
 containerTmpl = require '../templates/tile_set_container.hbs'
 
 class TileSet extends Model
-  @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset', 'tileOpacityColor')
+  @attributes('name', 'imagePath', 'cols', 'rows', 'tileOffset', 'tileOpacityColor', 'img', 'style')
   @belongsTo('Game')
   @hasMany('Tile', { dependent: 'destroy' })
 
@@ -32,6 +32,7 @@ class TileSet extends Model
       height: #{@game().tileSize}px; }"
     t += @tiles().map((tile) -> tile.style()).join('')
     @style.appendChild(document.createTextNode(t))
+    @save()
     document.head.appendChild(@style)
 
   posToPix: (pos) -> pos * (@game().tileSize + +@tileOffset) + +@tileOffset
@@ -42,6 +43,7 @@ class TileSet extends Model
     @img.src = @imagePath
     @img.id = "image-#{@id}"
     @img.style = 'display: none;'
+    @save()
     @img.onload = -> d.resolve()
     $('body').append(@img)
     d.promise()
