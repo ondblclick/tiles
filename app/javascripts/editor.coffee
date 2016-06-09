@@ -153,7 +153,10 @@ class Editor extends Model
             buffer: buffer
         utils.canvas.fill(chunk.context(), buffer)
 
-      @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
+      @activeScene().chunks().forEach (chunk) ->
+        chunk.dirty = true
+        chunk.save()
+
       @activeScene().render()
       console.timeEnd('floodfill')
 

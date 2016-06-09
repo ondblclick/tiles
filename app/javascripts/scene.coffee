@@ -17,8 +17,10 @@ class Scene extends Model
   createChunks: ->
     Chunk.createChunksFor(@, @)
 
+  debouncedRender: =>
+    utils.debounce(@renderVisibleChunks, 50)()
+
   afterCreate: ->
-    @debouncedRender = utils.debounce(@renderVisibleChunks, 50)
     @createChunks()
 
   visibleChunks: ->
@@ -50,6 +52,8 @@ class Scene extends Model
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
       chunk.dirty = false
+      chunk.save()
+
       @sortedLayers().forEach (layer) ->
         layerChunk = layer.chunks().where({ col: chunk.col, row: chunk.row })[0]
 
