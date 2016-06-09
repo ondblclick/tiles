@@ -80,13 +80,13 @@ class Scene extends Model
 
   renderToEditor: ->
     tabObj = @toJSON()
-    tabObj.activeClass = if @editor().activeScene() is @ then 'active' else ''
+    tabObj.activeClass = if editor.activeScene() is @ then 'active' else ''
     containerObj = @toJSON()
     containerObj.width *= @game().tileSize
     containerObj.height *= @game().tileSize
     containerObj.tileSize = @game().tileSize
     containerObj.tileSizeX2 = @game().tileSize * 2
-    containerObj.activeClass = if @editor().activeScene() is @ then 'active' else ''
+    containerObj.activeClass = if editor.activeScene() is @ then 'active' else ''
     $('#scene-tabs').append(tabTmpl(tabObj))
     $('#scene-containers').append(containerTmpl(containerObj))
 

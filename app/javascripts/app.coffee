@@ -1,10 +1,8 @@
 Editor = require './editor.coffee'
-
-# TODO: update attributes callback to do a rendering to editor stuff?
+Game = require './game.coffee'
 
 $(document).ready ->
-  editor = Editor.create()
-  game = editor.createGame({ tileSize: 48 })
+  game = Game.create({ tileSize: 48 })
 
   tileSet0 = game.tileSets().create
     name: 'tielset 0'
@@ -45,4 +43,5 @@ $(document).ready ->
   layer8 = scene3.layers().create({ name: 'layer 8', order: 3 })
   layer9 = scene3.layers().create({ name: 'layer 9', order: 2 })
 
+  window.editor = new Editor(game)
   editor.render()

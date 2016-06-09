@@ -1,5 +1,3 @@
-Model = require 'activer'
-Game = require './game.coffee'
 Tile = require './tile.coffee'
 Layer = require './layer.coffee'
 Scene = require './scene.coffee'
@@ -9,27 +7,24 @@ EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
 utils = require './utils.coffee'
 
-class Editor extends Model
-  @attributes()
-  @hasOne('Game')
-  @hasOne('EditorExporter')
-  @hasOne('EditorImporter')
-  @hasOne('EditorAdder')
-  @hasOne('EditorContexter')
-  @delegate('tileSets', 'Game')
-  @delegate('scenes', 'Game')
-
-  afterCreate: ->
+class Editor
+  constructor: (@game) ->
     @bindings()
-    @createEditorImporter()
-    @createEditorExporter()
-    @createEditorAdder()
-    @createEditorContexter()
+    new EditorImporter(@)
+    new EditorExporter(@)
+    new EditorContexter(@)
+    new EditorAdder(@)
     @selectedTile = undefined
     @spacePressed = false
     @dragScroll = false
     @dragScrollStartX = 0
     @dragScrollStartY = 0
+
+  tileSets: ->
+    @game.tileSets()
+
+  scenes: ->
+    @game.scenes()
 
   toolbar: ->
     $('#toolbar')
@@ -58,9 +53,7 @@ class Editor extends Model
   toJSON: ->
     # TODO: toJSON -> asJSON (as it is in rails)
     # TODO: options: { root: true, only: [], except: [], methods: [], include: [] }
-    res = super()
-    res.game = @game().toJSON()
-    res
+    @game.toJSON()
 
   toolIsSelected: (tool) ->
     $("#toolbar ##{tool}").is(':checked')
@@ -105,7 +98,9 @@ class Editor extends Model
         Layer.find($(item).data('model-id')).order = index
 
       console.time 'scene sorting'
-      @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
+      @activeScene().chunks().forEach (chunk) ->
+        chunk.dirty = true
+        chunk.save()
       @activeScene().render()
       console.timeEnd 'scene sorting'
       false
@@ -130,18 +125,18 @@ class Editor extends Model
       console.time('floodfill')
 
       # HACK: using context.createPattern here to speed up rendering process
-      buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
+      buffer = utils.canvas.create(@game.tileSize, @game.tileSize)
       ctx = buffer.getContext('2d')
       ctx.drawImage(
         @selectedTile.tileSet().img,
         @selectedTile.x,
         @selectedTile.y,
-        @game().tileSize,
-        @game().tileSize,
+        @game.tileSize,
+        @game.tileSize,
         0,
         0,
-        @game().tileSize,
-        @game().tileSize
+        @game.tileSize,
+        @game.tileSize
       )
 
       @activeLayer().chunks().forEach (chunk) =>
@@ -163,8 +158,8 @@ class Editor extends Model
     $(document).on 'click', 'canvas', (e) =>
       return if @spacePressed
       return unless @toolIsSelected('remove')
-      currentX = Math.floor(e.offsetX / @game().tileSize)
-      currentY = Math.floor(e.offsetY / @game().tileSize)
+      currentX = Math.floor(e.offsetX / @game.tileSize)
+      currentY = Math.floor(e.offsetY / @game.tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
@@ -178,8 +173,8 @@ class Editor extends Model
       return unless @toolIsSelected('draw')
       return unless @selectedTile
 
-      currentX = Math.floor(e.offsetX / @game().tileSize)
-      currentY = Math.floor(e.offsetY / @game().tileSize)
+      currentX = Math.floor(e.offsetX / @game.tileSize)
+      currentY = Math.floor(e.offsetY / @game.tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
@@ -197,7 +192,7 @@ class Editor extends Model
       @activeScene().render(sceneChunk)
 
     $(document).on 'mousemove', (e) =>
-      tileSize = @game().tileSize
+      tileSize = @game.tileSize
 
       # the second most lagging thing in the app =\
       return unless $(e.target).is('canvas')

@@ -1,5 +1,3 @@
-Model = require 'activer'
-Editor = require '../editor.coffee'
 Tile = require '../tile.coffee'
 Layer = require '../layer.coffee'
 Scene = require '../scene.coffee'
@@ -12,10 +10,8 @@ scenePillContextTmpl = require '../../templates/context_menus/scene_pill_context
 tileContextTmpl = require '../../templates/context_menus/tile_context.hbs'
 tileSetTabContextTmpl = require '../../templates/context_menus/tile_set_tab_context.hbs'
 
-class EditorContexter extends Model
-  @belongsTo('Editor')
-
-  afterCreate: ->
+class EditorContexter
+  constructor: (@editor) ->
     @bindings()
 
   handleContextMenuFor: (e) ->
