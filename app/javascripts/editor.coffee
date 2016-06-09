@@ -83,7 +83,9 @@ class Editor
       if ($(e.target).next().length) then utils.swap($a, $a.prev()) else utils.swap($a, $a.next())
 
       $(e.target).parents('.layers-list').find('.nav-item').each (index, item) ->
-        Layer.find($(item).data('model-id')).order = index
+        layer = Layer.find($(item).data('model-id'))
+        layer.order = index
+        layer.save()
 
       console.time 'scene sorting'
       @activeScene().chunks().forEach (chunk) ->
