@@ -48,6 +48,16 @@ class Scene extends Model
 
   render: (c) ->
     console.time 'scene render'
+
+    # TODO:
+    # if there is no chunks (imported scene or undo/redo actions) chunks shoud be created and rendered to the DOM
+    # same true for layer chunks - they should be created exactly here
+
+    unless @chunks().length
+      @createChunks()
+      @layers().forEach (layer) ->
+        layer.createChunks()
+
     chunks = if c then [c] else @visibleChunks().filter((chunk) -> chunk.dirty is true)
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>

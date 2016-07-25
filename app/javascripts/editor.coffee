@@ -1,6 +1,10 @@
 Tile = require './tile.coffee'
 Layer = require './layer.coffee'
 Scene = require './scene.coffee'
+TileSet = require './tileset.coffee'
+Cell = require './cell.coffee'
+Game = require './game.coffee'
+
 EditorImporter = require './editor/editor_importer.coffee'
 EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
@@ -49,22 +53,31 @@ class Editor
   activeScene: ->
     Scene.find($('#scene-tabs > .active').data('model-id'))
 
+  clear: ->
+    $('#tileset-tabs').empty()
+    $('#tileset-containers').empty()
+    $('#scene-tabs').empty()
+    $('#scene-containers').empty()
+    $('.tileset-styles').remove()
+    $('.tileset-images').remove()
+
   render: ->
+    @clear()
     imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
     $('#tileset-tabs > .nav-item').first().addClass('active')
     $('#tileset-containers > li').first().addClass('active')
     $.when(imagePromises...).then =>
-      @renderScenes()
-
-  renderScenes: ->
-    @scenes().forEach (scene) -> scene.renderToEditor()
-    $('#scene-tabs > .nav-item').first().addClass('active')
-    $('#scene-containers > li').first().addClass('active')
+      @scenes().forEach (scene) -> scene.renderToEditor()
+      $('#scene-tabs > .nav-item').first().addClass('active')
+      $('#scene-containers > li').first().addClass('active')
 
   toJSON: ->
-    # TODO: toJSON -> asJSON (as it is in rails)
-    # TODO: options: { root: true, only: [], except: [], methods: [], include: [] }
-    @game.toJSON()
+    TileSet: TileSet.dao()._collection.slice(0)
+    Tile: Tile.dao()._collection.slice(0)
+    Scene: Scene.dao()._collection.slice(0)
+    Layer: Layer.dao()._collection.slice(0)
+    Cell: Cell.dao()._collection.slice(0)
+    Game: Game.dao()._collection.slice(0)
 
   toolIsSelected: (tool) ->
     $("#toolbar ##{tool}").is(':checked')
