@@ -1,21 +1,14 @@
-Model = require 'activer'
-Editor = require '../editor.coffee'
 Modal = require '../modal.coffee'
 
 addMenuTmpl = require '../../templates/toolbar_menus/add_menu.hbs'
 
-class EditorAdder extends Model
-  @belongsTo('Editor')
-  @delegate('scenes', 'Editor')
-  @delegate('activeScene', 'Editor')
-  @delegate('tileSets', 'Editor')
-
-  afterCreate: ->
+class EditorAdder
+  constructor: (@editor) ->
     @appendMenu()
     @bindings()
 
   appendMenu: ->
-    @editor().menubar().append(addMenuTmpl())
+    @editor.menubar().append(addMenuTmpl())
 
   bindings: ->
     $(document).on 'click', '#add-scene', (e) =>
@@ -26,7 +19,7 @@ class EditorAdder extends Model
           height: ''
         actions:
           Create: (data) =>
-            scene = @scenes().create(data)
+            scene = @editor.scenes().create(data)
             scene.renderToEditor()
       ).show()
 
@@ -36,7 +29,7 @@ class EditorAdder extends Model
           name: ''
         actions:
           Create: (data) =>
-            layer = @activeScene().layers().create(data)
+            layer = @editor.activeScene().layers().create(data)
             layer.renderToEditor()
       ).show()
 
@@ -50,7 +43,7 @@ class EditorAdder extends Model
           tileOffset: ''
         actions:
           Create: (data) =>
-            tileSet = @tileSets().create(data)
+            tileSet = @editor.tileSets().create(data)
             tileSet.renderToEditor()
       ).show()
 

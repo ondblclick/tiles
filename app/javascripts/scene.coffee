@@ -17,8 +17,10 @@ class Scene extends Model
   createChunks: ->
     Chunk.createChunksFor(@, @)
 
+  debouncedRender: =>
+    utils.debounce(@renderVisibleChunks, 50)()
+
   afterCreate: ->
-    @debouncedRender = utils.debounce(@renderVisibleChunks, 50)
     @createChunks()
 
   visibleChunks: ->
@@ -50,19 +52,22 @@ class Scene extends Model
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
       chunk.dirty = false
+      chunk.save()
+
       @sortedLayers().forEach (layer) ->
         layerChunk = layer.chunks().where({ col: chunk.col, row: chunk.row })[0]
 
         # process floodfilling
         # (can be moved to background job)
-        if layerChunk.queue.length
-          action = layerChunk.queue.pop()
+        if layerChunk.jobs().length
+          job = layerChunk.jobs()[0]
           layerChunk.cells().deleteAll()
           cells = layerChunk.cells()
           [0..9].forEach (col) ->
             [0..9].forEach (row) ->
-              cells.create({ col: col, row: row, tileId: action.params.tile.id })
-          utils.canvas.fill(layerChunk.context(), action.params.buffer)
+              cells.create({ col: col, row: row, tileId: job.params.tile.id })
+          utils.canvas.fill(layerChunk.context(), job.params.buffer)
+          job.destroy()
 
         # draw layer to scene
         utils.canvas.drawChunk(chunk.context(), layerChunk.canvas, chunk)
@@ -75,13 +80,13 @@ class Scene extends Model
 
   renderToEditor: ->
     tabObj = @toJSON()
-    tabObj.activeClass = if @editor().activeScene() is @ then 'active' else ''
+    tabObj.activeClass = if editor.activeScene() is @ then 'active' else ''
     containerObj = @toJSON()
     containerObj.width *= @game().tileSize
     containerObj.height *= @game().tileSize
     containerObj.tileSize = @game().tileSize
     containerObj.tileSizeX2 = @game().tileSize * 2
-    containerObj.activeClass = if @editor().activeScene() is @ then 'active' else ''
+    containerObj.activeClass = if editor.activeScene() is @ then 'active' else ''
     $('#scene-tabs').append(tabTmpl(tabObj))
     $('#scene-containers').append(containerTmpl(containerObj))
 

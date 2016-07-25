@@ -21,7 +21,7 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
-    "activer": "^0.7.5",
+    "activer": "^0.9.9",
     "bootstrap": "https://github.com/twbs/bootstrap/tarball/v4-dev",
     "jquery": "^2.2.3",
     "tether": "^1.3.2"

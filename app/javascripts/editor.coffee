@@ -1,5 +1,3 @@
-Model = require 'activer'
-Game = require './game.coffee'
 Tile = require './tile.coffee'
 Layer = require './layer.coffee'
 Scene = require './scene.coffee'
@@ -7,29 +5,35 @@ EditorImporter = require './editor/editor_importer.coffee'
 EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
+EditorScroller = require './editor/editor_scroller.coffee'
 utils = require './utils.coffee'
 
-class Editor extends Model
-  @attributes()
-  @hasOne('Game')
-  @hasOne('EditorExporter')
-  @hasOne('EditorImporter')
-  @hasOne('EditorAdder')
-  @hasOne('EditorContexter')
-  @delegate('tileSets', 'Game')
-  @delegate('scenes', 'Game')
+class Editor
+  @KEY_PRESS_CALLBACKS: {
+    32: {
+      down: -> $('body').addClass('space-pressed')
+      up: -> $('body').removeClass('space-pressed')
+    }
+  }
 
-  afterCreate: ->
+  constructor: (@game) ->
+    @keysPressed = {}
     @bindings()
-    @createEditorImporter()
-    @createEditorExporter()
-    @createEditorAdder()
-    @createEditorContexter()
+    new EditorImporter(@)
+    new EditorExporter(@)
+    new EditorContexter(@)
+    new EditorAdder(@)
+    new EditorScroller(@)
     @selectedTile = undefined
-    @spacePressed = false
-    @dragScroll = false
-    @dragScrollStartX = 0
-    @dragScrollStartY = 0
+
+  keyPressed: (keyCode) ->
+    @keysPressed[keyCode]
+
+  tileSets: ->
+    @game.tileSets()
+
+  scenes: ->
+    @game.scenes()
 
   toolbar: ->
     $('#toolbar')
@@ -58,54 +62,35 @@ class Editor extends Model
   toJSON: ->
     # TODO: toJSON -> asJSON (as it is in rails)
     # TODO: options: { root: true, only: [], except: [], methods: [], include: [] }
-    res = super()
-    res.game = @game().toJSON()
-    res
+    @game.toJSON()
 
   toolIsSelected: (tool) ->
     $("#toolbar ##{tool}").is(':checked')
 
   bindings: ->
-    $(document).on 'mousedown', 'canvas', (e) =>
-      return unless @spacePressed
-      @dragScroll = true
-      @dragScrollStartX = e.pageX
-      @dragScrollStartY = e.pageY
-
-    $(document).on 'mouseup', (e) =>
-      return unless @dragScroll
-      @dragScroll = false
-
-    $(document).on 'mousemove', (e) =>
-      return unless @dragScroll
-      deltaX = e.pageX - @dragScrollStartX
-      deltaY = e.pageY - @dragScrollStartY
-      el = $('.tab-pane.active .canvas-container')
-      el.scrollLeft(el.scrollLeft() - deltaX)
-      el.scrollTop(el.scrollTop() - deltaY)
-      @dragScrollStartX = e.pageX
-      @dragScrollStartY = e.pageY
-
     $(document).on 'keydown', (e) =>
-      if e.keyCode is 32
-        @spacePressed = true
-        $('body').addClass('space-pressed')
-        e.preventDefault()
+      e.preventDefault() if Editor.KEY_PRESS_CALLBACKS[e.keyCode]
+      @keysPressed[e.keyCode] = true
+      Editor.KEY_PRESS_CALLBACKS[e.keyCode].down() if Editor.KEY_PRESS_CALLBACKS[e.keyCode].down
 
     $(document).on 'keyup', (e) =>
-      if e.keyCode is 32
-        @spacePressed = false
-        $('body').removeClass('space-pressed')
+      e.preventDefault() if Editor.KEY_PRESS_CALLBACKS[e.keyCode]
+      @keysPressed[e.keyCode] = false
+      Editor.KEY_PRESS_CALLBACKS[e.keyCode].up() if Editor.KEY_PRESS_CALLBACKS[e.keyCode].up
 
     $(document).on 'click', '.layers-list span', (e) =>
       $a = $(e.target).parents('.nav-item')
       if ($(e.target).next().length) then utils.swap($a, $a.prev()) else utils.swap($a, $a.next())
 
       $(e.target).parents('.layers-list').find('.nav-item').each (index, item) ->
-        Layer.find($(item).data('model-id')).order = index
+        layer = Layer.find($(item).data('model-id'))
+        layer.order = index
+        layer.save()
 
       console.time 'scene sorting'
-      @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
+      @activeScene().chunks().forEach (chunk) ->
+        chunk.dirty = true
+        chunk.save()
       @activeScene().render()
       console.timeEnd 'scene sorting'
       false
@@ -123,45 +108,48 @@ class Editor extends Model
         @selectedTile = Tile.find($(e.target).data('model-id'))
 
     $(document).on 'click', 'canvas', (e) =>
-      return if @spacePressed
+      return if @keyPressed(32)
       return unless @toolIsSelected('fill')
 
       # still the most lagging thing in the app =\
       console.time('floodfill')
 
       # HACK: using context.createPattern here to speed up rendering process
-      buffer = utils.canvas.create(@game().tileSize, @game().tileSize)
+      buffer = utils.canvas.create(@game.tileSize, @game.tileSize)
       ctx = buffer.getContext('2d')
       ctx.drawImage(
         @selectedTile.tileSet().img,
         @selectedTile.x,
         @selectedTile.y,
-        @game().tileSize,
-        @game().tileSize,
+        @game.tileSize,
+        @game.tileSize,
         0,
         0,
-        @game().tileSize,
-        @game().tileSize
+        @game.tileSize,
+        @game.tileSize
       )
 
       @activeLayer().chunks().forEach (chunk) =>
-        chunk.queue = []
-        chunk.queue.push
+        chunk.jobs().deleteAll()
+        chunk.jobs().create
           type: 'floodfill'
           params:
             tile: @selectedTile
             buffer: buffer
         utils.canvas.fill(chunk.context(), buffer)
 
-      @activeScene().chunks().forEach (chunk) -> chunk.dirty = true
+      @activeScene().chunks().forEach (chunk) ->
+        chunk.dirty = true
+        chunk.save()
+
       @activeScene().render()
       console.timeEnd('floodfill')
 
     $(document).on 'click', 'canvas', (e) =>
-      return if @spacePressed
+      return if @keyPressed(32)
       return unless @toolIsSelected('remove')
-      currentX = Math.floor(e.offsetX / @game().tileSize)
-      currentY = Math.floor(e.offsetY / @game().tileSize)
+      currentX = Math.floor(e.offsetX / @game.tileSize)
+      currentY = Math.floor(e.offsetY / @game.tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
@@ -171,12 +159,12 @@ class Editor extends Model
       @activeScene().render(sceneChunk)
 
     $(document).on 'click', 'canvas', (e) =>
-      return if @spacePressed
+      return if @keyPressed(32)
       return unless @toolIsSelected('draw')
       return unless @selectedTile
 
-      currentX = Math.floor(e.offsetX / @game().tileSize)
-      currentY = Math.floor(e.offsetY / @game().tileSize)
+      currentX = Math.floor(e.offsetX / @game.tileSize)
+      currentY = Math.floor(e.offsetY / @game.tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
@@ -194,7 +182,7 @@ class Editor extends Model
       @activeScene().render(sceneChunk)
 
     $(document).on 'mousemove', (e) =>
-      tileSize = @game().tileSize
+      tileSize = @game.tileSize
 
       # the second most lagging thing in the app =\
       return unless $(e.target).is('canvas')
