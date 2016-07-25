@@ -6,6 +6,7 @@ EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
 EditorScroller = require './editor/editor_scroller.coffee'
+EditorHistorian = require './editor/editor_historian.coffee'
 utils = require './utils.coffee'
 
 class Editor
@@ -24,6 +25,7 @@ class Editor
     new EditorContexter(@)
     new EditorAdder(@)
     new EditorScroller(@)
+    @historian = new EditorHistorian(@)
     @selectedTile = undefined
 
   keyPressed: (keyCode) ->
@@ -71,12 +73,14 @@ class Editor
     $(document).on 'keydown', (e) =>
       e.preventDefault() if Editor.KEY_PRESS_CALLBACKS[e.keyCode]
       @keysPressed[e.keyCode] = true
-      Editor.KEY_PRESS_CALLBACKS[e.keyCode].down() if Editor.KEY_PRESS_CALLBACKS[e.keyCode].down
+      if Editor.KEY_PRESS_CALLBACKS[e.keyCode] and Editor.KEY_PRESS_CALLBACKS[e.keyCode].down
+        Editor.KEY_PRESS_CALLBACKS[e.keyCode].down()
 
     $(document).on 'keyup', (e) =>
       e.preventDefault() if Editor.KEY_PRESS_CALLBACKS[e.keyCode]
       @keysPressed[e.keyCode] = false
-      Editor.KEY_PRESS_CALLBACKS[e.keyCode].up() if Editor.KEY_PRESS_CALLBACKS[e.keyCode].up
+      if Editor.KEY_PRESS_CALLBACKS[e.keyCode] and Editor.KEY_PRESS_CALLBACKS[e.keyCode].up
+        Editor.KEY_PRESS_CALLBACKS[e.keyCode].up()
 
     $(document).on 'click', '.layers-list span', (e) =>
       $a = $(e.target).parents('.nav-item')
@@ -113,6 +117,7 @@ class Editor
 
       # still the most lagging thing in the app =\
       console.time('floodfill')
+      @historian.saveState('FLOODFILL')
 
       # HACK: using context.createPattern here to speed up rendering process
       buffer = utils.canvas.create(@game.tileSize, @game.tileSize)
@@ -148,6 +153,7 @@ class Editor
     $(document).on 'click', 'canvas', (e) =>
       return if @keyPressed(32)
       return unless @toolIsSelected('remove')
+      @historian.saveState('REMOVE')
       currentX = Math.floor(e.offsetX / @game.tileSize)
       currentY = Math.floor(e.offsetY / @game.tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
@@ -162,6 +168,7 @@ class Editor
       return if @keyPressed(32)
       return unless @toolIsSelected('draw')
       return unless @selectedTile
+      @historian.saveState('DRAW')
 
       currentX = Math.floor(e.offsetX / @game.tileSize)
       currentY = Math.floor(e.offsetY / @game.tileSize)

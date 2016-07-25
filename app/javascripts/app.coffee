@@ -27,21 +27,21 @@ $(document).ready ->
     tileOffset: 0,
     tileOpacityColor: '255,255,255'
 
-  scene1 = game.scenes().create({ name: 'very first scene', width: 115, height: 115 })
-  scene2 = game.scenes().create({ name: 'second scene', width: 25, height: 25 })
-  scene3 = game.scenes().create({ name: 'last scene', width: 10, height: 10 })
+  scene3 = game.scenes().create({ name: 'last scene', width: 5, height: 5 })
+  # scene1 = game.scenes().create({ name: 'very first scene', width: 115, height: 115 })
+  # scene2 = game.scenes().create({ name: 'second scene', width: 25, height: 25 })
 
-  layer1 = scene1.layers().create({ name: 'layer 1', order: 1 })
-  layer2 = scene1.layers().create({ name: 'layer 2', order: 3 })
-  layer3 = scene1.layers().create({ name: 'layer 3', order: 2 })
+  # layer1 = scene1.layers().create({ name: 'layer 1', order: 1 })
+  # layer2 = scene1.layers().create({ name: 'layer 2', order: 3 })
+  # layer3 = scene1.layers().create({ name: 'layer 3', order: 2 })
 
-  layer4 = scene2.layers().create({ name: 'layer 4', order: 1 })
-  layer5 = scene2.layers().create({ name: 'layer 5', order: 2 })
-  layer6 = scene2.layers().create({ name: 'layer 6', order: 3 })
+  # layer4 = scene2.layers().create({ name: 'layer 4', order: 1 })
+  # layer5 = scene2.layers().create({ name: 'layer 5', order: 2 })
+  # layer6 = scene2.layers().create({ name: 'layer 6', order: 3 })
 
   layer7 = scene3.layers().create({ name: 'layer 7', order: 1 })
-  layer8 = scene3.layers().create({ name: 'layer 8', order: 3 })
-  layer9 = scene3.layers().create({ name: 'layer 9', order: 2 })
+  # layer8 = scene3.layers().create({ name: 'layer 8', order: 3 })
+  # layer9 = scene3.layers().create({ name: 'layer 9', order: 2 })
 
   window.editor = new Editor(game)
   editor.render()
