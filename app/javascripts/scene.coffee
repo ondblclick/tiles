@@ -55,8 +55,12 @@ class Scene extends Model
 
     unless @chunks().length
       @createChunks()
+      @chunks().forEach (chunk) =>
+        chunk.render($("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper")[0])
       @layers().forEach (layer) ->
         layer.createChunks()
+        layer.cells().forEach (cell) ->
+          cell.render()
 
     chunks = if c then [c] else @visibleChunks().filter((chunk) -> chunk.dirty is true)
     chunks.forEach (chunk) -> chunk.clear()

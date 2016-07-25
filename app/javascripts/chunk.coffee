@@ -1,6 +1,5 @@
 Model = require 'activer'
 Layer = require './layer.coffee'
-Cell = require './cell.coffee'
 Scene = require './scene.coffee'
 Job = require './job.coffee'
 utils = require './utils.coffee'
@@ -8,7 +7,6 @@ utils = require './utils.coffee'
 class Chunk extends Model
   @belongsTo('Layer')
   @belongsTo('Scene')
-  @hasMany('Cell', { dependent: 'destroy' })
   @hasMany('Job', { dependent: 'destroy' })
 
   # TODO: canvas shouldn't be here
@@ -49,10 +47,10 @@ class Chunk extends Model
   widthInPx: ->
     @width * @game().tileSize
 
-  toJSON: ->
-    res = super()
-    res.cells = @cells().forEach((cell) -> cell.toJSON())
-    res
+  # toJSON: ->
+  #   res = super()
+  #   res.cells = @cells().forEach((cell) -> cell.toJSON())
+  #   res
 
   clear: ->
     @context().clearRect(0, 0, @widthInPx(), @heightInPx())

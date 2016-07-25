@@ -4,6 +4,7 @@ Scene = require './scene.coffee'
 TileSet = require './tileset.coffee'
 Cell = require './cell.coffee'
 Game = require './game.coffee'
+Chunk = require './chunk.coffee'
 
 EditorImporter = require './editor/editor_importer.coffee'
 EditorExporter = require './editor/editor_exporter.coffee'
@@ -167,12 +168,14 @@ class Editor
       return if @keyPressed(32)
       return unless @toolIsSelected('remove')
       @historian.saveState('REMOVE')
-      currentX = Math.floor(e.offsetX / @game.tileSize)
-      currentY = Math.floor(e.offsetY / @game.tileSize)
+
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
-      cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
+      currentX = Math.floor(e.offsetX / @game.tileSize) + sceneChunk.col * Chunk.SIZE_IN_CELLS
+      currentY = Math.floor(e.offsetY / @game.tileSize) + sceneChunk.row * Chunk.SIZE_IN_CELLS
+
+      cell = layerChunk.layer().cells().where({ col: currentX, row: currentY })[0]
       return unless cell
       cell.destroy()
       @activeScene().render(sceneChunk)
@@ -183,14 +186,15 @@ class Editor
       return unless @selectedTile
       @historian.saveState('DRAW')
 
-      currentX = Math.floor(e.offsetX / @game.tileSize)
-      currentY = Math.floor(e.offsetY / @game.tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
-      cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
+      currentX = Math.floor(e.offsetX / @game.tileSize) + sceneChunk.col * Chunk.SIZE_IN_CELLS
+      currentY = Math.floor(e.offsetY / @game.tileSize) + sceneChunk.row * Chunk.SIZE_IN_CELLS
+
+      cell = layerChunk.layer().cells().where({ col: currentX, row: currentY })[0]
       cell.destroy() if cell
-      cell = layerChunk.cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
+      cell = layerChunk.layer().cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
       cell.render()
       @activeScene().render(sceneChunk)
 

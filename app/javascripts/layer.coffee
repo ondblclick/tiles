@@ -9,6 +9,7 @@ class Layer extends Model
   @attributes('name', 'order')
   @belongsTo('Scene')
   @hasMany('Chunk', { dependent: 'destroy' })
+  @hasMany('Cell', { dependent: 'destroy' })
   @delegate('game', 'Scene')
 
   toJSON: ->

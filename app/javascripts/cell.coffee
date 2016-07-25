@@ -1,19 +1,17 @@
 Model = require 'activer'
 Chunk = require './chunk.coffee'
+Layer = require './layer.coffee'
 Tile = require './tile.coffee'
 utils = require './utils.coffee'
 
 class Cell extends Model
-  @belongsTo('Chunk')
   @belongsTo('Tile')
+  @belongsTo('Layer')
   @attributes('col', 'row')
-  @delegate('game', 'Chunk')
+  @delegate('game', 'Layer')
 
-  absoluteCol: ->
-    @col + @chunk().col * Chunk.SIZE_IN_CELLS
-
-  absoluteRow: ->
-    @row + @chunk().row * Chunk.SIZE_IN_CELLS
+  chunk: ->
+    Chunk.where({ col: Math.ceil(@col / Chunk.SIZE_IN_CELLS), row: Math.ceil(@row / Chunk.SIZE_IN_CELLS) })[0]
 
   destroy: ->
     super()
