@@ -69,8 +69,8 @@ class Scene extends Model
         # (can be moved to background job)
         if layerChunk.jobs().length
           job = layerChunk.jobs()[0]
-          layerChunk.cells().deleteAll()
-          cells = layerChunk.cells()
+          layer.cells().deleteAll()
+          cells = layer.cells()
           [0..9].forEach (col) ->
             [0..9].forEach (row) ->
               cells.create({ col: col, row: row, tileId: job.params.tile.id })

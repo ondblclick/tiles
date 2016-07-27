@@ -69,6 +69,4 @@ class Cell extends Model
       tileSize
     )
 
-    $('body').append(@chunk().canvas)
-
 module.exports = Cell
