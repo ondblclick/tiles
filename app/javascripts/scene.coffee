@@ -47,12 +47,6 @@ class Scene extends Model
     @render()
 
   render: (c) ->
-    console.time 'scene render'
-
-    # TODO:
-    # if there is no chunks (imported scene or undo/redo actions) chunks shoud be created and rendered to the DOM
-    # same true for layer chunks - they should be created exactly here
-
     unless @chunks().length
       @createChunks()
       @chunks().forEach (chunk) =>
@@ -85,7 +79,6 @@ class Scene extends Model
 
         # draw layer to scene
         utils.canvas.drawChunk(chunk.context(), layerChunk.canvas, chunk)
-    console.timeEnd 'scene render'
 
   toJSON: ->
     res = super()

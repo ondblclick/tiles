@@ -68,9 +68,12 @@ class Editor
     $('#tileset-tabs > .nav-item').first().addClass('active')
     $('#tileset-containers > li').first().addClass('active')
     $.when(imagePromises...).then =>
-      @scenes().forEach (scene) -> scene.renderToEditor()
-      $('#scene-tabs > .nav-item').first().addClass('active')
-      $('#scene-containers > li').first().addClass('active')
+      # wat?
+      setTimeout(=>
+        @scenes().forEach (scene) -> scene.renderToEditor()
+        $('#scene-tabs > .nav-item').first().addClass('active')
+        $('#scene-containers > li').first().addClass('active')
+      , 0)
 
   toJSON: ->
     TileSet: TileSet.dao()._collection.slice(0)

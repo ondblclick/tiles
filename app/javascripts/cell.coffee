@@ -11,7 +11,10 @@ class Cell extends Model
   @delegate('game', 'Layer')
 
   chunk: ->
-    Chunk.where({ col: Math.ceil(@col / Chunk.SIZE_IN_CELLS), row: Math.ceil(@row / Chunk.SIZE_IN_CELLS) })[0]
+    @layer().chunks().where({
+      col: Math.floor(@col / Chunk.SIZE_IN_CELLS),
+      row: Math.floor(@row / Chunk.SIZE_IN_CELLS)
+    })[0]
 
   destroy: ->
     super()
