@@ -20,8 +20,8 @@ class Cell extends Model
     super()
     tileSize = @game().tileSize
     @chunk().context().clearRect(
-      @col * tileSize,
-      @row * tileSize,
+      @col % Chunk.SIZE_IN_CELLS * tileSize,
+      @row % Chunk.SIZE_IN_CELLS * tileSize
       tileSize,
       tileSize
     )
