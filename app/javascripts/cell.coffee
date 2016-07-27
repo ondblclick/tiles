@@ -63,10 +63,12 @@ class Cell extends Model
       0,
       tileSize,
       tileSize,
-      @col * tileSize,
-      @row * tileSize,
+      @col % Chunk.SIZE_IN_CELLS * tileSize,
+      @row % Chunk.SIZE_IN_CELLS * tileSize,
       tileSize,
       tileSize
     )
+
+    $('body').append(@chunk().canvas)
 
 module.exports = Cell

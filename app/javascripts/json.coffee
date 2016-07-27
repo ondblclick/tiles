@@ -488,6 +488,13 @@ module.exports = {
       "tileId": "tile28",
       "layerId": "layer35",
       "id": "cell40"
+    },
+    {
+      "col": 13,
+      "row": 13,
+      "tileId": "tile28",
+      "layerId": "layer35",
+      "id": "cell41"
     }
   ],
   "Game": [
