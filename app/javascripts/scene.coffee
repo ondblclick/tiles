@@ -49,6 +49,7 @@ class Scene extends Model
   render: (c) ->
     unless @chunks().length
       @createChunks()
+      $("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper canvas").remove()
       @chunks().forEach (chunk) =>
         chunk.render($("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper")[0])
       @layers().forEach (layer) ->

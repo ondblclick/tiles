@@ -1,6 +1,7 @@
 Layer = require '../layer.coffee'
 Scene = require '../scene.coffee'
 Cell = require '../cell.coffee'
+Chunk = require '../chunk.coffee'
 
 class EditorHistorian
   constructor: (@editor) ->
@@ -10,6 +11,7 @@ class EditorHistorian
   undo: ->
     item = @history.pop()
     return unless item
+    Chunk.dao()._collection = []
     Layer.dao()._collection = item.state.Layer.slice(0)
     Scene.dao()._collection = item.state.Scene.slice(0)
     Cell.dao()._collection = item.state.Cell.slice(0)
