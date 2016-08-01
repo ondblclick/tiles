@@ -25,13 +25,18 @@ class Editor
   constructor: (@game) ->
     @keysPressed = {}
     @bindings()
-    new EditorImporter(@)
-    new EditorExporter(@)
+    @menubarItems = [
+      new EditorImporter(@)
+      new EditorExporter(@)
+      new EditorAdder(@)
+    ]
     new EditorContexter(@)
-    new EditorAdder(@)
     new EditorScroller(@)
     @historian = new EditorHistorian(@)
     @selectedTile = undefined
+
+  import: (game) ->
+    @game = game
 
   keyPressed: (keyCode) ->
     @keysPressed[keyCode]
@@ -59,11 +64,13 @@ class Editor
     $('#tileset-containers').empty()
     $('#scene-tabs').empty()
     $('#scene-containers').empty()
+    $('#menubar').empty()
     $('.tileset-styles').remove()
     $('.tileset-images').remove()
 
   render: ->
     @clear()
+    @menubarItems.forEach (instance) -> instance.appendMenu()
     imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
     $('#tileset-tabs > .nav-item').first().addClass('active')
     $('#tileset-containers > li').first().addClass('active')
