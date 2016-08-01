@@ -6,22 +6,30 @@ Chunk = require '../chunk.coffee'
 class EditorHistorian
   constructor: (@editor) ->
     @bindings()
-    @history = []
+    @undoList = []
+    @redoList = []
 
-  undo: ->
-    item = @history.pop()
-    return unless item
+  changeStateTo: ({ Layer, Scene, Cell }) ->
     Chunk.dao()._collection = []
-    Layer.dao()._collection = item.state.Layer.slice(0)
-    Scene.dao()._collection = item.state.Scene.slice(0)
-    Cell.dao()._collection = item.state.Cell.slice(0)
+    Layer.dao()._collection = Layer.slice(0)
+    Scene.dao()._collection = Scene.slice(0)
+    Cell.dao()._collection = Cell.slice(0)
     @editor.scenes().forEach (scene) -> scene.render()
 
-  redo: ->
-    console.log 'redo'
+  undo: ->
+    item = @undoList.pop()
+    return unless item
+    @saveState('undo', 'redo')
+    @changeStateTo(item.state)
 
-  saveState: (action) ->
-    @history.push
+  redo: ->
+    item = @redoList.pop()
+    return unless item
+    @saveState('redo', 'undo')
+    @changeStateTo(item.state)
+
+  saveState: (action, type = 'undo') ->
+    @["#{type}List"].push
       action: action
       state: @getState()
 
