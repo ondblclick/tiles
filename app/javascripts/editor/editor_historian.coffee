@@ -9,11 +9,11 @@ class EditorHistorian
     @undoList = []
     @redoList = []
 
-  changeStateTo: ({ Layer, Scene, Cell }) ->
+  changeStateTo: (state) ->
     Chunk.dao()._collection = []
-    Layer.dao()._collection = Layer.slice(0)
-    Scene.dao()._collection = Scene.slice(0)
-    Cell.dao()._collection = Cell.slice(0)
+    Layer.dao()._collection = state.Layer.slice(0)
+    Scene.dao()._collection = state.Scene.slice(0)
+    Cell.dao()._collection = state.Cell.slice(0)
     @editor.scenes().forEach (scene) -> scene.render()
 
   undo: ->
