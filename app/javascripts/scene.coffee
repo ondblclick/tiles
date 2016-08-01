@@ -24,13 +24,12 @@ class Scene extends Model
     @createChunks()
 
   visibleChunks: ->
-    # TODO: should be refactored
+    # TODO: magic numbers should be refactored
     w = $("#scene-containers > li[data-model-id='#{@id}'] .canvas-container")[0]
     rect = w.getBoundingClientRect()
     width = if rect.width is 0 then 1000 else rect.width
     height = if rect.height is 0 then 1000 else rect.height
 
-    # magic numbers
     res = @chunks().filter (chunk) =>
       cond1 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize < width + w.scrollLeft
       cond2 = chunk.col * Chunk.SIZE_IN_CELLS * @game().tileSize + chunk.widthInPx() > w.scrollLeft
@@ -53,7 +52,10 @@ class Scene extends Model
       @chunks().forEach (chunk) =>
         chunk.render($("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper")[0])
       @layers().forEach (layer) ->
+        layer.chunks().deleteAll()
         layer.createChunks()
+
+        # TODO: move to jobs
         layer.cells().forEach (cell) ->
           cell.render()
 
@@ -123,15 +125,12 @@ class Scene extends Model
       cellsShouldBeUpdated = true
 
     for k, v of attrs
-      @[k] = v if k in @constructor.fields
+      @[k] = v if k in @constructor.attributes()
+
+    @save()
 
     if cellsShouldBeUpdated
-      # chunks should be updated
       @chunks().deleteAll()
-      @createChunks()
-
-      # cells should be updated
-      @layers().forEach (layer) -> layer.updateChunks()
 
     @removeFromEditor()
     @renderToEditor()
