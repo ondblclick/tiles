@@ -1,47 +1,19 @@
 Editor = require './editor.coffee'
+Tile = require './tile.coffee'
+Layer = require './layer.coffee'
+Scene = require './scene.coffee'
+TileSet = require './tileset.coffee'
+Cell = require './cell.coffee'
 Game = require './game.coffee'
+json = require './json.coffee'
 
 $(document).ready ->
-  game = Game.create({ tileSize: 48 })
+  Game.dao()._collection = json.Game.slice(0)
+  Tile.dao()._collection = json.Tile.slice(0)
+  TileSet.dao()._collection = json.TileSet.slice(0)
+  Layer.dao()._collection = json.Layer.slice(0)
+  Scene.dao()._collection = json.Scene.slice(0)
+  Cell.dao()._collection = json.Cell.slice(0)
 
-  tileSet0 = game.tileSets().create
-    name: 'tielset 0'
-    imagePath: '../../images/tiles_0.png'
-    cols: 0
-    rows: 0
-    tileOffset: 0
-
-  tileSet1 = game.tileSets().create
-    name: 'tileset 1'
-    imagePath: '../../images/tiles_1.png'
-    cols: 12
-    rows: 12
-    tileOffset: 2,
-    tileOpacityColor: '186,186,186'
-
-  tileSet2 = game.tileSets().create
-    name: 'tileset 2'
-    imagePath: '../../images/tiles_2.png'
-    cols: 6
-    rows: 5
-    tileOffset: 0,
-    tileOpacityColor: '255,255,255'
-
-  scene1 = game.scenes().create({ name: 'very first scene', width: 115, height: 115 })
-  scene2 = game.scenes().create({ name: 'second scene', width: 25, height: 25 })
-  scene3 = game.scenes().create({ name: 'last scene', width: 10, height: 10 })
-
-  layer1 = scene1.layers().create({ name: 'layer 1', order: 1 })
-  layer2 = scene1.layers().create({ name: 'layer 2', order: 3 })
-  layer3 = scene1.layers().create({ name: 'layer 3', order: 2 })
-
-  layer4 = scene2.layers().create({ name: 'layer 4', order: 1 })
-  layer5 = scene2.layers().create({ name: 'layer 5', order: 2 })
-  layer6 = scene2.layers().create({ name: 'layer 6', order: 3 })
-
-  layer7 = scene3.layers().create({ name: 'layer 7', order: 1 })
-  layer8 = scene3.layers().create({ name: 'layer 8', order: 3 })
-  layer9 = scene3.layers().create({ name: 'layer 9', order: 2 })
-
-  window.editor = new Editor(game)
+  window.editor = new Editor(Game.all()[0])
   editor.render()

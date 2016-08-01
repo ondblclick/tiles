@@ -1,11 +1,17 @@
 Tile = require './tile.coffee'
 Layer = require './layer.coffee'
 Scene = require './scene.coffee'
+TileSet = require './tileset.coffee'
+Cell = require './cell.coffee'
+Game = require './game.coffee'
+Chunk = require './chunk.coffee'
+
 EditorImporter = require './editor/editor_importer.coffee'
 EditorExporter = require './editor/editor_exporter.coffee'
 EditorAdder = require './editor/editor_adder.coffee'
 EditorContexter = require './editor/editor_contexter.coffee'
 EditorScroller = require './editor/editor_scroller.coffee'
+EditorHistorian = require './editor/editor_historian.coffee'
 utils = require './utils.coffee'
 
 class Editor
@@ -19,12 +25,18 @@ class Editor
   constructor: (@game) ->
     @keysPressed = {}
     @bindings()
-    new EditorImporter(@)
-    new EditorExporter(@)
+    @menubarItems = [
+      new EditorImporter(@)
+      new EditorExporter(@)
+      new EditorAdder(@)
+    ]
     new EditorContexter(@)
-    new EditorAdder(@)
     new EditorScroller(@)
+    @historian = new EditorHistorian(@)
     @selectedTile = undefined
+
+  import: (game) ->
+    @game = game
 
   keyPressed: (keyCode) ->
     @keysPressed[keyCode]
@@ -47,22 +59,36 @@ class Editor
   activeScene: ->
     Scene.find($('#scene-tabs > .active').data('model-id'))
 
+  clear: ->
+    $('#tileset-tabs').empty()
+    $('#tileset-containers').empty()
+    $('#scene-tabs').empty()
+    $('#scene-containers').empty()
+    $('#menubar').empty()
+    $('.tileset-styles').remove()
+    $('.tileset-images').remove()
+
   render: ->
+    @clear()
+    @menubarItems.forEach (instance) -> instance.appendMenu()
     imagePromises = @tileSets().forEach (tileSet) -> tileSet.renderToEditor()
     $('#tileset-tabs > .nav-item').first().addClass('active')
     $('#tileset-containers > li').first().addClass('active')
     $.when(imagePromises...).then =>
-      @renderScenes()
-
-  renderScenes: ->
-    @scenes().forEach (scene) -> scene.renderToEditor()
-    $('#scene-tabs > .nav-item').first().addClass('active')
-    $('#scene-containers > li').first().addClass('active')
+      # wat?
+      setTimeout(=>
+        @scenes().forEach (scene) -> scene.renderToEditor()
+        $('#scene-tabs > .nav-item').first().addClass('active')
+        $('#scene-containers > li').first().addClass('active')
+      , 0)
 
   toJSON: ->
-    # TODO: toJSON -> asJSON (as it is in rails)
-    # TODO: options: { root: true, only: [], except: [], methods: [], include: [] }
-    @game.toJSON()
+    TileSet: TileSet.dao()._collection.slice(0)
+    Tile: Tile.dao()._collection.slice(0)
+    Scene: Scene.dao()._collection.slice(0)
+    Layer: Layer.dao()._collection.slice(0)
+    Cell: Cell.dao()._collection.slice(0)
+    Game: Game.dao()._collection.slice(0)
 
   toolIsSelected: (tool) ->
     $("#toolbar ##{tool}").is(':checked')
@@ -71,12 +97,14 @@ class Editor
     $(document).on 'keydown', (e) =>
       e.preventDefault() if Editor.KEY_PRESS_CALLBACKS[e.keyCode]
       @keysPressed[e.keyCode] = true
-      Editor.KEY_PRESS_CALLBACKS[e.keyCode].down() if Editor.KEY_PRESS_CALLBACKS[e.keyCode].down
+      if Editor.KEY_PRESS_CALLBACKS[e.keyCode] and Editor.KEY_PRESS_CALLBACKS[e.keyCode].down
+        Editor.KEY_PRESS_CALLBACKS[e.keyCode].down()
 
     $(document).on 'keyup', (e) =>
       e.preventDefault() if Editor.KEY_PRESS_CALLBACKS[e.keyCode]
       @keysPressed[e.keyCode] = false
-      Editor.KEY_PRESS_CALLBACKS[e.keyCode].up() if Editor.KEY_PRESS_CALLBACKS[e.keyCode].up
+      if Editor.KEY_PRESS_CALLBACKS[e.keyCode] and Editor.KEY_PRESS_CALLBACKS[e.keyCode].up
+        Editor.KEY_PRESS_CALLBACKS[e.keyCode].up()
 
     $(document).on 'click', '.layers-list span', (e) =>
       $a = $(e.target).parents('.nav-item')
@@ -113,6 +141,7 @@ class Editor
 
       # still the most lagging thing in the app =\
       console.time('floodfill')
+      @historian.saveState('FLOODFILL')
 
       # HACK: using context.createPattern here to speed up rendering process
       buffer = utils.canvas.create(@game.tileSize, @game.tileSize)
@@ -148,12 +177,15 @@ class Editor
     $(document).on 'click', 'canvas', (e) =>
       return if @keyPressed(32)
       return unless @toolIsSelected('remove')
-      currentX = Math.floor(e.offsetX / @game.tileSize)
-      currentY = Math.floor(e.offsetY / @game.tileSize)
+      @historian.saveState('REMOVE')
+
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
-      cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
+      currentX = Math.floor(e.offsetX / @game.tileSize) + sceneChunk.col * Chunk.SIZE_IN_CELLS
+      currentY = Math.floor(e.offsetY / @game.tileSize) + sceneChunk.row * Chunk.SIZE_IN_CELLS
+
+      cell = layerChunk.layer().cells().where({ col: currentX, row: currentY })[0]
       return unless cell
       cell.destroy()
       @activeScene().render(sceneChunk)
@@ -162,15 +194,17 @@ class Editor
       return if @keyPressed(32)
       return unless @toolIsSelected('draw')
       return unless @selectedTile
+      @historian.saveState('DRAW')
 
-      currentX = Math.floor(e.offsetX / @game.tileSize)
-      currentY = Math.floor(e.offsetY / @game.tileSize)
       sceneChunk = @activeScene().chunks().find($(e.target).data('model-id'))
       layerChunk = @activeLayer().chunks().where({ col: sceneChunk.col, row: sceneChunk.row })[0]
 
-      cell = layerChunk.cells().where({ col: currentX, row: currentY })[0]
+      currentX = Math.floor(e.offsetX / @game.tileSize) + sceneChunk.col * Chunk.SIZE_IN_CELLS
+      currentY = Math.floor(e.offsetY / @game.tileSize) + sceneChunk.row * Chunk.SIZE_IN_CELLS
+
+      cell = layerChunk.layer().cells().where({ col: currentX, row: currentY })[0]
       cell.destroy() if cell
-      cell = layerChunk.cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
+      cell = layerChunk.layer().cells().create({ col: currentX, row: currentY, tileId: @selectedTile.id })
       cell.render()
       @activeScene().render(sceneChunk)
 

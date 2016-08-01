@@ -26,6 +26,7 @@ class TileSet extends Model
   renderStyles: ->
     @style = document.createElement('style')
     @style.id = "style-#{@id}"
+    @style.classList.add('tileset-styles')
     t = ".tileset-container[data-model-id='#{@id}'] .tile {
       background-image: url('#{@imagePath}');
       width: #{@game().tileSize}px;
@@ -43,6 +44,7 @@ class TileSet extends Model
     @img.src = @imagePath
     @img.id = "image-#{@id}"
     @img.style = 'display: none;'
+    @img.classList.add('tileset-images')
     @save()
     @img.onload = -> d.resolve()
     $('body').append(@img)

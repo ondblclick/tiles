@@ -1,26 +1,27 @@
 Model = require 'activer'
 Chunk = require './chunk.coffee'
+Layer = require './layer.coffee'
 Tile = require './tile.coffee'
 utils = require './utils.coffee'
 
 class Cell extends Model
-  @belongsTo('Chunk')
   @belongsTo('Tile')
+  @belongsTo('Layer')
   @attributes('col', 'row')
-  @delegate('game', 'Chunk')
+  @delegate('game', 'Layer')
 
-  absoluteCol: ->
-    @col + @chunk().col * Chunk.SIZE_IN_CELLS
-
-  absoluteRow: ->
-    @row + @chunk().row * Chunk.SIZE_IN_CELLS
+  chunk: ->
+    @layer().chunks().where({
+      col: Math.floor(@col / Chunk.SIZE_IN_CELLS),
+      row: Math.floor(@row / Chunk.SIZE_IN_CELLS)
+    })[0]
 
   destroy: ->
     super()
     tileSize = @game().tileSize
     @chunk().context().clearRect(
-      @col * tileSize,
-      @row * tileSize,
+      @col % Chunk.SIZE_IN_CELLS * tileSize,
+      @row % Chunk.SIZE_IN_CELLS * tileSize
       tileSize,
       tileSize
     )
@@ -62,8 +63,8 @@ class Cell extends Model
       0,
       tileSize,
       tileSize,
-      @col * tileSize,
-      @row * tileSize,
+      @col % Chunk.SIZE_IN_CELLS * tileSize,
+      @row % Chunk.SIZE_IN_CELLS * tileSize,
       tileSize,
       tileSize
     )

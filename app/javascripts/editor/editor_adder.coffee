@@ -4,7 +4,6 @@ addMenuTmpl = require '../../templates/toolbar_menus/add_menu.hbs'
 
 class EditorAdder
   constructor: (@editor) ->
-    @appendMenu()
     @bindings()
 
   appendMenu: ->

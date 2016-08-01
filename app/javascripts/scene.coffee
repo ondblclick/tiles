@@ -47,7 +47,16 @@ class Scene extends Model
     @render()
 
   render: (c) ->
-    console.time 'scene render'
+    unless @chunks().length
+      @createChunks()
+      $("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper canvas").remove()
+      @chunks().forEach (chunk) =>
+        chunk.render($("#scene-containers > li[data-model-id='#{@id}'] .canvas-container .wrapper")[0])
+      @layers().forEach (layer) ->
+        layer.createChunks()
+        layer.cells().forEach (cell) ->
+          cell.render()
+
     chunks = if c then [c] else @visibleChunks().filter((chunk) -> chunk.dirty is true)
     chunks.forEach (chunk) -> chunk.clear()
     chunks.forEach (chunk) =>
@@ -61,8 +70,8 @@ class Scene extends Model
         # (can be moved to background job)
         if layerChunk.jobs().length
           job = layerChunk.jobs()[0]
-          layerChunk.cells().deleteAll()
-          cells = layerChunk.cells()
+          layer.cells().deleteAll()
+          cells = layer.cells()
           [0..9].forEach (col) ->
             [0..9].forEach (row) ->
               cells.create({ col: col, row: row, tileId: job.params.tile.id })
@@ -71,7 +80,6 @@ class Scene extends Model
 
         # draw layer to scene
         utils.canvas.drawChunk(chunk.context(), layerChunk.canvas, chunk)
-    console.timeEnd 'scene render'
 
   toJSON: ->
     res = super()

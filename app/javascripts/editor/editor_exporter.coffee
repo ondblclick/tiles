@@ -5,7 +5,6 @@ exportJSONTmpl = require '../../templates/export_json.hbs'
 
 class EditorExporter
   constructor: (@editor) ->
-    @appendMenu()
     @bindings()
 
   appendMenu: ->
